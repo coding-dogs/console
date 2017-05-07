@@ -1,0 +1,9 @@
+@CHARSET "UTF-8";
+
+.display-n {
+	display: none !important;
+}
+
+.display-ib {
+	display: inline-block !important;
+}

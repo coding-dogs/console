@@ -113,10 +113,10 @@
 				</td>
 				<td>
 					<shiro:hasPermission name="supplier:supplier:view">
-						<a href="#" onclick="openDialogView('查看供货商', '${ctx}/supplier/form?id=${supplier.id}','800px', '500px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+						<a href="#" onclick="openDialogView('查看供货商', '${ctx}/supplier/form?action=view&id=${supplier.id}','800px', '500px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="supplier:supplier:edit">
-    					<a href="#" onclick="openDialog('修改供货商', '${ctx}/supplier/form?id=${supplier.id}','800px', '500px')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
+    					<a href="#" onclick="openDialog('修改供货商', '${ctx}/supplier/form?action=update&id=${supplier.id}','800px', '500px')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
     				</shiro:hasPermission>
     				<shiro:hasPermission name="supplier:supplier:del">
 						<a href="${ctx}/supplier/delete?id=${supplier.id}" onclick="return confirmx('确认要删除该供货商吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>

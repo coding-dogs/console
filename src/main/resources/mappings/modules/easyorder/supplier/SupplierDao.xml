@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.easyorder.modules.dao.SupplierDao">
+<mapper namespace="com.easyorder.modules.supplier.dao.SupplierDao">
     
 	<sql id="supplierColumns">
 		a.id AS "id",
 		a.name AS "name",
 		a.supplier_no AS "supplierNo",
 		a.logo_picture_url AS "logoPictureUrl",
+		a.manager_id AS "manager_id",
 		a.description AS "description",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -77,6 +78,7 @@
 			name,
 			supplier_no,
 			logo_picture_url,
+			manager_id,
 			description,
 			create_by,
 			create_date,
@@ -90,6 +92,7 @@
 			#{name},
 			#{supplierNo},
 			#{logoPictureUrl},
+			#{managerId},
 			#{description},
 			#{createBy.id},
 			#{createDate},
@@ -106,6 +109,7 @@
 			name = #{name},
 			supplier_no = #{supplierNo},
 			logo_picture_url = #{logoPictureUrl},
+			manager_id = #{managerId},
 			description = #{description},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
@@ -132,6 +136,27 @@
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
 	<select id="findUniqueByProperty" resultType="Supplier" statementType="STATEMENT">
 		select * FROM supplier  where ${propertyName} = '${value}'
+	</select>
+	
+	<!-- 根据ID查询供货商信息 -->
+	<select id="getById" resultType="SupplierVO" >
+		SELECT 
+			<include refid="supplierColumns"/>,
+			sys_user.name AS "managerName"
+		FROM supplier a
+		LEFT JOIN sys_user ON sys_user.id = a.manager_id
+		WHERE a.id = #{id}
+		limit 1
+	</select>
+	
+	<!-- 根据用户ID获取其供应商信息 -->
+	<select id="getByUserId" resultType="SupplierVO">
+		SELECT
+			<include refid="supplierColumns"/>
+		FROM sys_user_supplier
+		RIGHT JOIN supplier a on sys_user_supplier.supplier_id = a.id
+		WHERE sys_user_supplier.sys_user_id = #{userId}
+		
 	</select>
 	
 </mapper>

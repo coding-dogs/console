@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.easyorder.modules.dao.SupplierDao">
+<mapper namespace="com.easyorder.modules.supplier.dao.SysUserSupplierDao">
     
-	<sql id="supplierColumns">
+	<sql id="sysUserSupplierColumns">
 		a.id AS "id",
-		a.name AS "name",
-		a.supplier_no AS "supplierNo",
-		a.logo_picture_url AS "logoPictureUrl",
-		a.description AS "description",
+		a.sys_user_id AS "sysUserId",
+		a.supplier_id AS "supplierId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -17,31 +15,25 @@
 		a.version AS "version"
 	</sql>
 	
-	<sql id="supplierJoins">
+	<sql id="sysUserSupplierJoins">
 	</sql>
 	
     
-	<select id="get" resultType="Supplier" >
+	<select id="get" resultType="SysUserSupplier" >
 		SELECT 
-			<include refid="supplierColumns"/>
-		FROM supplier a
-		<include refid="supplierJoins"/>
+			<include refid="sysUserSupplierColumns"/>
+		FROM sys_user_supplier a
+		<include refid="sysUserSupplierJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findList" resultType="Supplier" >
+	<select id="findList" resultType="SysUserSupplier" >
 		SELECT 
-			<include refid="supplierColumns"/>
-		FROM supplier a
-		<include refid="supplierJoins"/>
+			<include refid="sysUserSupplierColumns"/>
+		FROM sys_user_supplier a
+		<include refid="sysUserSupplierJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -53,11 +45,11 @@
 		</choose>
 	</select>
 	
-	<select id="findAllList" resultType="Supplier" >
+	<select id="findAllList" resultType="SysUserSupplier" >
 		SELECT 
-			<include refid="supplierColumns"/>
-		FROM supplier a
-		<include refid="supplierJoins"/>
+			<include refid="sysUserSupplierColumns"/>
+		FROM sys_user_supplier a
+		<include refid="sysUserSupplierJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		
@@ -72,12 +64,10 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO supplier(
+		INSERT INTO sys_user_supplier(
 			id,
-			name,
-			supplier_no,
-			logo_picture_url,
-			description,
+			sys_user_id,
+			supplier_id,
 			create_by,
 			create_date,
 			update_by,
@@ -87,10 +77,8 @@
 			version
 		) VALUES (
 			#{id},
-			#{name},
-			#{supplierNo},
-			#{logoPictureUrl},
-			#{description},
+			#{sysUserId},
+			#{supplierId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -102,11 +90,9 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE supplier SET 	
-			name = #{name},
-			supplier_no = #{supplierNo},
-			logo_picture_url = #{logoPictureUrl},
-			description = #{description},
+		UPDATE sys_user_supplier SET 	
+			sys_user_id = #{sysUserId},
+			supplier_id = #{supplierId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},
@@ -117,21 +103,21 @@
 	
 	<!--物理删除-->
 	<update id="delete">
-		DELETE FROM supplier
+		DELETE FROM sys_user_supplier
 		WHERE id = #{id}
 	</update>
 	
 	<!--逻辑删除-->
 	<update id="deleteByLogic">
-		UPDATE supplier SET 
+		UPDATE sys_user_supplier SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 	
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
-	<select id="findUniqueByProperty" resultType="Supplier" statementType="STATEMENT">
-		select * FROM supplier  where ${propertyName} = '${value}'
+	<select id="findUniqueByProperty" resultType="SysUserSupplier" statementType="STATEMENT">
+		select * FROM sys_user_supplier  where ${propertyName} = '${value}'
 	</select>
 	
 </mapper>

@@ -1,7 +1,7 @@
 /**
  * Copyright &copy; 2015-2020 <a href="http://www.jeeplus.org/">JeePlus</a> All rights reserved.
  */
-package com.easyorder.modules.web;
+package com.easyorder.modules.supplier.web;
 
 import java.util.List;
 
@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.easyorder.modules.entity.Supplier;
-import com.easyorder.modules.service.SupplierService;
+import com.easyorder.common.utils.BeanUtils;
+import com.easyorder.modules.supplier.entity.Supplier;
+import com.easyorder.modules.supplier.service.SupplierService;
+import com.easyorder.modules.supplier.vo.SupplierVO;
 import com.google.common.collect.Lists;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.persistence.Page;
@@ -46,13 +48,13 @@ public class SupplierController extends BaseController {
 	private SupplierService supplierService;
 	
 	@ModelAttribute
-	public Supplier get(@RequestParam(required=false) String id) {
-		Supplier entity = null;
+	public SupplierVO get(@RequestParam(required=false) String id) {
+		SupplierVO entity = null;
 		if (StringUtils.isNotBlank(id)){
-			entity = supplierService.get(id);
+			entity = supplierService.getById(id);
 		}
 		if (entity == null){
-			entity = new Supplier();
+			entity = new SupplierVO();
 		}
 		return entity;
 	}
@@ -73,8 +75,9 @@ public class SupplierController extends BaseController {
 	 */
 	@RequiresPermissions(value={"supplier:supplier:view","supplier:supplier:add","supplier:supplier:edit"},logical=Logical.OR)
 	@RequestMapping(value = "form")
-	public String form(Supplier supplier, Model model) {
-		model.addAttribute("supplier", supplier);
+	public String form(SupplierVO supplierVo, Model model, String action) {
+		model.addAttribute("supplier", supplierVo);
+		model.addAttribute("action", action);
 		return "easyorder/supplier/supplierForm";
 	}
 
@@ -83,15 +86,17 @@ public class SupplierController extends BaseController {
 	 */
 	@RequiresPermissions(value={"supplier:supplier:add","supplier:supplier:edit"},logical=Logical.OR)
 	@RequestMapping(value = "save")
-	public String save(Supplier supplier, Model model, RedirectAttributes redirectAttributes) throws Exception{
-		if (!beanValidator(model, supplier)){
-			return form(supplier, model);
+	public String save(SupplierVO supplierVo, Model model, RedirectAttributes redirectAttributes) throws Exception{
+		if (!beanValidator(model, supplierVo)){
+			return form(supplierVo, model, "save");
 		}
-		if(!supplier.getIsNewRecord()){//编辑表单保存
-			Supplier t = supplierService.get(supplier.getId());//从数据库取出记录的值
-			MyBeanUtils.copyBeanNotNull2Bean(supplier, t);//将编辑表单中的非NULL值覆盖数据库记录中的值
+		if(!supplierVo.getIsNewRecord()){//编辑表单保存
+			Supplier t = supplierService.get(supplierVo.getId());//从数据库取出记录的值
+			MyBeanUtils.copyBeanNotNull2Bean(supplierVo, t);//将编辑表单中的非NULL值覆盖数据库记录中的值
 			supplierService.save(t);//保存
 		}else{//新增表单保存
+			Supplier supplier = new Supplier();
+			BeanUtils.consoleCopy(supplierVo, supplier);
 			supplierService.save(supplier);//保存
 		}
 		addMessage(redirectAttributes, "保存供货商成功");

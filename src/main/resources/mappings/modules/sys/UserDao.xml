@@ -439,4 +439,41 @@
 		</if>
 	</select>
 	
+	<select id="findUserByRoleEnname" resultType="User">
+		select
+			id,
+	    	company_id AS "company.id",
+	    	office_id AS "office.id",
+	    	login_name,
+	    	password,
+	    	no,
+			name,
+			email,
+			phone,
+			mobile,
+			user_type,
+			login_ip,
+			login_date,
+			remarks,
+			login_flag,
+			photo,
+			qrcode,
+			sign,
+			create_by AS "createBy.id",
+			create_date,
+			update_by AS "updateBy.id",
+			update_date,
+			del_flag
+		from
+			`sys_user`
+		left join `sys_user_role` on sys_user.id = `sys_user_role`.	`user_id`
+		where `sys_user_role`.`role_id` in (
+			select
+				id
+			from 
+				`sys_role`
+			where `enname` = #{enname}
+		)
+	</select>
+	
 </mapper>

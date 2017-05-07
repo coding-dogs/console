@@ -89,13 +89,24 @@
             <div class="row border-bottom">
                 <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
                     <div class="navbar-header"><a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
-                        <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
-                            <div class="form-group">
-                                <input type="text" placeholder="请输入您需要查找的内容 …" class="form-control" name="top-search" id="top-search">
-                            </div>
-                        </form>
                     </div>
                     <ul class="nav navbar-top-links navbar-right">
+                    	<c:if test="${not empty suppliers}">
+	                    	<!-- 用户所属供应商下拉列表 -->
+	                    	<li class="dropdown">
+	                    		<a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+	                                <i class="fa fa-cubes"></i> <span>所属供应商</span>
+	                            </a>
+	                            
+	                            	<ul class="dropdown-menu">
+	                            		<c:forEach items="${suppliers}" var="supplier" varStatus="status">
+	                            			<li>
+	                            				<a>${supplier.name}</a>
+	                            			</li>
+	                            		</c:forEach>
+	                            	</ul>
+	                        </li>
+	                    </c:if>
                         <li class="dropdown">
                             <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
                                 <i class="fa fa-envelope"></i> <span class="label label-warning">${noReadCount}</span>
