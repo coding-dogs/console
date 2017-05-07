@@ -10,7 +10,7 @@ package ${packageName}.${moduleName}.entity<#if subModuleName != "">.${subModule
 import ${i};
 </#list>
 
-import com.easyorder.common.entity.EasyOrderDataEntity;
+import com.jeeplus.common.persistence.DataEntity;
 import com.jeeplus.common.utils.excel.annotation.ExcelField;
 
 /**
@@ -18,7 +18,7 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
  * @author ${functionAuthor}
  * @version ${functionVersion}
  */
-public class ${ClassName} extends EasyOrderDataEntity<${ClassName}> {
+public class ${ClassName} extends DataEntity<${ClassName}> {
 	
 	private static final long serialVersionUID = 1L;
 	<#-- 生成字段属性 -->

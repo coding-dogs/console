@@ -309,6 +309,32 @@ function openDialog(title,url,width,height,target){
 	
 }
 
+//打开对话框(带自定义确定回调，不自动提交表单)
+function openDialogWithCallback(title,url,width,height,target, yesCallback){
+	
+	if(navigator.userAgent.match(/(iPhone|iPod|Android|ios)/i)){//如果是移动端，就使用自适应大小弹窗
+		width='auto';
+		height='auto';
+	}else{//如果是PC端，根据用户设置的width和height显示。
+	
+	}
+	
+	top.layer.open({
+	    type: 2,  
+	    area: [width, height],
+	    title: title,
+        maxmin: true, //开启最大化最小化按钮
+	    content: url ,
+	    btn: ['确定', '关闭'],
+	    yes: function(index, layero){
+	    	 yesCallback(index, layero);
+		  },
+		  cancel: function(index){ 
+	       }
+	}); 	
+	
+}
+
 //打开对话框(查看)
 function openDialogView(title,url,width,height){
 	

@@ -4,6 +4,7 @@
 package com.jeeplus.modules.sys.web;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.easyorder.common.utils.BeanUtils;
+import com.easyorder.modules.supplier.service.SupplierService;
+import com.easyorder.modules.supplier.vo.SupplierVO;
 import com.google.common.collect.Maps;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.json.AjaxJson;
@@ -54,6 +58,9 @@ public class LoginController extends BaseController {
 
   @Autowired
   private MailBoxService mailBoxService;
+  
+  @Autowired
+  private SupplierService supplierService;
 
 
   /**
@@ -268,7 +275,13 @@ public class LoginController extends BaseController {
     if (StringUtils.isNotEmpty(indexStyle) && indexStyle.equalsIgnoreCase("ace")) {
       return "modules/sys/sysIndex-ace";
     }
-
+    
+    User user = UserUtils.getUser();
+    if(BeanUtils.isNotEmpty(user)) {
+    	List<SupplierVO> suppliers = supplierService.getByUserId(user.getId());
+    	request.setAttribute("suppliers", suppliers);
+    }
+    
     return "modules/sys/sysIndex";
   }
 

@@ -118,6 +118,13 @@ public interface UserDao extends CrudDao<User> {
    */
 
   public List<User> findListByOffice(User user);
+  
+  /**
+   * 根据角色英文名获取用户列表
+   * @param enname 角色英文名
+   * @return 用户列表
+   */
+  public List<User> findUserByRoleEnname(@Param(value = "enname") String enname);
 
 
 }

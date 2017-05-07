@@ -652,4 +652,12 @@ public class UserController extends BaseController {
   public String ossTest(){
     return "modules/sys/oss";
   }
+  
+  @RequiresPermissions("sys:user:index")
+  @RequestMapping(value = "roleUserSelector")
+  public String getUserByRoleEnname(String enname, Model model) {
+	  List<User> users = userDao.findUserByRoleEnname(enname);
+	  model.addAttribute("userList", users);
+	  return "modules/sys/userSelector";
+  } 
 }

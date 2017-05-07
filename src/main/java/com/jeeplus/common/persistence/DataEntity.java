@@ -30,6 +30,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
   protected User updateBy; // 更新者
   protected Date updateDate; // 更新日期
   protected String delFlag; // 删除标记（0：正常；1：删除；2：审核）
+  protected Integer version;
 
   public DataEntity() {
     super();
@@ -56,6 +57,7 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
     }
     this.updateDate = new Date();
     this.createDate = this.updateDate;
+    this.version = 0;
   }
 
   /**

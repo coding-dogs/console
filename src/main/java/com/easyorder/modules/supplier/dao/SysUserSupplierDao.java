@@ -1,19 +1,19 @@
 /**
  * Copyright &copy; 2015-2020 <a href="http://www.jeeplus.org/">JeePlus</a> All rights reserved.
  */
-package com.easyorder.modules.dao;
+package com.easyorder.modules.supplier.dao;
 
-import com.easyorder.modules.entity.Supplier;
 import com.jeeplus.common.persistence.CrudDao;
 import com.jeeplus.common.persistence.annotation.MyBatisDao;
+import com.easyorder.modules.supplier.entity.SysUserSupplier;
 
 /**
- * 供货商DAO接口
+ * 用户-供应商DAO接口
  * @author qiudequan
- * @version 2017-04-22
+ * @version 2017-05-07
  */
 @MyBatisDao
-public interface SupplierDao extends CrudDao<Supplier> {
+public interface SysUserSupplierDao extends CrudDao<SysUserSupplier> {
 
 	
 }
