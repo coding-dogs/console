@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.customer.dao.CustomerShippingAddressDao">
+    
+	<sql id="customerShippingAddressColumns">
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.shipping_name AS "shippingName",
+		a.shipping_phone AS "shippingPhone",
+		a.shipping_tel AS "shippingTel",
+		a.mt_province_cd AS "mtProvinceCd",
+		a.mt_city_cd AS "mtCityCd",
+		a.mt_county_cd AS "mtCountyCd",
+		a.is_default AS "isDefault",
+		a.address AS "address",
+		a.zip_code AS "zipCode",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="customerShippingAddressJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="CustomerShippingAddress" >
+		SELECT 
+			<include refid="customerShippingAddressColumns"/>
+		FROM customer_shipping_address a
+		<include refid="customerShippingAddressJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CustomerShippingAddress" >
+		SELECT 
+			<include refid="customerShippingAddressColumns"/>
+		FROM customer_shipping_address a
+		<include refid="customerShippingAddressJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CustomerShippingAddress" >
+		SELECT 
+			<include refid="customerShippingAddressColumns"/>
+		FROM customer_shipping_address a
+		<include refid="customerShippingAddressJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO customer_shipping_address(
+			id,
+			customer_id,
+			shipping_name,
+			shipping_phone,
+			shipping_tel,
+			mt_province_cd,
+			mt_city_cd,
+			mt_county_cd,
+			is_default,
+			address,
+			zip_code,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{customerId},
+			#{shippingName},
+			#{shippingPhone},
+			#{shippingTel},
+			#{mtProvinceCd},
+			#{mtCityCd},
+			#{mtCountyCd},
+			#{isDefault},
+			#{address},
+			#{zipCode},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE customer_shipping_address SET 	
+			customer_id = #{customerId},
+			shipping_name = #{shippingName},
+			shipping_phone = #{shippingPhone},
+			shipping_tel = #{shippingTel},
+			mt_province_cd = #{mtProvinceCd},
+			mt_city_cd = #{mtCityCd},
+			mt_county_cd = #{mtCountyCd},
+			is_default = #{isDefault},
+			address = #{address},
+			zip_code = #{zipCode},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM customer_shipping_address
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE customer_shipping_address SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="CustomerShippingAddress" statementType="STATEMENT">
+		select * FROM customer_shipping_address  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>
