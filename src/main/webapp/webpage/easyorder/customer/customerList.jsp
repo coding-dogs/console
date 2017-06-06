@@ -57,13 +57,13 @@
 	<div class="col-sm-12">
 		<div class="pull-left">
 			<shiro:hasPermission name="customer:customer:add">
-				<table:addRow url="${ctx}/customerManager/customer/form" title="客户"></table:addRow><!-- 增加按钮 -->
+				<table:easyAddRow url="${ctx}/customerManager/customer/form?action=add" title="客户"></table:easyAddRow><!-- 增加按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="customer:customer:edit">
-			    <table:editRow url="${ctx}/customerManager/customer/form" title="客户" id="contentTable"></table:editRow><!-- 编辑按钮 -->
+			    <table:easyEditRow url="${ctx}/customerManager/customer/form?action=edit" title="客户" id="contentTable"></table:easyEditRow><!-- 编辑按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="customer:customer:del">
-				<table:delRow url="${ctx}/customerManager/customer/deleteAll" id="contentTable"></table:delRow><!-- 删除按钮 -->
+				<table:easyDelRow url="${ctx}/customerManager/customer/deleteAll" id="contentTable"></table:easyDelRow><!-- 删除按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="customer:customer:import">
 				<table:importExcel url="${ctx}/customerManager/customer/import"></table:importExcel><!-- 导入按钮 -->
@@ -86,9 +86,14 @@
 		<thead>
 			<tr>
 				<th> <input type="checkbox" class="i-checks"></th>
-				<th  class="sort-column name">客户名称</th>
-				<th  class="sort-column updateDate">更新时间</th>
-				<th  class="sort-column remarks">备注</th>
+				<th class="sort-column customerNo">客户编号</th>
+				<th class="sort-column name">客户名称</th>
+				<th class="sort-column accountNo">登录账号</th>
+				<th>所属客户组</th>
+				<th>归属地区</th>
+				<th>客户状态</th>
+				<th class="sort-column updateDate">更新时间</th>
+				<th class="sort-column remarks">备注</th>
 				<th>操作</th>
 			</tr>
 		</thead>
@@ -96,9 +101,24 @@
 		<c:forEach items="${page.list}" var="customer">
 			<tr>
 				<td> <input type="checkbox" id="${customer.id}" class="i-checks"></td>
-				<td><a  href="#" onclick="openDialogView('查看客户', '${ctx}/customerManager/customer/form?id=${customer.id}','800px', '500px')">
+				<td>
+					${customer.customerNo}
+				</td>
+				<td><a  href="${ctx}/customerManager/customer/form?id=${customer.id}&action=view">
 					${customer.name}
 				</a></td>
+				<td>
+					${customer.accountNo}
+				</td>
+				<td>
+					${customer.customerGroupName}
+				</td>
+				<td>
+					${customer.mtCityCd}
+				</td>
+				<td>
+					${fns:getDictLabel(customer.mtCustomerStatusCd, "mtCustomerStatusCd", "-") }
+				</td>
 				<td>
 					<fmt:formatDate value="${customer.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
@@ -107,10 +127,10 @@
 				</td>
 				<td>
 					<shiro:hasPermission name="customer:customer:view">
-						<a href="#" onclick="openDialogView('查看客户', '${ctx}/customerManager/customer/form?id=${customer.id}','800px', '500px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+						<a href="${ctx}/customerManager/customer/form?id=${customer.id}&action=view" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="customer:customer:edit">
-    					<a href="#" onclick="openDialog('修改客户', '${ctx}/customerManager/customer/form?id=${customer.id}','800px', '500px')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
+    					<a href="${ctx}/customerManager/customer/form?id=${customer.id}&action=edit" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
     				</shiro:hasPermission>
     				<shiro:hasPermission name="customer:customer:del">
 						<a href="${ctx}/customerManager/customer/delete?id=${customer.id}" onclick="return confirmx('确认要删除该客户吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>

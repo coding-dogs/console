@@ -52,6 +52,8 @@ public class User extends DataEntity<User> {
   private Date oldLoginDate; // 上次登陆日期
 
   private Role role; // 根据角色查询用户条件
+  
+  private String supplierId; // 供货商ID
 
   private List<Role> roleList = Lists.newArrayList(); // 拥有角色列表
 
@@ -343,4 +345,13 @@ public class User extends DataEntity<User> {
   public String getSign() {
     return sign;
   }
+
+	public String getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(String supplierId) {
+		this.supplierId = supplierId;
+	}
+  
 }

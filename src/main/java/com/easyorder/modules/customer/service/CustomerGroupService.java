@@ -10,7 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jeeplus.common.persistence.Page;
 import com.jeeplus.common.service.CrudService;
+import com.jeeplus.modules.sys.entity.User;
+import com.jeeplus.modules.sys.utils.UserUtils;
 import com.easyorder.modules.customer.entity.CustomerGroup;
+import com.easyorder.common.utils.BeanUtils;
 import com.easyorder.modules.customer.dao.CustomerGroupDao;
 
 /**
@@ -36,6 +39,10 @@ public class CustomerGroupService extends CrudService<CustomerGroupDao, Customer
 	
 	@Transactional(readOnly = false)
 	public void save(CustomerGroup customerGroup) {
+		User user = UserUtils.getUser();
+		if(BeanUtils.isNotEmpty(user)) {
+			customerGroup.setSupplierId(user.getSupplierId());
+		}
 		super.save(customerGroup);
 	}
 	

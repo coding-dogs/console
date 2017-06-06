@@ -5,6 +5,7 @@
 	<sql id="customerGroupColumns">
 		a.id AS "id",
 		a.name AS "name",
+		a.supplier_id AS "supplierId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -39,6 +40,13 @@
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND supplier_id = #{supplierId}
+			</if>
+			<if test="supplierId == null">
+				AND supplier_id is NULL
+			</if>
+			
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -78,7 +86,8 @@
 			update_date,
 			remarks,
 			del_flag,
-			version
+			version,
+			supplier_id
 		) VALUES (
 			#{id},
 			#{name},
@@ -88,7 +97,8 @@
 			#{updateDate},
 			#{remarks},
 			#{delFlag},
-			#{version}
+			#{version},
+			#{supplierId}
 		)
 	</insert>
 	
@@ -98,7 +108,8 @@
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},
-			version = #{version}
+			version = #{version},
+			supplier_id = #{supplierId}
 		WHERE id = #{id}
 	</update>
 	
