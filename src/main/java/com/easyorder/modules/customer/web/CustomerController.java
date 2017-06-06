@@ -27,10 +27,17 @@ import com.jeeplus.common.utils.MyBeanUtils;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.persistence.Page;
 import com.jeeplus.common.web.BaseController;
+import com.jeeplus.modules.sys.entity.User;
+import com.jeeplus.modules.sys.utils.UserUtils;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
+import com.easyorder.common.constant.Constants;
+import com.easyorder.common.utils.BeanUtils;
+import com.easyorder.common.utils.GSONUtils;
 import com.easyorder.modules.customer.entity.Customer;
+import com.easyorder.modules.customer.entity.CustomerGroup;
+import com.easyorder.modules.customer.service.CustomerGroupService;
 import com.easyorder.modules.customer.service.CustomerService;
 
 /**
@@ -44,6 +51,8 @@ public class CustomerController extends BaseController {
 
 	@Autowired
 	private CustomerService customerService;
+	@Autowired
+	private CustomerGroupService customerGroupService;
 	
 	@ModelAttribute
 	public Customer get(@RequestParam(required=false) String id) {
@@ -63,6 +72,10 @@ public class CustomerController extends BaseController {
 	@RequiresPermissions("customer:customer:list")
 	@RequestMapping(value = {"list", ""})
 	public String list(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
+		User user = UserUtils.getUser();
+		if(BeanUtils.isNotEmpty(user)) {
+			customer.setSupplierId(user.getSupplierId());
+		}
 		Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer); 
 		model.addAttribute("page", page);
 		return "easyorder/customer/customerList";
@@ -75,6 +88,18 @@ public class CustomerController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(Customer customer, Model model) {
 		model.addAttribute("customer", customer);
+		CustomerGroup cg = new CustomerGroup();
+		cg.setSupplierId(UserUtils.getUser().getSupplierId());
+		if(Constants.ACTION_ADD.equals(customer.getAction())
+				|| Constants.ACTION_EDIT.equals(customer.getAction())) {
+			List<CustomerGroup> groups = customerGroupService.findList(cg);
+			model.addAttribute("groups", GSONUtils.toJSON(groups));
+		}
+		
+		if(Constants.ACTION_VIEW.equals(customer.getAction())) {
+			return "easyorder/customer/customerDetail";
+		}
+		
 		return "easyorder/customer/customerForm";
 	}
 

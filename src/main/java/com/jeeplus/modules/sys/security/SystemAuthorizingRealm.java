@@ -29,6 +29,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.easyorder.common.utils.CollectionUtils;
+import com.easyorder.modules.supplier.service.SupplierService;
+import com.easyorder.modules.supplier.vo.SupplierVO;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.servlet.ValidateCodeServlet;
 import com.jeeplus.common.utils.Encodes;
@@ -55,6 +58,9 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
   private Logger logger = LoggerFactory.getLogger(getClass());
 
   private SystemService systemService;
+  
+  @Autowired
+  private SupplierService supplierService;
 
   @Autowired
   HttpServletRequest request;
@@ -86,10 +92,18 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
     User user = getSystemService().getUserByLoginName(token.getUsername());
     if (user != null) {
       if (Global.NO.equals(user.getLoginFlag())) {
-        throw new AuthenticationException("msg:该已帐号禁止登录.");
+        throw new AuthenticationException("msg:该帐号已禁止登录.");
       }
       byte[] salt = Encodes.decodeHex(user.getPassword().substring(0, 16));
-      return new SimpleAuthenticationInfo(new Principal(user, token.isMobileLogin()),
+      Principal principal = new Principal(user, token.isMobileLogin());
+      
+      // 查询用户关联供货商
+      List<SupplierVO> suppliers = supplierService.getByUserId(user.getId());
+    	if(CollectionUtils.isNotEmpty(suppliers)) {
+    		String supplierId = suppliers.get(0).getId();
+    		principal.setSupplierId(supplierId);
+    	}
+      return new SimpleAuthenticationInfo(principal,
           user.getPassword().substring(16), ByteSource.Util.bytes(salt), getName());
     } else {
       return null;
@@ -243,6 +257,7 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
     private String loginName; // 登录名
     private String name; // 姓名
     private boolean mobileLogin; // 是否手机登录
+    private String supplierId;
 
     // private Map<String, Object> cacheMap;
 
@@ -288,7 +303,15 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
       }
     }
 
-    @Override
+    public String getSupplierId() {
+			return supplierId;
+		}
+
+		public void setSupplierId(String supplierId) {
+			this.supplierId = supplierId;
+		}
+
+		@Override
     public String toString() {
       return id;
     }

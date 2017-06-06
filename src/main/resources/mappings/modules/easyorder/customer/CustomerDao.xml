@@ -33,16 +33,32 @@
     
 	<select id="get" resultType="Customer" >
 		SELECT 
-			<include refid="customerColumns"/>
+			<include refid="customerColumns"/>,
+			c.id AS "contactId",
+			c.name AS "contactName",
+			c.address AS "contactAddress",
+			c.email AS "contactEmail",
+			c.phone AS "contactPhone",
+			cg.name AS "customerGroupName"
 		FROM customer a
+		LEFT JOIN contact c ON c.customer_id = a.id
+		LEFT JOIN customer_group cg ON cg.supplier_id = a.supplier_id AND a.customer_group_id = cg.id
 		<include refid="customerJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="Customer" >
 		SELECT 
-			<include refid="customerColumns"/>
+			<include refid="customerColumns"/>,
+			c.id AS "contactId",
+			c.name AS "contactName",
+			c.address AS "contactAddress",
+			c.email AS "contactEmail",
+			c.phone AS "contactPhone",
+			cg.name AS "customerGroupName"
 		FROM customer a
+		LEFT JOIN contact c ON c.customer_id = a.id
+		LEFT JOIN customer_group cg ON cg.supplier_id = a.supplier_id AND a.customer_group_id = cg.id
 		<include refid="customerJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -52,6 +68,13 @@
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="supplierId == null">
+				AND a.supplier_id is NULL
+			</if>
+			
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

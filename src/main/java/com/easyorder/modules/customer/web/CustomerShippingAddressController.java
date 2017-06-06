@@ -65,7 +65,7 @@ public class CustomerShippingAddressController extends BaseController {
 	public String list(CustomerShippingAddress customerShippingAddress, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<CustomerShippingAddress> page = customerShippingAddressService.findPage(new Page<CustomerShippingAddress>(request, response), customerShippingAddress); 
 		model.addAttribute("page", page);
-		return "easyorder/customerManager/customerShippingAddressList";
+		return "easyorder/customer/customerShippingAddressList";
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class CustomerShippingAddressController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(CustomerShippingAddress customerShippingAddress, Model model) {
 		model.addAttribute("customerShippingAddress", customerShippingAddress);
-		return "easyorder/customerManager/customerShippingAddressForm";
+		return "easyorder/customer/customerShippingAddressForm";
 	}
 
 	/**

@@ -1,0 +1,139 @@
+@charset 'UTF-8';
+.easy-selector {
+	position: relative;
+	border: 1px solid #d2d2d2;
+	font-size: 14px;
+	height: 32px;
+	line-height: 32px;
+	user-select: none;
+}
+
+.easy-selector .value-area span {
+	padding-left: 12px;
+	width: 100%;
+}
+
+.easy-selector .dropdown-menu {
+	position: absolute;
+	width: 100%;
+	border: 1px solid #d2d2d2;
+	top: 34px;
+	left: 0;
+	overflow: hidden;
+}
+
+.easy-selector .menu-wrapper {
+	
+}
+
+.easy-selector .dropdown-menu ul {
+	padding: 0 0 30px 0;
+	margin: 0;
+	clear: both;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	display: block;
+	overflow-y: auto;
+	position: static;
+}
+
+.easy-selector .dropdown-menu ul li {
+	list-style: none;
+	height: 26px;
+	line-height: 26px;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.easy-selector .dropdown-menu ul li a.selected {
+	background-color: #edf1f2;
+}
+
+.easy-selector .dropdown-menu ul li a.hover {
+	background-color: #F0F0F0;
+}
+
+.easy-selector .dropdown-menu ul li a {
+	display: block;
+	cursor: pointer;
+	padding: 3px 0 3px 10px;
+	outline: none;
+}
+
+.easy-selector .more-wrapper {
+	float: none;
+	box-sizing: border-box;
+	margin-bottom: 20px;
+}
+
+.easy-selector .more-btn {
+	position: absolute;
+	width: 100%;
+	height: 26px;
+	border: 0;
+	color: #666;
+	outline: none;
+	text-align: left;
+	padding: 8px 0 8px 10px;
+	cursor: pointer;
+	margin: 0;
+	background-color: #f1f1f1;
+	bottom: 0;
+	display: block;
+	box-sizing: border-box;
+	line-height: 10px;
+}
+
+.easy-caret {
+	position: absolute;
+	top: 50%;
+	right: 12px;
+	margin-top: -2px;
+	vertical-align: middle;
+	content: "";
+	display: inline-block;
+	width: 0;
+	height: 0;
+}
+
+.easy-caret.caret-top {
+	border-top: 0;
+	border-bottom: 4px solid;
+	border-right: 4px solid transparent;
+	border-left: 4px solid transparent;
+}
+
+.easy-caret.caret-bottom {
+	border-top: 4px solid;
+	border-bottom: 0;
+	border-right: 4px solid transparent;
+	border-left: 4px solid transparent;
+}
+
+.easy-selector .dropdown-menu::-webkit-scrollbar { 
+	width: 0px; 
+	height: 0px;
+}
+.easy-selector .dropdown-menu::-webkit-scrollbar-button:vertical {
+	display: none;
+}
+.easy-selector .dropdown-menu::-webkit-scrollbar-track, 
+.easy-selector .dropdown-menu::-webkit-scrollbar-corner {
+	background-color: #e2e2e2;
+}
+.easy-selector .dropdown-menu::-webkit-scrollbar-thumb {
+	border-radius: 0; 
+	background-color: rgba(0,0,0,.3);
+}
+.easy-selector .dropdown-menu::-webkit-scrollbar-thumb:vertical:hover {
+	background-color: rgba(0,0,0,.35);
+}
+.easy-selector .dropdown-menu::-webkit-scrollbar-thumb:vertical:active {
+	background-color: rgba(0,0,0,.38);
+}
+
+
+
+
+

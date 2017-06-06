@@ -18,20 +18,25 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.easyorder.common.beans.EasyResponse;
+import com.easyorder.common.utils.BeanUtils;
+import com.easyorder.modules.customer.entity.CustomerGroup;
+import com.easyorder.modules.customer.service.CustomerGroupService;
 import com.google.common.collect.Lists;
-import com.jeeplus.common.utils.DateUtils;
-import com.jeeplus.common.utils.MyBeanUtils;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.persistence.Page;
-import com.jeeplus.common.web.BaseController;
+import com.jeeplus.common.utils.DateUtils;
+import com.jeeplus.common.utils.MyBeanUtils;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
-import com.easyorder.modules.customer.entity.CustomerGroup;
-import com.easyorder.modules.customer.service.CustomerGroupService;
+import com.jeeplus.common.web.BaseController;
+import com.jeeplus.modules.sys.entity.User;
+import com.jeeplus.modules.sys.utils.UserUtils;
 
 /**
  * 客户组Controller
@@ -44,7 +49,7 @@ public class CustomerGroupController extends BaseController {
 
 	@Autowired
 	private CustomerGroupService customerGroupService;
-	
+
 	@ModelAttribute
 	public CustomerGroup get(@RequestParam(required=false) String id) {
 		CustomerGroup entity = null;
@@ -56,16 +61,20 @@ public class CustomerGroupController extends BaseController {
 		}
 		return entity;
 	}
-	
+
 	/**
 	 * 客户组列表页面
 	 */
 	@RequiresPermissions("customer:customerGroup:list")
 	@RequestMapping(value = {"list", ""})
 	public String list(CustomerGroup customerGroup, HttpServletRequest request, HttpServletResponse response, Model model) {
+		User user = UserUtils.getUser();
+		if(BeanUtils.isNotEmpty(user)) {
+			customerGroup.setSupplierId(user.getSupplierId());
+		}
 		Page<CustomerGroup> page = customerGroupService.findPage(new Page<CustomerGroup>(request, response), customerGroup); 
 		model.addAttribute("page", page);
-		return "easyorder/customerManager/customerGroupList";
+		return "easyorder/customer/customerGroupList";
 	}
 
 	/**
@@ -75,7 +84,7 @@ public class CustomerGroupController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(CustomerGroup customerGroup, Model model) {
 		model.addAttribute("customerGroup", customerGroup);
-		return "easyorder/customerManager/customerGroupForm";
+		return "easyorder/customer/customerGroupForm";
 	}
 
 	/**
@@ -97,7 +106,7 @@ public class CustomerGroupController extends BaseController {
 		addMessage(redirectAttributes, "保存客户组成功");
 		return "redirect:"+Global.getAdminPath()+"/customerManager/customerGroup/?repage";
 	}
-	
+
 	/**
 	 * 删除客户组
 	 */
@@ -108,7 +117,7 @@ public class CustomerGroupController extends BaseController {
 		addMessage(redirectAttributes, "删除客户组成功");
 		return "redirect:"+Global.getAdminPath()+"/customerManager/customerGroup/?repage";
 	}
-	
+
 	/**
 	 * 批量删除客户组
 	 */
@@ -122,31 +131,31 @@ public class CustomerGroupController extends BaseController {
 		addMessage(redirectAttributes, "删除客户组成功");
 		return "redirect:"+Global.getAdminPath()+"/customerManager/customerGroup/?repage";
 	}
-	
+
 	/**
 	 * 导出excel文件
 	 */
 	@RequiresPermissions("customer:customerGroup:export")
-    @RequestMapping(value = "export", method=RequestMethod.POST)
-    public String exportFile(CustomerGroup customerGroup, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "export", method=RequestMethod.POST)
+	public String exportFile(CustomerGroup customerGroup, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
-            String fileName = "客户组"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
-            Page<CustomerGroup> page = customerGroupService.findPage(new Page<CustomerGroup>(request, response, -1), customerGroup);
-    		new ExportExcel("客户组", CustomerGroup.class).setDataList(page.getList()).write(response, fileName).dispose();
-    		return null;
+			String fileName = "客户组"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+			Page<CustomerGroup> page = customerGroupService.findPage(new Page<CustomerGroup>(request, response, -1), customerGroup);
+			new ExportExcel("客户组", CustomerGroup.class).setDataList(page.getList()).write(response, fileName).dispose();
+			return null;
 		} catch (Exception e) {
 			addMessage(redirectAttributes, "导出客户组记录失败！失败信息："+e.getMessage());
 		}
 		return "redirect:"+Global.getAdminPath()+"/customerManager/customerGroup/?repage";
-    }
+	}
 
 	/**
 	 * 导入Excel数据
 
 	 */
 	@RequiresPermissions("customer:customerGroup:import")
-    @RequestMapping(value = "import", method=RequestMethod.POST)
-    public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "import", method=RequestMethod.POST)
+	public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
 		try {
 			int successNum = 0;
 			int failureNum = 0;
@@ -171,26 +180,50 @@ public class CustomerGroupController extends BaseController {
 			addMessage(redirectAttributes, "导入客户组失败！失败信息："+e.getMessage());
 		}
 		return "redirect:"+Global.getAdminPath()+"/customerManager/customerGroup/?repage";
-    }
-	
+	}
+
 	/**
 	 * 下载导入客户组数据模板
 	 */
 	@RequiresPermissions("customer:customerGroup:import")
-    @RequestMapping(value = "import/template")
-    public String importFileTemplate(HttpServletResponse response, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "import/template")
+	public String importFileTemplate(HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
-            String fileName = "客户组数据导入模板.xlsx";
-    		List<CustomerGroup> list = Lists.newArrayList(); 
-    		new ExportExcel("客户组数据", CustomerGroup.class, 1).setDataList(list).write(response, fileName).dispose();
-    		return null;
+			String fileName = "客户组数据导入模板.xlsx";
+			List<CustomerGroup> list = Lists.newArrayList(); 
+			new ExportExcel("客户组数据", CustomerGroup.class, 1).setDataList(list).write(response, fileName).dispose();
+			return null;
 		} catch (Exception e) {
 			addMessage(redirectAttributes, "导入模板下载失败！失败信息："+e.getMessage());
 		}
 		return "redirect:"+Global.getAdminPath()+"/customerManager/customerGroup/?repage";
-    }
+	}
+
+	@RequiresPermissions("customer:customerGroup:list")
+	@RequestMapping(value = "/all", method = RequestMethod.GET)
+	@ResponseBody
+	public EasyResponse<List<CustomerGroup>> getCustomerGroups() {
+		CustomerGroup customerGroup = new CustomerGroup();
+		User user = UserUtils.getUser();
+		if(BeanUtils.isNotEmpty(user)) {
+			customerGroup.setSupplierId(user.getSupplierId());
+		}
+		List<CustomerGroup> groups = customerGroupService.findList(customerGroup);
+		return EasyResponse.buildSuccess(groups, "查询成功");
+	}
 	
-	
-	
+	@RequiresPermissions("customer:customerGroup:add")
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	@ResponseBody
+	public EasyResponse<String> saveCustomerGroup(CustomerGroup customerGroup) {
+		User user = UserUtils.getUser();
+		if(BeanUtils.isNotEmpty(user)) {
+			customerGroup.setSupplierId(user.getSupplierId());
+		}
+		customerGroupService.save(customerGroup);
+		return EasyResponse.buildSuccess(customerGroup.getId(), "新增客户组成功");
+	}
+
+
 
 }

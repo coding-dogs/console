@@ -25,6 +25,14 @@ public class Customer extends DataEntity<Customer> {
 	private String phone;		// 手机号
 	private String email;		// 邮箱号
 	private String headPicUrl;		// 用户头像地址
+	private String action;	// 跳转动作，view：查看，add：新增，edit：修改
+	private String customerGroupName;
+	
+	private String contactId;
+	private String contactName;
+	private String contactPhone;
+	private String contactEmail;
+	private String contactAddress;
 	
 	public Customer() {
 		super();
@@ -158,6 +166,62 @@ public class Customer extends DataEntity<Customer> {
 
 	public void setHeadPicUrl(String headPicUrl) {
 		this.headPicUrl = headPicUrl;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public String getContactName() {
+		return contactName;
+	}
+
+	public void setContactName(String contactName) {
+		this.contactName = contactName;
+	}
+
+	public String getContactPhone() {
+		return contactPhone;
+	}
+
+	public void setContactPhone(String contactPhone) {
+		this.contactPhone = contactPhone;
+	}
+
+	public String getContactEmail() {
+		return contactEmail;
+	}
+
+	public void setContactEmail(String contactEmail) {
+		this.contactEmail = contactEmail;
+	}
+
+	public String getContactAddress() {
+		return contactAddress;
+	}
+
+	public void setContactAddress(String contactAddress) {
+		this.contactAddress = contactAddress;
+	}
+
+	public String getContactId() {
+		return contactId;
+	}
+
+	public void setContactId(String contactId) {
+		this.contactId = contactId;
+	}
+
+	public String getCustomerGroupName() {
+		return customerGroupName;
+	}
+
+	public void setCustomerGroupName(String customerGroupName) {
+		this.customerGroupName = customerGroupName;
 	}
 	
 }

@@ -127,15 +127,17 @@ public class UserUtils {
    */
   public static User getUser() {
     Principal principal = getPrincipal();
+    User user = new User();
     if (principal != null) {
-      User user = get(principal.getId());
+    	user.setSupplierId(principal.getSupplierId());
+      user = get(principal.getId());
       if (user != null) {
+      	user.setSupplierId(principal.getSupplierId());
         return user;
       }
-      return new User();
     }
-    // 如果没有登录，则返回实例化空的User对象。
-    return new User();
+    
+    return user;
   }
 
   /**

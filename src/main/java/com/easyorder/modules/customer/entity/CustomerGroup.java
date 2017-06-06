@@ -13,6 +13,8 @@ public class CustomerGroup extends DataEntity<CustomerGroup> {
 	private static final long serialVersionUID = 1L;
 	private String name;		// 客户组名称
 	
+	private String supplierId; // 供应商ID
+	
 	public CustomerGroup() {
 		super();
 	}
@@ -28,6 +30,14 @@ public class CustomerGroup extends DataEntity<CustomerGroup> {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(String supplierId) {
+		this.supplierId = supplierId;
 	}
 	
 }
