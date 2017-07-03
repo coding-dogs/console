@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>跨页记录插件测试页面</title>
+	<link rel="stylesheet" type="text/css" href="easy-page-records.css">
+</head>
+<body>
+	<table id="alert">
+		
+	</table>
+
+	<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="easy-page-records.js"></script>
+	<script type="text/javascript">
+		$('#alert').easyPageRecords({
+			titles: [
+				{
+					name : 'name',
+					title: '客户名称'
+				},
+				{
+					name : 'mtCityCd',
+					title : '归属地区'
+				}
+			],
+			drawCallback: function() {
+
+			},
+			selectedCallback: function() {
+
+			},
+			type: 'checkbox',
+			url: 'http://localhost:8080/console/a/customerManager/customer/async/list'
+		});
+
+	</script>
+</body>
+</html>

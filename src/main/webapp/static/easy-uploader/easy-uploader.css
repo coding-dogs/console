@@ -1,0 +1,63 @@
+@CHARSET "UTF-8";
+
+.easy-uploader-container .easy-uploader {
+	width: 100px;
+	height: 100px;
+	border: 1px dashed #ddd;
+	background: #fff;
+	cursor: pointer;
+	margin: 10px 10px 10px;
+	position: relative;
+	box-sizing: content-box;
+	display: inline-block;
+}
+
+.easy-uploader-container .main-setting {
+	width: 100%;
+	height: 20px;
+	line-height: 20px;
+	display: inline-block;
+	filter: alpha(opacity = 40);
+	opacity: 0.4;
+	position: absolute;
+	bottom: 1px;
+	left: 0;
+	text-align: center;
+	color: #fff;
+	background: #000;
+}
+
+.easy-uploader-container .easy-uploader .file-selector {
+	filter: alpha(opacity = 0);
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.easy-uploader-container .easy-uploader .plus {
+	width: 60px;
+	height: 640px;
+	position: absolute;
+	display: block;
+}
+
+.easy-uploader-container .easy-uploader .plus:before, .easy-uploader .plus:after {
+	content: '';
+	background: #eee;
+	display: block;
+	position: absolute;
+}
+
+.easy-uploader-container .easy-uploader .plus:after {
+	width: 60px;
+	height: 12px;
+	top: 44px;
+	left: 20px;
+}
+
+.easy-uploader-container .easy-uploader .plus:before {
+	width: 12px;
+	height: 60px;
+	top: 20px;
+	left: 44px;
+}

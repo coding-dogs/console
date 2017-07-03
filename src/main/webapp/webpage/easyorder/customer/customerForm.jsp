@@ -21,11 +21,25 @@
 					loading('正在提交，请稍等...');
 					form.submit();
 				},
+				ignore: '',
+				rules: {
+					customerGroupId: {
+						required: true
+					}
+				},
+				messages: {
+					customerGroupId: {
+						required: '请选择客户组'
+					}
+				},
 				errorContainer: "#messageBox",
 				errorPlacement: function(error, element) {
 					$("#messageBox").text("输入有误，请先更正。");
 					if (element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
 						error.appendTo(element.parent().parent());
+					} else if(element.parents('.easy-selector').length > 0){
+						element.parents('.easy-selector').addClass('error');
+						error.insertAfter(element.parents('.easy-selector'));
 					} else {
 						error.insertAfter(element);
 					}
@@ -76,21 +90,21 @@
 					<div class="easy-order customer-base-info">
 						<h2>基本信息</h2>
 						<div class="form-group">
-							<label for="accountNo" class="col-sm-2 control-label"><em class="required-tag">* </em>登录账号</label>
+							<label for="accountNo" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>登录账号</label>
 							<div class="col-sm-10">
 								<input type="text" id="accountNo" name="accountNo" value="${customer.accountNo}" placeholder="请输入登录账号" maxlength="50" class="form-control required"/>
 							</div>
 						</div>
 						<c:if test="${customer.action ne 'edit' and customer.action ne 'view'}">
 							<div class="form-group">
-								<label for="password" class="col-sm-2 control-label"><em class="required-tag">* </em>密码</label>
+								<label for="password" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>密码</label>
 								<div class="col-sm-10">
 									<input type="password" id="password" name="password" value="" placeholder="请输入密码" maxlength="50" class="form-control required"/>
 								</div>
 							</div>
 						</c:if>
 						<div class="form-group">
-							<label for="mtCustomerStatusCd" class="col-sm-2 control-label"><em class="required-tag">* </em>账号状态</label>
+							<label for="mtCustomerStatusCd" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>账号状态</label>
 							<div class="col-sm-10 easy-form-ichecks">
 								<c:choose>
 									<c:when test="${customer.action eq 'view'}">
@@ -107,31 +121,31 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="name" class="col-sm-2 control-label"><em class="required-tag">* </em>客户名称</label>
+							<label for="name" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>客户名称</label>
 							<div class="col-sm-10">
 								<input type="text" id="name" name="name" value="${customer.name}" placeholder="请输入客户名称" maxlength="50" class="form-control required"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="customerNo" class="col-sm-2 control-label"><em class="required-tag">* </em>客户编号</label>
+							<label for="customerNo" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>客户编号</label>
 							<div class="col-sm-10">
 								<input type="text" id="customerNo" name="customerNo" value="${customer.customerNo }" maxlength="50" class="form-control required"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="customerGroup" class="col-sm-2 control-label"><em class="required-tag">* </em>所属客户组</label>
+							<label for="customerGroup" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>所属客户组</label>
 							<div class="col-sm-10">
 								<div id="customerGroup" data-text="" data-required="true" data-value="${customer.customerGroupId}" data-name='customerGroupId'></div>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="mtCityCd" class="col-sm-2 control-label"><em class="required-tag">* </em>归属地区</label>
+							<label for="mtCityCd" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>归属地区</label>
 							<div class="col-sm-10">
 								<input type="text" id="mtCityCd" name="mtCityCd" value="${customer.mtCityCd}" maxlength="50" class="form-control required"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="remarks" class="col-sm-2 control-label">备注</label>
+							<label for="remarks" class="col-sm-2 ctrl-label">备注</label>
 							<div class="col-sm-10">
 								<textarea id="remarks" name="remarks" maxlength="300" class="form-control">${customer.remarks}</textarea>
 							</div>
@@ -143,25 +157,25 @@
 						<h2>联系人</h2>
 						<input type="hidden" id="contactId" name="contactId" value="${customer.contactId}"/>
 						<div class="form-group">
-							<label for="contactName" class="col-sm-2 control-label">联系人</label>
+							<label for="contactName" class="col-sm-2 ctrl-label">联系人</label>
 							<div class="col-sm-10">
 								<input type="text" id="contactName" name="contactName" value="${customer.contactName}" placeholder="请输入客户联系人" maxlength="50" class="form-control"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="contactPhone" class="col-sm-2 control-label">电话号码</label>
+							<label for="contactPhone" class="col-sm-2 ctrl-label">电话号码</label>
 							<div class="col-sm-10">
 								<input type="text" id="contactPhone" name="contactPhone" value="${customer.contactPhone}" placeholder="请输入联系人电话号码" maxlength="50" class="form-control"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="contactEmail" class="col-sm-2 control-label">电子邮箱</label>
+							<label for="contactEmail" class="col-sm-2 ctrl-label">电子邮箱</label>
 							<div class="col-sm-10">
 								<input type="text" id="contactEmail" name="contactEmail" placeholder="请输入电子邮箱" maxlength="50" class="form-control" value="${customer.contactEmail}"/>
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="contactAddress" class="col-sm-2 control-label">联系地址</label>
+							<label for="contactAddress" class="col-sm-2 ctrl-label">联系地址</label>
 							<div class="col-sm-10">
 								<input type="text" id="contactAddress" name="contactAddress" placeholder="详细地址，如四川省成都市天府三街12099号" value="${customer.contactAddress}" maxlength="150" class="form-control"/>
 							</div>

@@ -1,7 +1,5 @@
 package com.easyorder.modules.supplier.entity;
 
-import javax.validation.constraints.NotNull;
-
 import com.jeeplus.common.persistence.DataEntity;
 import com.jeeplus.common.utils.excel.annotation.ExcelField;
 

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.product.dao.ProductCategoryDao">
+    
+	<sql id="productCategoryColumns">
+		a.id AS "id",
+		a.supplier_id AS "supplierId",
+		a.name AS "name",
+		a.category_no AS "categoryNo",
+		a.pid AS "pid",
+		a.pids AS "pids",
+		a.sort AS "sort",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="productCategoryJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="ProductCategory" >
+		SELECT 
+			<include refid="productCategoryColumns"/>
+		FROM product_category a
+		<include refid="productCategoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProductCategory" >
+		SELECT 
+			<include refid="productCategoryColumns"/>
+		FROM product_category a
+		<include refid="productCategoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.sort, a.name
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProductCategory" >
+		SELECT 
+			<include refid="productCategoryColumns"/>
+		FROM product_category a
+		<include refid="productCategoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO product_category(
+			id,
+			supplier_id,
+			name,
+			category_no,
+			pid,
+			pids,
+			sort,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{supplierId},
+			#{name},
+			#{categoryNo},
+			#{pid},
+			#{pids},
+			#{sort},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE product_category SET 	
+			supplier_id = #{supplierId},
+			name = #{name},
+			category_no = #{categoryNo},
+			pid = #{pid},
+			pids = #{pids},
+			sort = #{sort},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM product_category
+		WHERE id = #{id} OR pids LIKE
+					<if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE product_category SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id} OR pids LIKE 
+					<if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="ProductCategory" statementType="STATEMENT">
+		select * FROM product_category  where ${propertyName} = '${value}'
+	</select>
+	
+	<select id="findByParentIdsLike"  resultType="ProductCategory">
+		SELECT
+			a.id,
+			a.pid AS "parent.id",
+			a.pids
+		FROM product_category a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.pids LIKE #{pids}
+			AND supplier_id = #{supplierId}
+		ORDER BY a.sort
+	</select>
+	
+	<select id="getMaxSort" resultType="java.lang.Integer">
+		SELECT
+			max(sort)
+		FROM
+			product_category
+		WHERE supplier_id = #{supplierId}
+	</select>
+	
+</mapper>

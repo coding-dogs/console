@@ -25,7 +25,6 @@ public class Customer extends DataEntity<Customer> {
 	private String phone;		// 手机号
 	private String email;		// 邮箱号
 	private String headPicUrl;		// 用户头像地址
-	private String action;	// 跳转动作，view：查看，add：新增，edit：修改
 	private String customerGroupName;
 	
 	private String contactId;
@@ -166,14 +165,6 @@ public class Customer extends DataEntity<Customer> {
 
 	public void setHeadPicUrl(String headPicUrl) {
 		this.headPicUrl = headPicUrl;
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
 	}
 
 	public String getContactName() {

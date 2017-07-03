@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.product.dao.ProductDao">
+    
+	<sql id="productColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.title AS "title",
+		a.product_no AS "productNo",
+		a.product_category_id AS "productCategoryId",
+		a.repository_id AS "repositoryId",
+		a.repository_no AS "repositoryNo",
+		a.product_brand_id AS "productBrandId",
+		a.mt_product_label_cd AS "mtProductLabelCd",
+		a.sort AS "sort",
+		a.model_number AS "modelNumber",
+		a.`key` AS "key",
+		a.minimum_order_number AS "minimumOrderNumber",
+		a.mt_product_updown_cd AS "mtProductUpdownCd",
+		a.order_price AS "orderPrice",
+		a.market_price AS "marketPrice",
+		a.buy_price AS "buyPrice",
+		a.cover_url AS "coverUrl",
+		a.unit_id AS "unitId",
+		a.description AS "description",
+		a.bar_code AS "barCode",
+		a.supplier_id AS "supplierId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="productJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="Product" >
+		SELECT 
+			<include refid="productColumns"/>
+		FROM product a
+		<include refid="productJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Product" >
+		SELECT 
+			<include refid="productColumns"/>
+		FROM product a
+		<include refid="productJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="productNo != null and productNo != ''">
+				AND a.product_no = #{productNo}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Product" >
+		SELECT 
+			<include refid="productColumns"/>
+		FROM product a
+		<include refid="productJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO product(
+			id,
+			name,
+			title,
+			product_no,
+			product_category_id,
+			repository_id,
+			repository_no,
+			product_brand_id,
+			mt_product_label_cd,
+			sort,
+			model_number,
+			`key`,
+			minimum_order_number,
+			mt_product_updown_cd,
+			order_price,
+			market_price,
+			buy_price,
+			cover_url,
+			unit_id,
+			description,
+			bar_code,
+			supplier_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{name},
+			#{title},
+			#{productNo},
+			#{productCategoryId},
+			#{repositoryId},
+			#{repositoryNo},
+			#{productBrandId},
+			#{mtProductLabelCd},
+			#{sort},
+			#{modelNumber},
+			#{key},
+			#{minimumOrderNumber},
+			#{mtProductUpdownCd},
+			#{orderPrice},
+			#{marketPrice},
+			#{buyPrice},
+			#{coverUrl},
+			#{unitId},
+			#{description},
+			#{barCode},
+			#{supplierId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE product SET 	
+			name = #{name},
+			title = #{title},
+			product_no = #{productNo},
+			product_category_id = #{productCategoryId},
+			repository_id = #{repositoryId},
+			repository_no = #{repositoryNo},
+			product_brand_id = #{productBrandId},
+			mt_product_label_cd = #{mtProductLabelCd},
+			sort = #{sort},
+			model_number = #{modelNumber},
+			`key` = #{key},
+			minimum_order_number = #{minimumOrderNumber},
+			mt_product_updown_cd = #{mtProductUpdownCd},
+			order_price = #{orderPrice},
+			market_price = #{marketPrice},
+			buy_price = #{buyPrice},
+			cover_url = #{coverUrl},
+			unit_id = #{unitId},
+			description = #{description},
+			bar_code = #{barCode},
+			supplier_id = #{supplierId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM product
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE product SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Product" statementType="STATEMENT">
+		select * FROM product  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

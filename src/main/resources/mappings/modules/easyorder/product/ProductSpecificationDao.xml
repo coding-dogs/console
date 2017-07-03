@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.product.dao.ProductSpecificationDao">
+    
+	<sql id="productSpecificationColumns">
+		a.id AS "id",
+		a.specification_id AS "specificationId",
+		a.price AS "price",
+		a.product_id AS "productId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="productSpecificationJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="ProductSpecification" >
+		SELECT 
+			<include refid="productSpecificationColumns"/>
+		FROM product_specification a
+		<include refid="productSpecificationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProductSpecification" >
+		SELECT 
+			<include refid="productSpecificationColumns"/>
+		FROM product_specification a
+		<include refid="productSpecificationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProductSpecification" >
+		SELECT 
+			<include refid="productSpecificationColumns"/>
+		FROM product_specification a
+		<include refid="productSpecificationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO product_specification(
+			id,
+			specification_id,
+			price,
+			product_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{specificationId},
+			#{price},
+			#{productId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE product_specification SET 	
+			specification_id = #{specificationId},
+			price = #{price},
+			product_id = #{productId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM product_specification
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE product_specification SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="ProductSpecification" statementType="STATEMENT">
+		select * FROM product_specification  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

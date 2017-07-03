@@ -8035,4 +8035,59 @@ label {
 
 .easy-order h2 {
 	font-size: 16px;
+	font-weight: 800 !important;
+	margin-top: 20px;
 }
+
+.easy-order.btns {
+	margin-top: 15px;
+}
+
+.mt-10 {
+	margin-top: 10px !important;
+}
+
+.padding-5 {
+	padding: 10px !important;
+}
+
+.display-ib {
+	display: inline-block !important;
+}
+
+.btn {
+	outline: none !important;
+}
+
+.mw-1200 {
+	min-width: 1200px;
+}
+
+.easy-order .form-inline .form-group {
+	padding-left: 15px;
+	margin-top: 10px;
+}
+
+.easy-order .form-inline .form-group.first {
+	padding-left: 0 !important;
+}
+
+.pagination>li>a {
+	display: inline-block;
+}
+
+@media (min-width: 768px) {
+	.form-horizontal .ctrl-label {
+	    padding-top: 7px;
+	    margin-bottom: 0;
+	    text-align: right;
+	}
+}
+
+
+.form-horizontal .ctrl-label {
+	float: left;
+    padding-top: 5px;
+    text-align: right;
+}
+

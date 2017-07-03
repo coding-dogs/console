@@ -49,8 +49,12 @@
 		$(document).ready(function(){
 			$.get("${ctx}${url}${fn:indexOf(url,'?')==-1?'?':'&'}&extId=${extId}&isAll=${isAll}&module=${module}&t="
 					+ new Date().getTime(), function(zNodes){
+				var tempData = zNodes;
+				if(zNodes.code && zNodes.code === '200') {
+					tempData = zNodes.result;
+				}
 				// 初始化树结构
-				tree = $.fn.zTree.init($("#tree"), setting, zNodes);
+				tree = $.fn.zTree.init($("#tree"), setting, tempData);
 				
 				// 默认展开一级节点
 				var nodes = tree.getNodesByParam("level", 0);
