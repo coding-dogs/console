@@ -1,0 +1,84 @@
+.easy-tabs-container, 
+.easy-tabs-container * {
+	box-sizing: border-box;
+}
+
+.easy-tabs-container {
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+
+.easy-tabs-container .easy-tabs-list {
+	margin-bottom: 10px;
+}
+
+.easy-tabs-container .easy-tabs-list ul {
+	zoom: 1;
+	border-bottom: 2px solid #f0f3f4;
+	width: 100%;
+	overflow: auto;
+	margin: 0 0 10px 0;
+	outline: none;
+	padding: 10px 20px;
+}
+
+.easy-tabs-container .easy-tabs-list ul li {
+	list-style: none;
+	height: 26px;
+	text-align: center;
+	float: left;
+	margin: 0 15px;
+	cursor: pointer;
+}
+
+.easy-tabs-container .easy-tabs-list ul li a {
+	color: #666;
+	font-size: 14px;
+	text-decoration: none;
+}
+
+.easy-tabs-container .easy-tabs-list ul li.selected {
+	position: relative;
+	z-index: 100;
+}
+
+.easy-tabs-container .easy-tabs-list ul li.selected:before {
+	content: '';
+    position: absolute;
+	top: 26px;
+	left: 32%;
+	width: 0;
+	height: 0;
+	border-bottom: 10px solid #f0f3f4;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent; 
+	z-index: 101;
+}
+
+./*easy-tabs-container .easy-tabs-list ul li.selected:after {
+	content: '';
+	position: absolute;
+	top: 28px;
+	left: 40%;
+	width: 0;
+	height: 0;
+	border-right: 8px solid transparent;
+	border-bottom: 8px solid #fff;
+	border-left: 8px solid transparent; 
+	z-index: 101;
+}*/
+
+.easy-tabs-container .easy-tabs-list ul li.selected a {
+	color: #999;
+	font-size: 16px;
+}
+
+.easy-tabs-container .easy-tabs-pages {
+
+}
+
+.easy-tabs-container .easy-tabs-pages .tab-page {
+	display: none;
+	padding: 0 20px;
+}

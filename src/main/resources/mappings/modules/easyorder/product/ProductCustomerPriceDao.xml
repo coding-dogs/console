@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.product.dao.ProductCustomerPriceDao">
+    
+	<sql id="productCustomerPriceColumns">
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.product_id AS "productId",
+		a.price AS "price",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="productCustomerPriceJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="ProductCustomerPrice" >
+		SELECT 
+			<include refid="productCustomerPriceColumns"/>,
+			customer_group.name AS "customerGroupName",
+			customer.name AS "customerName",
+			customer.mt_city_cd AS "mtCityCd",
+			customer.customer_no AS "customerNo"
+		FROM product_customer_price a
+		LEFT JOIN customer ON customer.id = a.customer_id
+		LEFT JOIN customer_group ON customer_group.id = customer.customer_group_id
+		<include refid="productCustomerPriceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProductCustomerPrice" >
+		SELECT 
+			<include refid="productCustomerPriceColumns"/>,
+			customer_group.name AS "customerGroupName",
+			customer.name AS "customerName",
+			customer.mt_city_cd AS "mtCityCd",
+			customer.customer_no AS "customerNo"
+		FROM product_customer_price a
+		LEFT JOIN customer ON customer.id = a.customer_id
+		LEFT JOIN customer_group ON customer_group.id = customer.customer_group_id
+		<include refid="productCustomerPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProductCustomerPrice" >
+		SELECT 
+			<include refid="productCustomerPriceColumns"/>
+		FROM product_customer_price a
+		<include refid="productCustomerPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO product_customer_price(
+			id,
+			customer_id,
+			product_id,
+			price,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{customerId},
+			#{productId},
+			#{price},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE product_customer_price SET 	
+			customer_id = #{customerId},
+			product_id = #{productId},
+			price = #{price},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM product_customer_price
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE product_customer_price SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="ProductCustomerPrice" statementType="STATEMENT">
+		select * FROM product_customer_price  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

@@ -51,6 +51,11 @@ public abstract class BaseEntity<T> implements Serializable {
    * 是否是新记录（默认：false），调用setIsNewRecord()设置新记录，使用自定义ID。 设置为true后强制执行插入语句，ID不会自动生成，需从手动传入。
    */
   protected boolean isNewRecord = false;
+  
+  /**
+   * 前端传递的动作，add:新增，edit：编辑,del：删除
+   */
+  protected String action;
 
   public BaseEntity() {
 
@@ -134,8 +139,16 @@ public abstract class BaseEntity<T> implements Serializable {
   public void setIsNewRecord(boolean isNewRecord) {
     this.isNewRecord = isNewRecord;
   }
+  
+  public String getAction() {
+		return action;
+	}
 
-  /**
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	/**
    * 全局变量对象
    */
   @JsonIgnore

@@ -71,8 +71,17 @@
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
 			</if>
+			
 			<if test="supplierId == null">
 				AND a.supplier_id is NULL
+			</if>
+			
+			<if test="customerGroupId != null and customerGroupId != ''">
+				AND cg.id = #{customerGroupId}
+			</if>
+			
+			<if test="mtCityCd != null and mtCityCd != ''">
+				AND a.mt_city_cd = #{mtCityCd}
 			</if>
 			
 		</where>

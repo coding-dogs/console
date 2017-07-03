@@ -1,13 +1,24 @@
 (function($, win){
 
+	var ID_KEY = 'value',
+		PARENT_ID_KEY = 'pvalue',
+		CHILDREN_KEY = 'children';
+
 	var defaults = {
-		hasMore : false,
-		moreText : '更多',
-		moreCallback : function() {
+		type : 'select',	// select : 正常下拉框，tree : 树状下拉框
+		hasMore : false,	// 是否需要更多选项
+		moreText : '更多',	// 需要更多选项时的文本内容，支持html
+		moreCallback : function() {		// 点击更多选项时的回调函数
 
 		},
-		items : [],
-		zIndex : 9999999,
+		targetLevel: 3,		// 指定树形菜单可选择的层级【暂只支持指定一个层级】，type为tree时生效
+		defaults: {
+			value : '',
+			text : '请选择',
+			selected: true
+		},
+		items : [],			// 下拉框数据来源
+		zIndex : 9999999,	
 		maxHeight : 300,
 		width : null,
 		height : null
@@ -20,6 +31,9 @@
 		this.text = '';
 		this.value = '';
 		this.required = false;
+		this.idKey = ID_KEY;
+		this.parentKey = PARENT_ID_KEY;
+		this.childKey = CHILDREN_KEY;
 
 		this.options = $.extend({}, defaults, options);
 
@@ -28,13 +42,61 @@
 
 	EasySelector.fn = EasySelector.prototype;
 
+	EasySelector.prototype.settings = function() {
+
+	}
+
 	EasySelector.prototype._init = function() {
 		var that = this;
 		this.text = that.$element.data('text');
 		this.value = that.$element.data('value');
 		this.required = that.$element.data('required') || false;
 
+		if(this.options.type === 'tree') {
+			var treeData = this.generateTreeData();
+			this.options.items = treeData;
+		}
+
 		that._createElement();
+	}
+
+	EasySelector.prototype.generateTreeData = function() {
+		var index,len,
+			that = this, 
+			items = that.options.items,
+			isTree = that.options.type === 'tree',
+			childKey = that.childKey,
+			idKey = that.idKey,
+			parentKey = that.parentKey;
+		if(!isTree) {
+			return []; 
+		}
+
+		var tempItems = [];
+
+		if(!idKey || idKey == '' || !items) {
+			return [];
+		}
+
+		if(Object.prototype.toString.call(items) === '[object Array]') {
+			var r = [];
+			var tmpMap = [];
+			for (index = 0, len = items.length; index < len; index++) {
+				tmpMap[items[index][idKey]] = items[index];
+			}
+			for (index = 0, len = items.length; index < len; index++) {
+				if (tmpMap[items[index][parentKey]] && items[index][idKey] != items[index][parentKey]) {
+					if (!tmpMap[items[index][parentKey]][childKey])
+						tmpMap[items[index][parentKey]][childKey] = [];
+					tmpMap[items[index][parentKey]][childKey].push(items[index]);
+				} else {
+					r.push(items[index]);
+				}
+			}
+			return r;
+		} else {
+			return [items];
+		}
 	}
 
 	EasySelector.prototype._createElement = function() {
@@ -46,11 +108,11 @@
 		var $va = $('<div class="value-area">');
 		$va.appendTo($element);
 
-		var $vs = $('<span>');
+		var $vs = $('<span role="text-container">');
 		$vs.text(that.text);
 		$vs.appendTo($va);
 
-		var $hidden = $('<input type="hidden" name="' + $element.data('name') + '"/>');
+		var $hidden = $('<input type="text" style="display:none" class="form-control" role="value-container" name="' + $element.data('name') + '"/>');
 		if(that.required) {
 			$hidden.addClass('required');
 		}
@@ -98,9 +160,9 @@
 		});
 		
 		$(win.document.body).on('click', function(e) {
-			if(!$(e.target).hasClass('easy-selector') && $(e.target).parents('.easy-selector').length == 0) {
+			if((!$(e.target).hasClass('easy-selector') && $(e.target).parents('.easy-selector').length == 0
+					&& !$(e.target).hasClass('easy-arrow')) || !$(e.target).parents('.easy-selector').is(that.$element)) {
 				that.close();
-				console.log('123');
 			}
 		});
 
@@ -137,12 +199,14 @@
 		var that = this;
 		that.$element.find('.dropdown-menu').hide();
 		that.changeState('close');
+		that.$element.removeClass('focus');
 	}
 
 	EasySelector.prototype.open = function() {
 		var that = this;
 		that.$element.find('.dropdown-menu').show();
 		that.changeState('open');
+		that.$element.addClass('focus');
 	}
 
 	EasySelector.prototype.changeState = function(state) {
@@ -164,10 +228,73 @@
 		if(value) {
 			this.options[key] = value;
 			if(key === 'items') {
+				if(that.options.type === 'tree') {
+					var treeData = that.generateTreeData();
+					that.options.items = treeData;
+				}
 				that.renderItems();
 			}
 		}
 		return this.options[key];
+	}
+
+	EasySelector.prototype.drawItem = function(item, pid, level, hasArrow) {
+		var that = this,
+			$ul = that.$element.find('.menu-wrapper ul'),
+			$li = $('<li>'),
+			$span = $('<span>'),
+			$va = that.$element.find('.value-area'),
+			$hidden = $va.find('input[role="value-container"]'),
+			$vs = $va.find('span[role="text-container"]');
+		$span.text(item.text);
+		$li.attr('data-pid', pid);
+		$li.attr('data-id', item[that.idKey]);
+		$li.addClass('easy-selector-item');
+		$li.attr('tabindex', '0');
+		$li.data('value', item.value);
+		$li.attr('data-level', level);
+		$ul.append($li);
+		
+		if(level > 0) {
+			for(var i = 0; i < level; i++) {
+				var $indent = $('<span class="easy-selector-indent">');
+				$indent.appendTo($li);
+			}
+		}
+		
+		if(that.options.type === 'tree') {
+			var $pli = $ul.find('li[data-id="' + item.pvalue + '"]');
+			var hasChildren = item[that.childKey] && item[that.childKey].length > 0;
+			if((!hasArrow && level == 0) || ($pli.length > 0 && $pli.attr('data-has-children') === 'true' && !hasChildren)) {
+				var $indent = $('<span class="easy-selector-indent">');
+				$indent.appendTo($li);
+			}
+
+			if(hasChildren) {
+				var $arrow = $('<span class="easy-arrow easy-arrow-bottom"></span>');
+				$arrow.appendTo($li);
+				hasArrow = true;
+			}
+		}
+
+		$span.appendTo($li);
+
+		if(that.value === item.value) {
+			$li.addClass('selected');
+			if(!that.text) {
+				that.text = item.text;
+				$hidden.val(item.value);
+				$vs.text(item.text);
+			}
+		}
+		var children = item[this.childKey];
+		if(children) {
+			$li.attr('data-has-children', 'true');
+			level++;
+			for(var i = 0; i < children.length; i++) {
+				that.drawItem(children[i], item[that.idKey], level, hasArrow);
+			}
+		}
 	}
 	
 	EasySelector.prototype.renderItems = function() {
@@ -178,56 +305,118 @@
 		}
 		$ul.html('');
 		var $va = that.$element.find('.value-area');
-		var $hidden = $va.find('input[type="hidden"]');
+		var $hidden = $va.find('input[role="value-container"]');
 		var $vs = $va.find('span');
+		if(that.options.defaults) {
+			var $defaultLi = $('<li>');
+			$defaultLi.attr('data-pid', '-1');
+			$defaultLi.attr('data-id', that.options.defaults.value);
+			$defaultLi.attr('data-level', '0');
+			$defaultLi.attr('tab-index', '0');
+			$defaultLi.data('role', 'default');
+			$defaultLi.html('<span>' + that.options.defaults.text + '</span>');
+			$defaultLi.appendTo($ul);
+			
+			if(that.options.defaults.selected) {
+				$defaultLi.addClass('selected');
+				$hidden.val(that.options.defaults.value);
+				$vs.html(that.options.defaults.text);
+			}
+		}
+		
 		if(that.options.items) {
 			$.each(that.options.items, function(index, item) {
-				var $li = $('<li>');
-				var $a = $('<a>');
-				$a.addClass('easy-selector-item');
-				$a.attr('tabindex', '0');
-				$a.data('value', item.value);
-				$a.text(item.text);
-				$a.appendTo($li);
-				$ul.append($li);
-
-				if(that.value === item.value) {
-					$a.addClass('selected');
-					if(!that.text) {
-						that.text = item.text;
-						$hidden.val(item.value);
-						$vs.text(item.text);
-					}
-				}
+				that.drawItem(item, -1, 0, (item[that.childKey] && item[that.childKey].length > 0));
 			});
 		}
-		$ul.find('li a').hover(function() {
+		$ul.find('li').hover(function(e) {
 			if(!$(this).hasClass('selected')) {
-				$(this).addClass('hover');
+				if(that.options.type === 'tree' && $(this).data('role') != 'default' && ($(this).attr('data-level') == that.options.targetLevel - 1)) {
+					$(this).addClass('hover');
+				} else if(that.options.type !== 'tree'){ 
+					$(this).addClass('hover');
+				}
 			}
 			
-		}, function() {
+		}, function(e) {
 			if($(this).hasClass('hover')){
 				$(this).removeClass('hover');
 			}
 		});
 
-		$ul.find('li a').on('click', function(e) {
+		$ul.find('li').on('click', function(e) {
 			e.stopPropagation();
+			
+			var $target = $(e.target);
+			var isArrow = $target.hasClass('easy-arrow');
+			if(isArrow) {
+				if ($target.hasClass('easy-arrow-top')) {
+					$target.removeClass('easy-arrow-top').addClass('easy-arrow-bottom');
+					that.display($(this).attr('data-id'));
+				} else if($target.hasClass('easy-arrow-bottom')){
+					$target.removeClass('easy-arrow-bottom').addClass('easy-arrow-top');
+					// 收缩选项
+					that.hidden($(this).attr('data-id'));
+				}
+				return;
+			}
+			
+			if(that.options.type === 'tree' && $(this).data('role') != 'default' && ($(this).attr('data-level') != that.options.targetLevel - 1)) {
+				return;
+			}
+
 			var value = $(this).data('value');
 			var text = $(this).text();
-
+			
 			that.value = value;
 			that.text = text;
 
 			$vs.text(that.text);
 			$hidden.val(that.value);
-			var selectedA = that.$element.find('.menu-wrapper').find('a.selected');
+			var selectedA = that.$element.find('.menu-wrapper').find('li.selected');
 			if(selectedA.length > 0) {
 				selectedA.removeClass('selected');
 			}
 			$(this).addClass('selected');
+			that.$element.siblings('.error').remove();
+			that.$element.removeClass('error');
 			that.close();
+		});
+	}
+
+	EasySelector.prototype.display = function(id) {
+		var that = this;
+		var $ul = that.$element.find('.menu-wrapper ul');
+		var $children = $ul.find('li[data-pid="' + id + '"]');
+
+		if($children.length == 0) {
+			return;
+		}
+
+		// 展开选项
+		$.each($children, function(index, child) {
+			$(child).show();
+			if($(child).attr('data-has-children') === 'true') {
+				$(child).removeClass('easy-arrow-bottom').addClass('easy-arrow-top');
+			}
+			that.display($(child).attr('data-id'));
+		});
+	}
+
+	EasySelector.prototype.hidden = function(pid) {
+		var that = this;
+		var $ul = that.$element.find('.menu-wrapper ul');
+		var $lis = $ul.find('li[data-pid="' + pid + '"]');
+		if($lis.length == 0) {
+			return;
+		}
+		$.each($lis, function(index, item) {
+			var _pid = $(item).attr('data-id');
+			$(item).hide();
+			if($(item).attr('data-has-children') === 'true') {
+				$(item).removeClass('easy-arrow-top').addClass('easy-arrow-bottom');
+			}
+			that.hidden(_pid);
 		});
 	}
 	
@@ -241,11 +430,48 @@
 					that.text = item.text;
 					that.$element.find('.value-area').find('input').val(item.value);
 					that.$element.find('.value-area').find('span').html(item.text);
-					that.$element.find('.menu-wrapper ul li a').removeClass('selected');
-					that.$element.find('.menu-wrapper ul li a').eq(index).addClass('selected');
+					that.$element.find('.menu-wrapper ul li').removeClass('selected');
+					that.$element.find('.menu-wrapper ul li').eq(index).addClass('selected');
+					return false;
+				}
+				if(item.children && item.children.length > 0){
+					var _result = that._recurseSelect(item.children, value);
+					if(_result) {
+						return false;
+					} else {
+						return true;
+					}
 				}
 			});
 		}
+	}
+	
+	EasySelector.prototype._recurseSelect = function(items, value) {
+		var that = this,
+			result = false;
+		if(items.length > 0) {
+			$.each(items, function(index, item) {
+				if(value === item.value) {
+					that.value = item.value;
+					that.text = item.text;
+					that.$element.find('.value-area').find('input').val(item.value);
+					that.$element.find('.value-area').find('span').html(item.text);
+					that.$element.find('.menu-wrapper ul li').removeClass('selected');
+					that.$element.find('.menu-wrapper ul li').eq(index).addClass('selected');
+					result = true;
+					return false;
+				} else if(item.children && item.children.length > 0){
+					var _result = that._recurseSelect(item.children, value);
+					if(_result) {
+						result = _result;
+						return false;
+					} else {
+						return true;
+					}
+				}
+			});
+		}
+		return result;
 	}
 
 
