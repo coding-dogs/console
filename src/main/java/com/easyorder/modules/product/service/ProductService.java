@@ -61,8 +61,9 @@ public class ProductService extends CrudService<ProductDao, Product> {
 	}
 
 	private void handlerPrice(Product product, String type) {
+		String productId = product.getId();
 		ProductCustomerPrice productCustomerPrice = new ProductCustomerPrice();
-		productCustomerPrice.setProductId(product.getId());
+		productCustomerPrice.setProductId(productId);
 		List<ProductCustomerPrice> customerPriceList = productCustomerPriceService.findList(productCustomerPrice);
 		if(CollectionUtils.isNotEmpty(customerPriceList)) {
 			if(HANDLER_TYPE_MAP.equals(type)) {
@@ -77,7 +78,7 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		}
 
 		ProductCustomerGroupPrice productCustomerGroupPrice = new ProductCustomerGroupPrice();
-		productCustomerGroupPrice.setProductId(product.getId());
+		productCustomerGroupPrice.setProductId(productId);
 		List<ProductCustomerGroupPrice> customerGroupPriceList = productCustomerGroupPriceService.findList(productCustomerGroupPrice);
 		if(CollectionUtils.isNotEmpty(customerGroupPriceList)) {
 			if(HANDLER_TYPE_MAP.equals(type)) {
@@ -98,7 +99,7 @@ public class ProductService extends CrudService<ProductDao, Product> {
 			product.setProductNo("SP" + System.currentTimeMillis());
 		}
 		super.save(product);
-
+		String productId = product.getId();
 		// 查询商品分类和品牌的关系，不存在关联关系，否则向数据库插入一条数据
 		if(StringUtils.hasText(product.getProductBrandId()) && StringUtils.hasText(product.getProductCategoryId())) {
 			ProductCategoryBrand productCategoryBrand = new ProductCategoryBrand();
@@ -113,7 +114,10 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		// 保存客户指定价格
 		Map<String, Double> customerPrice = product.getCustomerPrice();
 		if(CollectionUtils.isNotEmpty(customerPrice)) {
-			ProductCustomerPrice productCustomerPrice;
+			ProductCustomerPrice productCustomerPrice = new ProductCustomerPrice();;
+			productCustomerPrice.setProductId(productId);
+			productCustomerPriceService.deleteByCondition(productCustomerPrice);
+			
 			for (Map.Entry<String, Double> entry : customerPrice.entrySet()) {
 				String customerId = entry.getKey();
 				Double price = entry.getValue();
@@ -128,7 +132,11 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		// 保存客户组指定价格
 		Map<String, Double> customerGroupPrice = product.getCustomerGroupPrice();
 		if(CollectionUtils.isNotEmpty(customerGroupPrice)) {
-			ProductCustomerGroupPrice productCustomerGroupPrice;
+			// 先删除
+			ProductCustomerGroupPrice productCustomerGroupPrice = new ProductCustomerGroupPrice();
+			productCustomerGroupPrice.setProductId(product.getId());
+			productCustomerGroupPriceService.deleteByCondition(productCustomerGroupPrice);
+			
 			for (Map.Entry<String, Double> entry : customerGroupPrice.entrySet()) {
 				String customerGroupId = entry.getKey();
 				Double price = entry.getValue();
@@ -140,7 +148,24 @@ public class ProductService extends CrudService<ProductDao, Product> {
 			}
 		}
 		
-		if(StringUtils.isNotEmpty(product.getCoverUrl())) {
+		if (product.getPictures() != null && product.getPictures().length > 0) {
+			ProductPicture productPicture = new ProductPicture();
+			productPicture.setProductId(product.getId());
+			productPictureService.deleteByCondition(productPicture);
+			String[] pictures = product.getPictures();
+			ProductPicture pp;
+			for (String picUrl : pictures) {
+				if(StringUtils.hasText(picUrl)) {
+					pp = new ProductPicture();
+					pp.setProductId(product.getId());
+					pp.setIsMain(Constants.NO);
+					pp.setUrl(picUrl);
+					productPictureService.save(pp);
+				}
+			}
+		}
+		
+		if (StringUtils.isNotEmpty(product.getCoverUrl())) {
 			ProductPicture productPicture = new ProductPicture();
 			productPicture.setProductId(product.getId());
 			productPicture.setUrl(product.getCoverUrl());
@@ -154,6 +179,7 @@ public class ProductService extends CrudService<ProductDao, Product> {
 				productPictureService.save(productPicture);
 			}
 		}
+		
 	}
 
 	@Transactional(readOnly = false)

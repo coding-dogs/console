@@ -55,4 +55,9 @@ public class ProductPictureService extends CrudService<ProductPictureDao, Produc
 		dao.updateIsMain(productPicture);
 	}
 	
+	@Transactional(readOnly = false)
+	public void deleteByCondition(ProductPicture productPicture) {
+		dao.deleteByCondition(productPicture);
+	}
+	
 }

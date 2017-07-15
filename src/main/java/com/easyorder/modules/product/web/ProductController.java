@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.easyorder.common.constant.Constants;
 import com.easyorder.common.enums.EasyResponseEnums;
 import com.easyorder.common.utils.BeanUtils;
 import com.easyorder.modules.product.entity.Product;
@@ -98,6 +100,9 @@ public class ProductController extends BaseController {
 		}
 		product.setSupplierId(supplierId);
 		model.addAttribute("product", product);
+		if(Constants.ACTION_VIEW.equals(product.getAction())) {
+			return "easyorder/product/productDetail";
+		}
 		return "easyorder/product/productForm";
 	}
 
@@ -236,12 +241,14 @@ public class ProductController extends BaseController {
 			addMessage(redirectAttributes, EasyResponseEnums.NOT_FOUND_PRODUCT.message);
 			return "redirect:" + Global.getAdminPath() + "/productManager/product/?repage"; 
 		}
+		
 		p.setCoverUrl(product.getCoverUrl());
-		p.setDescription(product.getDescription());
+		p.setDescription(StringEscapeUtils.unescapeHtml4(product.getDescription()));
+		p.setPictures(product.getPictures());
 		productService.save(p);
 		addMessage(redirectAttributes, "商品图片及描述保存成功");
 		return "redirect:" + Global.getAdminPath() + "/productManager/product/?repage";
 	}
-
+	
 
 }

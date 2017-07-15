@@ -14,6 +14,7 @@ import com.easyorder.modules.product.entity.ProductCustomerGroupPrice;
  */
 @MyBatisDao
 public interface ProductCustomerGroupPriceDao extends CrudDao<ProductCustomerGroupPrice> {
-
+	
+	void deleteByCondition(ProductCustomerGroupPrice customerGroupPrice);
 	
 }

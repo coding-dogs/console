@@ -38,10 +38,15 @@ public class Product extends DataEntity<Product> {
 	private String barCode;		// 商品条形码
 	private String supplierId;		// 所属供货商ID
 	
+	private String productCategoryName;
+	private String productBrandName;
+	
 	private Map<String, Double> customerPrice;	// 客户指定价格
 	private Map<String, Double> customerGroupPrice; // 客户组指定价格
 	private List<ProductCustomerPrice> productCustomerPrices;
 	private List<ProductCustomerGroupPrice> productCustomerGroupPrices;
+	
+	private String[] pictures;
 	
 	public Product() {
 		super();
@@ -272,6 +277,30 @@ public class Product extends DataEntity<Product> {
 
 	public void setProductCustomerGroupPrices(List<ProductCustomerGroupPrice> productCustomerGroupPrices) {
 		this.productCustomerGroupPrices = productCustomerGroupPrices;
+	}
+
+	public String[] getPictures() {
+		return pictures;
+	}
+
+	public void setPictures(String[] pictures) {
+		this.pictures = pictures;
+	}
+
+	public String getProductCategoryName() {
+		return productCategoryName;
+	}
+
+	public void setProductCategoryName(String productCategoryName) {
+		this.productCategoryName = productCategoryName;
+	}
+
+	public String getProductBrandName() {
+		return productBrandName;
+	}
+
+	public void setProductBrandName(String productBrandName) {
+		this.productBrandName = productBrandName;
 	}
 	
 }

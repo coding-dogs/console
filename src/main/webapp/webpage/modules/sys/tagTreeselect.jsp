@@ -9,13 +9,16 @@
 		var key, lastValue = "", nodeList = [], type = getQueryString("type", "${url}");
 		var tree, setting = {view:{selectedMulti:false,dblClickExpand:false},check:{enable:"${checked}",nocheckInherit:true},
 				async:{enable:(type==3),url:"${ctx}/sys/user/treeData",autoParam:["id=officeId"]},
-				data:{simpleData:{enable:true}},callback:{<%--
+				data:{simpleData:{enable:true}},callback:{
 					beforeClick: function(treeId, treeNode){
-						if("${checked}" == "true"){
-							//tree.checkNode(treeNode, !node.checked, true, true);
-							tree.expandNode(treeNode, true, false, false);
+						var maxLevel = "${maxLevel}";
+						if(maxLevel) {
+							if(parseInt(treeNode.level) > parseInt(maxLevel) ) {
+								return false;
+							}
 						}
-					}, --%>
+						return true;
+					},
 					onClick:function(event, treeId, treeNode){
 						tree.expandNode(treeNode);
 					},onCheck: function(e, treeId, treeNode){

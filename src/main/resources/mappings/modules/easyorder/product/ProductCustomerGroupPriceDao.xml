@@ -128,4 +128,16 @@
 		select * FROM product_customer_group_price  where ${propertyName} = '${value}'
 	</select>
 	
+	<delete id="deleteByCondition">
+		DELETE FROM product_customer_group_price
+		<where>
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND product_id = #{productId}
+			</if>
+		</where>
+	</delete>
+	
 </mapper>

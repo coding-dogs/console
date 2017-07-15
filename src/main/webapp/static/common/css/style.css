@@ -8039,6 +8039,11 @@ label {
 	margin-top: 20px;
 }
 
+.easy-order h2 .placeholder {
+	font: normal 400 14px 'Microsoft YaHei';
+	color: #999;
+}
+
 .easy-order.btns {
 	margin-top: 15px;
 }
@@ -8089,5 +8094,9 @@ label {
 	float: left;
     padding-top: 5px;
     text-align: right;
+}
+
+.paddingT-20 {
+	padding-top: 20px;
 }
 

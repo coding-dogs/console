@@ -21,90 +21,85 @@
 	var descForm;
 	function doSubmit() {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
 		if (validateForm.form()) {
-			$('#description').val(descEditor.getContentTxt());
+			$('#description').val(descEditor.getContent());
 			$("#inputForm").submit();
 			return true;
 		}
 
 		return false;
 	}
-	$(document).ready(
-			function() {
-				validateForm = $("#inputForm")
-						.validate({
-							ignore: '',
-							rules: {
-								productCategoryId: {
-									required: true
-								}
-							},
-							messages: {
-								productCategoryId: {
-									required: '请选择商品类目'
-								}
-							},
-							submitHandler : function(form) {
-								loading('正在提交，请稍等...');
-								form.submit();
-							},
-							errorContainer : "#messageBox",
-							errorPlacement : function(error, element) {
-								$("#messageBox").text("输入有误，请先更正。");
-								if (element.is(":checkbox")
-										|| element.is(":radio")
-										|| element.parent().is(
-												".input-append")) {
-									error.appendTo(element.parent()
-											.parent());
-								} else if(element.parents('.easy-selector').length > 0){
-									element.parents('.easy-selector').addClass('error');
-									error.insertAfter(element.parents('.easy-selector'));
-								} else {
-									error.insertAfter(element);
-								}
-							}
-						});
-
-			});
-	
-			function() {
-				descForm = $("#descForm")
-						.validate({
-							ignore: '',
-							rules: {
-								productId: {
-									required: true
-								}
-							},
-							messages: {
-								productId: {
-									required: '请先保存商品基本信息后再保存图片及描述'
-								}
-							},
-							submitHandler : function(form) {
-								loading('正在提交，请稍等...');
-								$('#description').val(descEditor.getContentTxt());
-								form.submit();
-							},
-							errorContainer : "#messageBox",
-							errorPlacement : function(error, element) {
-								$("#messageBox").text("输入有误，请先更正。");
-								if (element.is(":checkbox")
-										|| element.is(":radio")
-										|| element.parent().is(
-												".input-append")) {
-									error.appendTo(element.parent()
-											.parent());
-								} else if(element.parents('.easy-selector').length > 0){
-									element.parents('.easy-selector').addClass('error');
-									error.insertAfter(element.parents('.easy-selector'));
-								} else {
-									error.insertAfter(element);
-								}
-							}
-						});
+	$(document).ready(function () {
+		validateForm = $("#inputForm").validate({
+			ignore: '',
+			rules: {
+				productCategoryId: {
+					required: true
+				}
+			},
+			messages: {
+				productCategoryId: {
+					required: '请选择商品类目'
+				}
+			},
+			submitHandler : function(form) {
+				loading('正在提交，请稍等...');
+				form.submit();
+			},
+			errorContainer : "#messageBox",
+			errorPlacement : function(error, element) {
+				$("#messageBox").text("输入有误，请先更正。");
+				if (element.is(":checkbox")
+						|| element.is(":radio")
+						|| element.parent().is(
+								".input-append")) {
+					error.appendTo(element.parent()
+							.parent());
+				} else if(element.parents('.easy-selector').length > 0){
+					element.parents('.easy-selector').addClass('error');
+					error.insertAfter(element.parents('.easy-selector'));
+				} else {
+					error.insertAfter(element);
+				}
+			}
+		});
 		
-			});
+		descForm = $("#descForm").validate({
+			ignore: '',
+			rules: {
+				id: {
+					required: true
+				}
+			},
+			messages: {
+				id: {
+					required: '请保存商品后重新进入后进行保存'
+				}
+			},
+			submitHandler : function(form) {
+				loading('正在提交，请稍等...');
+				$('#description').val(descEditor.getContent());
+				form.submit();
+			},
+			errorContainer : "#messageBox",
+			errorPlacement : function(error, element) {
+				$("#messageBox").text("输入有误，请先更正。");
+				if (element.is(":checkbox")
+						|| element.is(":radio")
+						|| element.parent().is(
+								".input-append")) {
+					error.appendTo(element.parent()
+							.parent());
+				} else if(element.parents('.easy-selector').length > 0){
+					element.parents('.easy-selector').addClass('error');
+					error.insertAfter(element.parents('.easy-selector'));
+				} else {
+					error.insertAfter(element);
+				}
+			}
+		});
+	});
+	
+			
 </script>
 </head>
 <body class="gray-bg">
@@ -112,12 +107,17 @@
 		<div class="ibox">
 			<div class="ibox-title">
 				<h5>
-					<c:if test="${product.action eq 'add'}">
-						新增商品信息
-					</c:if>
-					<c:if test="${product.action eq 'edit'}">
-						编辑商品信息
-					</c:if>
+					<c:choose>
+						<c:when test="${product.action eq 'add'}">
+							新增商品信息
+						</c:when>
+						<c:when test="${product.action eq 'edit'}">
+							编辑商品信息
+						</c:when>
+						<c:otherwise>
+							商品信息预览
+						</c:otherwise>
+					</c:choose>
 				</h5>
 				<div class="ibox-tools">
 					<a class="collapse-link">
@@ -242,7 +242,7 @@
 													<td>${cp.customerGroupName}</td>
 													<td>${cp.mtCityCd}</td>
 													<td>
-														<input type="number" value="${cp.price}" maxlength="20" class="form-control">
+														<input name="customerPrice[${cp.customerId}]" type="number" value="${cp.price}" maxlength="20" class="form-control">
 													</td>
 													<td>
 														<span class="fa fa-times"></span>
@@ -275,7 +275,7 @@
 												<tr>
 													<td>${cgp.customerGroupName}</td>
 													<td>
-														<input type="number" value="${cgp.price}" maxlength="20" class="form-control">
+														<input name="customerGroupPrice[${cgp.customerGroupId}]" type="number" value="${cgp.price}" maxlength="20" class="form-control">
 													</td>
 													<td>
 														<span class="fa fa-times"></span>
@@ -293,17 +293,17 @@
 							<c:if test="${product.action eq 'add' or product.action eq 'edit' }">
 								<button type="submit" class="btn btn-success">提交</button>			
 							</c:if>
-							<button type="button" class="btn btn-white" onclick="window.location.href='${ctx}/customerManager/customer/'">返回</button>
+							<button type="button" class="btn btn-white" onclick="window.location.href='${ctx}/productManager/product'">返回</button>
 						</div>
 					</form:form>
 		    	</div>
 				<div id="picAndDesc">
 					<form:form id="descForm" modelAttribute="product" action="${ctx}/productManager/product/picDesc" method="post" class="form-horizontal">
-						<input type="hidden" name="productId" id="productId" class="form-control required" value="${product.id}"/>
+						<input type="hidden" name="id" id="productId" class="form-control required" value="${product.id}"/>
 						<!-- start 商品图片 -->
 						<div class="easy-order product-pictures">
-							<h2>商品图片</h2>
-							<input type="hidden" name="pictureId" id="pictureId" />
+							<h2>商品图片<span class="placeholder">(最多可添加24张图片，建议图片尺寸800*800，大小≤5MB,支持JPG、PNG、JPEG)</span></h2>
+							<input type="hidden" name="coverUrl" id="coverUrl" value="${product.coverUrl }"/>
 							<div id="easy-uploader"></div>
 						</div>
 						<!-- 商品图片 end -->
@@ -313,10 +313,9 @@
 							<h2>商品图文描述</h2>
 							<div class="form-group">
 								<div class="col-sm-12">
-									<input type="hidden" id="description" name="description" value="${product.description}"/>
-									<script id="desc" name="desc" type="text/plain">
-        							${product.description}
-    							</script>
+									<input type="hidden" id="description" name="description" value='${product.description}'/>
+									<!-- 注意此处内容，不要出现空行，否则存在每次编辑都多处空行的问题 -->
+									<script id="desc" name="desc" type="text/plain">${product.description}</script>
 								</div>							
 							</div>
 						</div>
@@ -326,15 +325,13 @@
 							<c:if test="${product.action eq 'add' or product.action eq 'edit' }">
 								<button type="submit" class="btn btn-success">提交</button>			
 							</c:if>
-							<button type="button" class="btn btn-white" onclick="window.location.href='${ctx}/customerManager/customer/'">返回</button>
+							<button type="button" class="btn btn-white" onclick="window.location.href='${ctx}/productManager/product'">返回</button>
 						</div>
 					</form:form>
 				</div>
 			</div>
 		</div>
 	</div>
-	
-	
 	
 	<script type="text/javascript" src="${ctxStatic}/easy-selector/easy-selector.js"></script>
 	<script type="text/javascript" src="${ctxStatic}/easy-uploader/easy-uploader.js"></script>
@@ -441,7 +438,7 @@
 		UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
 		UE.Editor.prototype.getActionUrl = function(action) {
 			if(action == 'uploadimage') {
-				return "${ctx}/upload/image?type=product"
+				return "${ctx}/upload/image?utype=product"
 			} else {
                  return this._bkGetActionUrl.call(this, action);
             }
@@ -583,24 +580,69 @@
 			}
 		});
 		
+		var pictureDatas = [];
+		$.ajax({
+			url: '${ctx}/productManager/productPicture/async/list',
+			type: 'GET',
+			data: {productId : '${product.id}'},
+			dataType: 'JSON',
+			async: false,
+			success: function(data) {
+				if(SUCCESS_CODE == data.code) {
+					if(data.result) {
+						$.each(data.result, function(i, result) {
+							var picData = result;
+							picData['isMain'] = (result['isMain'] == 'Y');
+							pictureDatas.push(picData);
+						});
+					}
+				}
+			}
+		});
+		
+		// 上传插件参照此处使用
 		$("#easy-uploader").easyUploader({
-			uploadUrl : "${ctx}/upload/file?type=product",
-			success: function(uploader, data) {
+			// 回显图片数据
+			datas: pictureDatas,
+			uploadUrl : "${ctx}/upload/product/file",
+			success: function(uploader, data) {			// 此函数必须返回图片URL，以便于预览
+				var fileUrl;
 				if(SUCCESS_CODE === data.code) {
 					uploader.find('.hidden-value').val(data.result);
+					fileUrl = data.result;
 				} else {
 					top.layer.alert(data.msg);
 				}
+				return fileUrl;
 			},
 			error: function() {
-				top.layer.alert('上传失败');
+				top.layer.alert('上传失败,请联系管理员');
 			},
+			multiple: true,
+			targetName: 'pictures',
+			fileTypes: 'image/jpg,image/jpeg,image/png',					// 限制文件格式(相应格式后缀名)，多个以','分割
+			maxSize: 5 * 1024,							// 限制单文件大小					
+			maxLength: 24,								// 限制文件个数
 			mainSetting: true,
-			mainSettingPlaceholder: '设置为封面图片',
+			mainSettingPlaceholder: '设为封面图片',
 			mainSettingText: '封面图片',
 			mainSettingHandler: function(e, uploader) {
-				$('#pictureId').val(uploader.find('.hidden-value').val());
-				top.layer.alert('设置成功');
+				$('#coverUrl').val(uploader.find('.hidden-value').val());
+			},
+			uploaderError : function(detailMsg, simpleMsg) {
+				top.layer.alert(simpleMsg);
+			},
+			uploaderBtnClass: 'btn btn-success',
+			/* mode: 'readonly', */
+			closeHandler : function(uploader) {
+				var $img = uploader.find('.file-preview').find('img');
+				if($img.length > 0) {
+					var src = $img.attr('_src');
+					var coverUrl = $("#coverUrl").val();
+					if(src == coverUrl) {
+						$('#coverUrl').val('');
+					}
+				}
 			}
 		});
 	</script>

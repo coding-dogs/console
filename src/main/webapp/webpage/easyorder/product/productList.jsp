@@ -81,14 +81,13 @@
 		<thead>
 			<tr>
 				<th> <input type="checkbox" class="i-checks"></th>
+				<th>商品主图</th>
 				<th  class="sort-column name">商品名称</th>
 				<th  class="sort-column title">商品标题</th>
 				<th  class="sort-column productNo">商品编号</th>
-				<th  class="sort-column mtProductLabelCd">标签</th>
 				<th  class="sort-column modelNumber">型号</th>
 				<th  class="sort-column mtProductUpdownCd">商品上下架标识</th>
 				<th  class="sort-column orderPrice">订货价格</th>
-				<th  class="sort-column marketPrice">市场价格</th>
 				<th  class="sort-column buyPrice">进货价格</th>
 				<th  class="sort-column updateDate">更新时间</th>
 				<th  class="sort-column remarks">备注</th>
@@ -99,6 +98,16 @@
 		<c:forEach items="${page.list}" var="product">
 			<tr>
 				<td> <input type="checkbox" id="${product.id}" class="i-checks"></td>
+				<td>
+					<c:choose>
+						<c:when test="${not empty product.coverUrl}">
+							<img src="${product.coverUrl}" width="40" height="40">
+						</c:when>
+						<c:otherwise>
+							-
+						</c:otherwise>
+					</c:choose>
+				</td>
 				<td><a  href="${ctx}/productManager/product/form?action=view&id=${product.id}">
 					${product.name}
 				</a></td>
@@ -109,19 +118,13 @@
 					${product.productNo}
 				</td>
 				<td>
-					${product.mtProductLabelCd}
-				</td>
-				<td>
 					${product.modelNumber}
 				</td>
 				<td>
-					${product.mtProductUpdownCd}
+					${fns:getDictLabel(product.mtProductUpdownCd, 'mtProductUpdownCd', '-') }
 				</td>
 				<td>
 					${product.orderPrice}
-				</td>
-				<td>
-					${product.marketPrice}
 				</td>
 				<td>
 					${product.buyPrice}
@@ -134,7 +137,7 @@
 				</td>
 				<td>
 					<shiro:hasPermission name="product:product:view">
-						<a href="${ctx}/productManager/product/form?action=view&id=${product.id}'" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+						<a href="${ctx}/productManager/product/form?action=view&id=${product.id}" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="product:product:edit">
     					<a href="${ctx}/productManager/product/form?action=edit&id=${product.id}" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
