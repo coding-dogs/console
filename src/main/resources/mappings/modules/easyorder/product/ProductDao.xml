@@ -40,10 +40,16 @@
     
 	<select id="get" resultType="Product" >
 		SELECT 
-			<include refid="productColumns"/>
+			<include refid="productColumns"/>,
+			product_brand.name AS "productBrandName",
+			product_category.name AS "productCategoryName"
 		FROM product a
-		<include refid="productJoins"/>
-		WHERE a.id = #{id}
+		LEFT JOIN product_brand on product_brand.id = a.product_brand_id
+		LEFT JOIN product_category on product_category.id = a.product_category_id
+		<where>
+			AND a.id = #{id}
+			
+		</where>
 	</select>
 	
 	<select id="findList" resultType="Product" >
@@ -68,6 +74,9 @@
 			<if test="productNo != null and productNo != ''">
 				AND a.product_no = #{productNo}
 			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -86,6 +95,9 @@
 		<include refid="productJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

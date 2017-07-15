@@ -8,10 +8,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.easyorder.modules.product.dao.ProductCustomerGroupPriceDao;
+import com.easyorder.modules.product.entity.ProductCustomerGroupPrice;
 import com.jeeplus.common.persistence.Page;
 import com.jeeplus.common.service.CrudService;
-import com.easyorder.modules.product.entity.ProductCustomerGroupPrice;
-import com.easyorder.modules.product.dao.ProductCustomerGroupPriceDao;
 
 /**
  * 商品客户组指定价Service
@@ -44,7 +44,10 @@ public class ProductCustomerGroupPriceService extends CrudService<ProductCustome
 		super.delete(productCustomerGroupPrice);
 	}
 	
-	
+	@Transactional(readOnly = false)
+	public void deleteByCondition(ProductCustomerGroupPrice productCustomerGroupPrice) {
+		dao.deleteByCondition(productCustomerGroupPrice);
+	}
 	
 	
 }

@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.easyorder.common.beans.EasyResponse;
 import com.easyorder.common.constant.Constants;
 import com.easyorder.common.enums.EasyResponseEnums;
-import com.easyorder.common.exceptions.InternalServerException;
 import com.easyorder.common.utils.OSSUtils;
 import com.easyorder.common.utils.PropertyUtils;
 import com.easyorder.common.utils.StringUtils;
@@ -39,13 +38,15 @@ public class UploadController extends BaseController {
 	@Autowired
 	private ProductPictureService productPictureService;
 
-	@RequestMapping(value = "file", method = RequestMethod.POST)
+	@RequestMapping(value = "product/file", method = RequestMethod.POST)
 	@ResponseBody
-	public EasyResponse<String> uploadFile(MultipartFile file, String type, String productId, String productBrandId) {
+	public EasyResponse<String> uploadFile(MultipartFile file, String productId) {
 		String supplierId = UserUtils.getUser().getSupplierId();
 		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
-			throw new InternalServerException("无法确认当前供应商");
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
 		}
+		ProductPicture productPicture = null;
 		String uploadUrl = null;
 		String fileName = null;
 		try(OSSUtils ossUtils = new OSSUtils()) {
@@ -56,15 +57,7 @@ public class UploadController extends BaseController {
 				suffix = fileName.substring(fileName.lastIndexOf("."));
 			}
 			String path = "";
-			if("product".equals(type)) {
-				path = OSS_ROOT + PRODUCT_DIC.replace("{supplierId}", supplierId);
-				if(!StringUtils.hasText(productId)) {
-					logger.warn("upload product picture but productId is empty.");
-					return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
-				}
-			} else if("brand".equals(type)) {
-				path = OSS_ROOT + BRAND_DIC.replace("{supplierId}", supplierId);
-			}
+			path = OSS_ROOT + PRODUCT_DIC.replace("{supplierId}", supplierId);
 			String uploadFileName = System.currentTimeMillis() + suffix;
 			uploadUrl = ossUtils.uploadStream(bucketName, path, uploadFileName, file.getInputStream());
 			if(StringUtils.isEmpty(uploadUrl)) {
@@ -72,17 +65,18 @@ public class UploadController extends BaseController {
 			}
 			
 			if(StringUtils.hasText(productId)) {
-				ProductPicture productPicture = new ProductPicture();
+				productPicture = new ProductPicture();
 				productPicture.setProductId(productId);
 				productPicture.setUrl(uploadUrl);
+				productPicture.setIsMain(Constants.NO);
 				productPictureService.save(productPicture);
 			}
 			
 		} catch (IOException e) {
-			logger.error("reading the file error.[type : {}, fileName : {}]", type, fileName,e);
+			logger.error("reading the product file error.[fileName : {}]", fileName,e);
 			return EasyResponse.buildError("文件读取异常，请联系管理员。");
 		} catch (Exception e) {
-			logger.error("upload the file error.[type : {}, fileName : {}]", type, fileName,e);
+			logger.error("upload the product file error.[fileName : {}]", fileName,e);
 			return EasyResponse.buildError();
 		}
 		return EasyResponse.buildSuccess(uploadUrl, "文件上传成功");
@@ -90,14 +84,11 @@ public class UploadController extends BaseController {
 
 	@RequestMapping(value = "image", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, String> uploadFile(MultipartFile file, HttpServletResponse response, String type, String productId, String productBrandId) {
+	public Map<String, String> uploadFile(MultipartFile file, HttpServletResponse response, String utype, String productId, String productBrandId) {
 		Map<String, String> resultMap = new HashMap<>();
 		String supplierId = UserUtils.getUser().getSupplierId();
 		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
-			resultMap.put("state", "无法确认当前供应商");
-			resultMap.put("url", Constants.EMPTY_STRING);
-			resultMap.put("title", Constants.EMPTY_STRING);
-			resultMap.put("original", Constants.EMPTY_STRING);
+			buildUEErrorResult(resultMap, EasyResponseEnums.NOT_FOUND_SUPPLIER.message);
 			return resultMap;
 		}
 		String fileName = null;
@@ -110,14 +101,9 @@ public class UploadController extends BaseController {
 				suffix = fileName.substring(fileName.lastIndexOf("."));
 			}
 			String path = "";
-			if("product".equals(type)) {
+			if("product".equals(utype)) {
 				path = OSS_ROOT + PRODUCT_DIC.replace("{supplierId}", supplierId);
-				if(!StringUtils.hasText(productId)) {
-					logger.warn("upload product picture but productId is empty.");
-					buildUEErrorResult(resultMap, "productId is error.");
-					return resultMap;
-				}
-			} else if("brand".equals(type)) {
+			} else if("brand".equals(utype)) {
 				path = OSS_ROOT + BRAND_DIC.replace("{supplierId}", supplierId);
 			}
 			String uploadFileName = System.currentTimeMillis() + suffix;
@@ -130,6 +116,7 @@ public class UploadController extends BaseController {
 				ProductPicture productPicture = new ProductPicture();
 				productPicture.setProductId(productId);
 				productPicture.setUrl(uploadUrl);
+				productPicture.setIsMain(Constants.NO);
 				productPictureService.save(productPicture);
 			}
 		} catch (IOException e) {

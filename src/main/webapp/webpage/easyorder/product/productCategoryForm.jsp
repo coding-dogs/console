@@ -60,11 +60,11 @@
 			<tbody>
 				<tr>
 					<td class="width-15 active"><label class="pull-right"><em class="required-tag">* </em>上级分类:</label></td>
-					<td class="width-35"><sys:treeselect id="p" name="pid"
+					<td class="width-35"><sys:easyTreeSelect id="p" name="pid"
 							value="${productCategory.parent.id}" labelName="parent.name"
 							labelValue="${productCategory.parent.name}" title="父级分类名称"
 							url="/productManager/productCategory/tree"
-							cssClass="form-control required" /></td>
+							cssClass="form-control required" allowMaxLevel="2"/></td>
 					<td class="width-15" class="active"><label class="pull-right"><em class="required-tag">* </em>分类名称:</label></td>
 					<td class="width-35"><form:input path="name"
 							htmlEscape="false" maxlength="50" class="form-control required" /></td>

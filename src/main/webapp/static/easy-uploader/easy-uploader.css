@@ -17,14 +17,15 @@
 	height: 20px;
 	line-height: 20px;
 	display: inline-block;
-	filter: alpha(opacity = 40);
-	opacity: 0.4;
+	filter: alpha(opacity = 60);
+	opacity: 0.6;
 	position: absolute;
-	bottom: 1px;
+	bottom: 0;
 	left: 0;
 	text-align: center;
 	color: #fff;
 	background: #000;
+	user-select: none;
 }
 
 .easy-uploader-container .easy-uploader .file-selector {
@@ -41,7 +42,8 @@
 	display: block;
 }
 
-.easy-uploader-container .easy-uploader .plus:before, .easy-uploader .plus:after {
+.easy-uploader-container .easy-uploader .plus:before, .easy-uploader .plus:after
+	{
 	content: '';
 	background: #eee;
 	display: block;
@@ -60,4 +62,79 @@
 	height: 60px;
 	top: 20px;
 	left: 44px;
+}
+
+.easy-uploader .easy-uploader-close {
+	position: absolute;
+	width: 18px;
+	height: 18px;
+	display: inline-block;
+	background: #000;
+	opacity: 0.5;
+	filter: alpha(opacity=20);
+	vertical-align: middle;
+	text-align: center;
+	right:0;
+}
+
+.easy-uploader-container .easy-uploader .easy-uploader-close:after,
+.easy-uploader-container .easy-uploader .easy-uploader-close:before {
+	display: block;
+	content: '';
+	width: 16px;
+	height: 3px;
+	background: #fff;
+	font-size: 0;
+	line-height: 0;
+	vertical-align: middle;
+	position: absolute;
+}
+
+.easy-uploader-container .easy-uploader .easy-uploader-close:after {
+	-webkit-transform: rotate(45deg);
+	top: 7px;
+	left: 1px;
+	
+}
+
+.easy-uploader-container .easy-uploader .easy-uploader-close:before {
+	-webkit-transform: rotate(-45deg);
+	top: 7px;
+	left: 1px;
+}
+
+.easy-uploader-container .easy-uploader .easy-uploader-tip {
+	display: inline-block;
+	width: 60px;
+	max-width: 60px;
+	height: 18px;
+	font-size: 12px;
+	line-height: 18px;
+	color: #fff;
+	text-align: center;
+	position: absolute;
+	left: 0;
+	top: 0;
+	user-select: none;
+}
+
+.easy-uploader-container .easy-uploader .easy-uploader-tip.success {
+	background: #1c84c6;
+	border-color: #1c84c6;
+}
+
+.easy-uploader-container .easy-uploader .easy-uploader-tip.error {
+	background: #f00;
+	border-color: #f00;
+}
+
+.easy-uploader-clearfix:before,
+.easy-uploader-clearfix:after {
+	display: table;
+    content: " ";
+    clear: both;
+}
+
+.easy-uploader-container .easy-uploader-btns button {
+	float: right;
 }

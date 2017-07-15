@@ -53,11 +53,11 @@
 									title="商品分类"></table:addRow>
 								<!-- 增加按钮 -->
 							</shiro:hasPermission>
-							<shiro:hasPermission name="product:productCategory:edit">
+							<%-- <shiro:hasPermission name="product:productCategory:edit">
 								<table:editRow url="${ctx}/productManager/productCategory/form"
 									title="商品分类" id="contentTable"></table:editRow>
 								<!-- 编辑按钮 -->
-							</shiro:hasPermission>
+							</shiro:hasPermission> --%>
 							<%-- <shiro:hasPermission name="product:productCategory:del">
 								<table:delRow
 									url="${ctx}/productManager/productCategory/deleteAll"
@@ -82,14 +82,13 @@
 						</div>
 					</div>
 				</div>
-				<p class="bg-warning mt-10 padding-5">建议添加商品分类不超过三级</p>
+				<p class="bg-warning mt-10 padding-5">注意添加商品分类时，层级为三级</p>
 				<!-- 表格 -->
 				<form id="listForm" method="post">
 					<table id="treeTable"
 						class="table table-striped table-bordered table-hover table-condensed dataTables-example dataTable">
 						<thead>
 							<tr>
-								<th><input type="checkbox" class="i-checks"></th>
 								<th>名称</th>
 								<th>排序</th>
 								<shiro:hasPermission name="product:productCategory:edit">
@@ -101,8 +100,7 @@
 							<c:forEach items="${productCategoryList}" var="productCategory">
 								<tr id="${productCategory.id}"
 									pId="${not empty productCategory.pid ? productCategory.pid : '0'}">
-									<td><input type="checkbox" id="${productCategory.id}"
-										class="i-checks"></td>
+									
 									<td nowrap><i
 										class=""></i><a
 										href="#"
@@ -131,7 +129,7 @@
 										</shiro:hasPermission> <shiro:hasPermission name="product:productCategory:add">
 											<a href="#"
 												onclick="openDialog('添加下级分类', '${ctx}/productManager/productCategory/form?pid=${productCategory.id}&action=add','800px', '500px')"
-												class="btn btn-primary btn-xs"><i class="fa fa-plus"></i>
+												class="btn btn-primary btn-xs add-next-level"><i class="fa fa-plus"></i>
 												添加下级分类</a>
 										</shiro:hasPermission></td>
 								</tr>
@@ -147,7 +145,7 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		$("#treeTable").treeTable({expandLevel : 1,column:1}).show();
+		$("#treeTable").treeTable({expandLevel : 1,column:0}).show();
     	function updateSort() {
 			loading('正在提交，请稍等...');
 	    	$("#listForm").submit();
@@ -155,6 +153,11 @@
 		function refresh(){//刷新
 			
 			window.location="${ctx}/productManager/productCategory/";
+		}
+		// 三级目录禁用添加下级目录
+		var $nextLevel = $("#treeTable").find('tr[depth="3"]').find('.add-next-level');
+		if($nextLevel.length > 0) {
+			$nextLevel.remove();
 		}
 	</script>
 </body>

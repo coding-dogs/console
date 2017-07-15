@@ -32,8 +32,8 @@
 			<if test="productId != null and productId != ''">
 				AND a.product_id = #{productId}
 			</if>
-			<if test="coverUrl != null and coverUrl != ''">
-				AND a.cover_url = #{coverUrl}
+			<if test="url != null and url != ''">
+				AND a.url = #{url}
 			</if>
 		</where>
 		limit 1
@@ -46,6 +46,15 @@
 		<include refid="productPictureJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="productId != null and productId != ''">
+				AND product_id = #{productId}
+			</if>
+			<if test="url != null and url != ''">
+				AND url = #{url}
+			</if>
+			<if test="isMain != null and isMain != ''">
+				AND is_main = #{isMain}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -128,6 +137,18 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+	
+	<delete id="deleteByCondition" parameterType="ProductPicture">
+		DELETE FROM product_picture
+		<where>
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND product_id = #{productId}
+			</if>
+		</where>
+	</delete>
 	
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->

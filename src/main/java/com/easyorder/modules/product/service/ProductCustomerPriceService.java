@@ -44,7 +44,10 @@ public class ProductCustomerPriceService extends CrudService<ProductCustomerPric
 		super.delete(productCustomerPrice);
 	}
 	
-	
+	@Transactional(readOnly = false)
+	public void deleteByCondition(ProductCustomerPrice customerPrice) {
+		dao.deleteByCondition(customerPrice);
+	}
 	
 	
 }

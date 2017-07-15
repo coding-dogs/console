@@ -16,4 +16,6 @@ import com.easyorder.modules.product.entity.ProductPicture;
 public interface ProductPictureDao extends CrudDao<ProductPicture> {
 
 	int updateIsMain(ProductPicture productPicture);
+	
+	int deleteByCondition(ProductPicture productPicture);
 }
