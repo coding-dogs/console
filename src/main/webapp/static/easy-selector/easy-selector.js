@@ -279,9 +279,10 @@
 
 		$span.appendTo($li);
 
+		// 如果指定的唯一值相等，则需要默认选中，并取消初始化设置的"请选择"项的选中状态
 		if(that.value === item.value) {
-			$li.addClass('selected');
-			if(!that.text) {
+			$li.addClass('selected').siblings().removeClass('selected');
+			if(that.text) {
 				that.text = item.text;
 				$hidden.val(item.value);
 				$vs.text(item.text);
@@ -397,7 +398,7 @@
 		$.each($children, function(index, child) {
 			$(child).show();
 			if($(child).attr('data-has-children') === 'true') {
-				$(child).removeClass('easy-arrow-bottom').addClass('easy-arrow-top');
+				$(child).find('span.easy-arrow').removeClass('easy-arrow-top').addClass('easy-arrow-bottom');
 			}
 			that.display($(child).attr('data-id'));
 		});
@@ -414,7 +415,7 @@
 			var _pid = $(item).attr('data-id');
 			$(item).hide();
 			if($(item).attr('data-has-children') === 'true') {
-				$(item).removeClass('easy-arrow-top').addClass('easy-arrow-bottom');
+				$(item).find('span.easy-arrow').removeClass('easy-arrow-bottom').addClass('easy-arrow-top');
 			}
 			that.hidden(_pid);
 		});
@@ -423,6 +424,17 @@
 	EasySelector.prototype.select = function(value) {
 		var that = this;
 		var items = that.options.items;
+		
+		var $valueLi = that.$element.find('.menu-wrapper ul li[data-id="' + value + '"]');
+		if($valueLi.length > 0 && that.options.targetLevel) {
+			var valueLevel = $valueLi.attr('data-level');
+			if(valueLevel != that.targetLevel) {
+				return;
+			}
+		}
+		
+		
+		
 		if(items.length > 0) {
 			$.each(items, function(index, item) {
 				if(value === item.value) {

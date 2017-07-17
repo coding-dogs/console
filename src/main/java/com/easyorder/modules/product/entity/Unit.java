@@ -12,6 +12,7 @@ public class Unit extends DataEntity<Unit> {
 	
 	private static final long serialVersionUID = 1L;
 	private String unit;		// 单位
+	private String supplierId; 	// 供货商ID
 	
 	public Unit() {
 		super();
@@ -28,6 +29,14 @@ public class Unit extends DataEntity<Unit> {
 
 	public void setUnit(String unit) {
 		this.unit = unit;
+	}
+
+	public String getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(String supplierId) {
+		this.supplierId = supplierId;
 	}
 	
 }

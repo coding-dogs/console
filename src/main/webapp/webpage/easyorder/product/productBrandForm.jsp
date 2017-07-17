@@ -68,8 +68,6 @@
 					<td class="width-15 active"><label class="pull-right">备注:</label></td>
 					<td class="width-35"><form:textarea path="remarks"
 							htmlEscape="false" rows="3" maxlength="300" class="form-control " /></td>
-					<td class="width-15 active"><label class="pull-right"></label></td>
-					<td class="width-35"></td>
 				</tr>
 			</tbody>
 		</table>

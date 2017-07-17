@@ -25,7 +25,20 @@
 			<include refid="productCategoryBrandColumns"/>
 		FROM product_category_brand a
 		<include refid="productCategoryBrandJoins"/>
-		WHERE a.id = #{id}
+		<where>
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND supplier_id = #{supplierId}
+			</if>
+			<if test="productCategoryId != null and productCategoryId != ''">
+				AND product_category_id = #{productCategoryId}
+			</if>
+			<if test="productBrandId != null and productBrandId != ''">
+				AND product_brand_id = #{productBrandId}
+			</if>
+		</where>
 	</select>
 	
 	<select id="findList" resultType="ProductCategoryBrand" >
@@ -35,6 +48,9 @@
 		<include refid="productCategoryBrandJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -53,6 +69,9 @@
 		<include refid="productCategoryBrandJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

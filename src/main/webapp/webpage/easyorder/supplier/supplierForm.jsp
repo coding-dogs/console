@@ -59,7 +59,7 @@
 					<td  class="width-15 active"><label class="pull-right"><font color="red">*</font>分配管理员:</label></td>
 		         	<td class="width-35">
 		         		<form:hidden path="managerId"/>
-		         		<form:input path="managerName" readonly="readonly" class="form-control required"/><button type="button" class="btn btn-primary btn-sm display-n" id="selectManager">选择供应商管理员</button>
+		         		<form:input path="managerName" readonly="true" class="form-control required"/><button type="button" class="btn btn-primary btn-sm display-n" id="selectManager">选择供应商管理员</button>
 		         	</td>
 		     	</tr>
 			</tbody>

@@ -90,64 +90,69 @@
 				<th  class="sort-column orderPrice">订货价格</th>
 				<th  class="sort-column buyPrice">进货价格</th>
 				<th  class="sort-column updateDate">更新时间</th>
-				<th  class="sort-column remarks">备注</th>
 				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
-		<c:forEach items="${page.list}" var="product">
-			<tr>
-				<td> <input type="checkbox" id="${product.id}" class="i-checks"></td>
-				<td>
-					<c:choose>
-						<c:when test="${not empty product.coverUrl}">
-							<img src="${product.coverUrl}" width="40" height="40">
-						</c:when>
-						<c:otherwise>
-							-
-						</c:otherwise>
-					</c:choose>
-				</td>
-				<td><a  href="${ctx}/productManager/product/form?action=view&id=${product.id}">
-					${product.name}
-				</a></td>
-				<td>
-					${product.title}
-				</td>
-				<td>
-					${product.productNo}
-				</td>
-				<td>
-					${product.modelNumber}
-				</td>
-				<td>
-					${fns:getDictLabel(product.mtProductUpdownCd, 'mtProductUpdownCd', '-') }
-				</td>
-				<td>
-					${product.orderPrice}
-				</td>
-				<td>
-					${product.buyPrice}
-				</td>
-				<td>
-					<fmt:formatDate value="${product.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
-					${product.remarks}
-				</td>
-				<td>
-					<shiro:hasPermission name="product:product:view">
-						<a href="${ctx}/productManager/product/form?action=view&id=${product.id}" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
-					</shiro:hasPermission>
-					<shiro:hasPermission name="product:product:edit">
-    					<a href="${ctx}/productManager/product/form?action=edit&id=${product.id}" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
-    				</shiro:hasPermission>
-    				<shiro:hasPermission name="product:product:del">
-						<a href="${ctx}/productManager/product/delete?id=${product.id}" onclick="return confirmx('确认要删除该商品吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
-					</shiro:hasPermission>
-				</td>
-			</tr>
-		</c:forEach>
+			<c:choose>
+				<c:when test="${empty page or empty page.list }">
+					<tr>
+						<td colspan="12" align="center">暂无商品信息</td>
+					</tr>
+				</c:when>
+				<c:otherwise>
+					<c:forEach items="${page.list}" var="product">
+						<tr>
+							<td> <input type="checkbox" id="${product.id}" class="i-checks"></td>
+							<td>
+								<c:choose>
+									<c:when test="${not empty product.coverUrl}">
+										<img src="${product.coverUrl}" width="40" height="40">
+									</c:when>
+									<c:otherwise>
+										-
+									</c:otherwise>
+								</c:choose>
+							</td>
+							<td><a  href="${ctx}/productManager/product/form?action=view&id=${product.id}">
+								${product.name}
+							</a></td>
+							<td>
+								${product.title}
+							</td>
+							<td>
+								${product.productNo}
+							</td>
+							<td>
+								${product.modelNumber}
+							</td>
+							<td>
+								${fns:getDictLabel(product.mtProductUpdownCd, 'mtProductUpdownCd', '-') }
+							</td>
+							<td>
+								${product.orderPrice}
+							</td>
+							<td>
+								${product.buyPrice}
+							</td>
+							<td>
+								<fmt:formatDate value="${product.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+							</td>
+							<td>
+								<shiro:hasPermission name="product:product:view">
+									<a href="${ctx}/productManager/product/form?action=view&id=${product.id}" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+								</shiro:hasPermission>
+								<shiro:hasPermission name="product:product:edit">
+			    					<a href="${ctx}/productManager/product/form?action=edit&id=${product.id}" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
+			    				</shiro:hasPermission>
+			    				<shiro:hasPermission name="product:product:del">
+									<a href="${ctx}/productManager/product/delete?id=${product.id}" onclick="return confirmx('确认要删除该商品吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
+								</shiro:hasPermission>
+							</td>
+						</tr>
+					</c:forEach>
+				</c:otherwise>
+			</c:choose>
 		</tbody>
 	</table>
 	

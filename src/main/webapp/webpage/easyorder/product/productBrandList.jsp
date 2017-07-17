@@ -85,34 +85,43 @@
 			</tr>
 		</thead>
 		<tbody>
-		<c:forEach items="${page.list}" var="productBrand">
-			<tr>
-				<td> <input type="checkbox" id="${productBrand.id}" class="i-checks"></td>
-				<td><a  href="#" onclick="openDialogView('查看品牌', '${ctx}/productManager/productBrand/form?action=view&id=${productBrand.id}', '800px', '500px')">
-					${productBrand.name}
-				</a></td>
-				<td>
-					${productBrand.simpleName}
-				</td>
-				<td>
-					<fmt:formatDate value="${productBrand.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
-					${productBrand.remarks}
-				</td>
-				<td>
-					<shiro:hasPermission name="product:productBrand:view">
-						<a href="#" onclick="openDialogView('查看品牌', '${ctx}/productManager/productBrand/form?action=view&id=${productBrand.id}', '800px', '500px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
-					</shiro:hasPermission>
-					<shiro:hasPermission name="product:productBrand:edit">
-    					<a href="#" onclick="openDialog('修改品牌', '${ctx}/productManager/productBrand/form?action=edit&id=${productBrand.id}', '800px', '500px')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
-    				</shiro:hasPermission>
-    				<shiro:hasPermission name="product:productBrand:del">
-						<a href="${ctx}/productManager/productBrand/delete?id=${productBrand.id}" onclick="return confirmx('确认要删除该商品品牌吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
-					</shiro:hasPermission>
-				</td>
-			</tr>
-		</c:forEach>
+		<c:choose>
+			<c:when test="${empty page or empty page.list }">
+				<tr>
+					<td colspan="6" align="center">暂无商品品牌信息</td>
+				</tr>
+			</c:when>
+			<c:otherwise>
+				<c:forEach items="${page.list}" var="productBrand">
+					<tr>
+						<td> <input type="checkbox" id="${productBrand.id}" class="i-checks"></td>
+						<td><a  href="#" onclick="openDialogView('查看品牌', '${ctx}/productManager/productBrand/form?action=view&id=${productBrand.id}', '800px', '500px')">
+							${productBrand.name}
+						</a></td>
+						<td>
+							${productBrand.simpleName}
+						</td>
+						<td>
+							<fmt:formatDate value="${productBrand.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+						</td>
+						<td>
+							${productBrand.remarks}
+						</td>
+						<td>
+							<shiro:hasPermission name="product:productBrand:view">
+								<a href="#" onclick="openDialogView('查看品牌', '${ctx}/productManager/productBrand/form?action=view&id=${productBrand.id}', '800px', '500px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+							</shiro:hasPermission>
+							<shiro:hasPermission name="product:productBrand:edit">
+		    					<a href="#" onclick="openDialog('修改品牌', '${ctx}/productManager/productBrand/form?action=edit&id=${productBrand.id}', '800px', '500px')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
+		    				</shiro:hasPermission>
+		    				<shiro:hasPermission name="product:productBrand:del">
+								<a href="${ctx}/productManager/productBrand/delete?id=${productBrand.id}" onclick="return confirmx('确认要删除该商品品牌吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
+							</shiro:hasPermission>
+						</td>
+					</tr>
+				</c:forEach>
+			</c:otherwise>
+		</c:choose>
 		</tbody>
 	</table>
 	

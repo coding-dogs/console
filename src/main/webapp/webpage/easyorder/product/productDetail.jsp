@@ -68,6 +68,12 @@
 				    				<span>${fns:getDictLabel(product.mtProductUpdownCd, 'mtProductUpdownCd', '-') }</span>
 				    			</li>
 			    			</c:if>
+			    			<c:if test="${not empty product && not empty product.unitName }">
+			    				<li>
+				    				<span>商品单位：</span>
+				    				<span>${product.unitName}</span>
+				    			</li>
+			    			</c:if>
 			    			<c:if test="${not empty product && not empty product.minimumOrderNumber }">
 			    				<li>
 				    				<span>起订量：</span>
@@ -161,7 +167,8 @@
 			success: function(data) {
 				if(SUCCESS_CODE == data.code) {
 					$('#product-pictures').easyCarousel({
-						items: data.result
+						items: data.result				// items参数为要显示的图片数据，类型为对象数组，对象必须包含属性---url：图片路径
+						//,trigger: 'click'				//	默认为鼠标悬浮切换，值为hover，若要点击后切换图片，将此属性更改为click即可
 					});
 				}
 			}
