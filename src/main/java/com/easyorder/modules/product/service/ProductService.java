@@ -184,7 +184,23 @@ public class ProductService extends CrudService<ProductDao, Product> {
 
 	@Transactional(readOnly = false)
 	public void delete(Product product) {
+		// 删除商品
 		super.delete(product);
+		String productId = product.getId();
+		// 删除商品客户指定价和客户组指定价
+		ProductCustomerPrice pcp = new ProductCustomerPrice();
+		pcp.setProductId(productId);
+		productCustomerPriceService.deleteByCondition(pcp);
+		
+		ProductCustomerGroupPrice pcgp = new ProductCustomerGroupPrice();
+		pcgp.setProductId(productId);
+		productCustomerGroupPriceService.deleteByCondition(pcgp);
+		
+		// 删除商品图片数据库记录
+		ProductPicture pp = new ProductPicture();
+		pp.setProductId(productId);
+		productPictureService.deleteByCondition(pp);
+		
 	}
 
 

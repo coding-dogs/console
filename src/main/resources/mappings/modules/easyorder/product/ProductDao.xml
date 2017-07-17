@@ -42,13 +42,13 @@
 		SELECT 
 			<include refid="productColumns"/>,
 			product_brand.name AS "productBrandName",
-			product_category.name AS "productCategoryName"
+			product_category.name AS "productCategoryName",
+			(select unit from unit where id = a.unit_id) AS "unitName"
 		FROM product a
 		LEFT JOIN product_brand on product_brand.id = a.product_brand_id
 		LEFT JOIN product_category on product_category.id = a.product_category_id
 		<where>
 			AND a.id = #{id}
-			
 		</where>
 	</select>
 	

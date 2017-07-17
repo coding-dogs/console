@@ -53,17 +53,6 @@
 									title="商品分类"></table:addRow>
 								<!-- 增加按钮 -->
 							</shiro:hasPermission>
-							<%-- <shiro:hasPermission name="product:productCategory:edit">
-								<table:editRow url="${ctx}/productManager/productCategory/form"
-									title="商品分类" id="contentTable"></table:editRow>
-								<!-- 编辑按钮 -->
-							</shiro:hasPermission> --%>
-							<%-- <shiro:hasPermission name="product:productCategory:del">
-								<table:delRow
-									url="${ctx}/productManager/productCategory/deleteAll"
-									id="contentTable"></table:delRow>
-								<!-- 删除按钮 -->
-							</shiro:hasPermission> --%>
 							<button class="btn btn-white btn-sm " data-toggle="tooltip"
 								data-placement="left" onclick="sortOrRefresh()" title="刷新">
 								<i class="glyphicon glyphicon-repeat"></i> 刷新
@@ -97,43 +86,52 @@
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach items="${productCategoryList}" var="productCategory">
-								<tr id="${productCategory.id}"
-									pId="${not empty productCategory.pid ? productCategory.pid : '0'}">
-									
-									<td nowrap><i
-										class=""></i><a
-										href="#"
-										onclick="openDialogView('查看分类', '${ctx}/productManager/productCategory/form?id=${productCategory.id}','800px', '500px')">${productCategory.name}</a></td>
-									<td>
-										${productCategory.sort}
-									</td>
-									<td nowrap>
-										<shiro:hasPermission name="product:productCategory:view">
-											<a href="#"
-												onclick="openDialogView('查看分类', '${ctx}/productManager/productCategory/form?id=${productCategory.id}','800px', '500px')"
-												class="btn btn-info btn-xs"><i
-												class="fa fa-search-plus"></i> 查看</a>
-										</shiro:hasPermission> 
-										<shiro:hasPermission name="product:productCategory:edit">
-											<a href="#"
-												onclick="openDialog('修改分类', '${ctx}/productManager/productCategory/form?id=${productCategory.id}','800px', '500px')"
-												class="btn btn-success btn-xs"><i class="fa fa-edit"></i>
-												修改</a>
-										</shiro:hasPermission> 
-										<shiro:hasPermission name="product:productCategory:del">
-											<a href="${ctx}/productManager/productCategory/delete?id=${productCategory.id}"
-												onclick="return confirmx('要删除该分类及所有子分类吗？', this.href)"
-												class="btn btn-danger btn-xs"><i class="fa fa-trash"></i>
-												删除</a>
-										</shiro:hasPermission> <shiro:hasPermission name="product:productCategory:add">
-											<a href="#"
-												onclick="openDialog('添加下级分类', '${ctx}/productManager/productCategory/form?pid=${productCategory.id}&action=add','800px', '500px')"
-												class="btn btn-primary btn-xs add-next-level"><i class="fa fa-plus"></i>
-												添加下级分类</a>
-										</shiro:hasPermission></td>
-								</tr>
-							</c:forEach>
+							<c:choose>
+								<c:when test="${empty productCategoryList }">
+									<tr>
+										<td colspan="3" align="center">暂无商品分类信息</td>
+									</tr>
+								</c:when>
+								<c:otherwise>
+									<c:forEach items="${productCategoryList}" var="productCategory">
+										<tr id="${productCategory.id}"
+											pId="${not empty productCategory.pid ? productCategory.pid : '0'}">
+											
+											<td nowrap><i
+												class=""></i><a
+												href="#"
+												onclick="openDialogView('查看分类', '${ctx}/productManager/productCategory/form?id=${productCategory.id}','800px', '500px')">${productCategory.name}</a></td>
+											<td>
+												${productCategory.sort}
+											</td>
+											<td nowrap>
+												<shiro:hasPermission name="product:productCategory:view">
+													<a href="#"
+														onclick="openDialogView('查看分类', '${ctx}/productManager/productCategory/form?id=${productCategory.id}','800px', '500px')"
+														class="btn btn-info btn-xs"><i
+														class="fa fa-search-plus"></i> 查看</a>
+												</shiro:hasPermission> 
+												<shiro:hasPermission name="product:productCategory:edit">
+													<a href="#"
+														onclick="openDialog('修改分类', '${ctx}/productManager/productCategory/form?id=${productCategory.id}','800px', '500px')"
+														class="btn btn-success btn-xs"><i class="fa fa-edit"></i>
+														修改</a>
+												</shiro:hasPermission> 
+												<shiro:hasPermission name="product:productCategory:del">
+													<a href="${ctx}/productManager/productCategory/delete?id=${productCategory.id}"
+														onclick="return confirmx('要删除该分类及所有子分类吗？', this.href)"
+														class="btn btn-danger btn-xs"><i class="fa fa-trash"></i>
+														删除</a>
+												</shiro:hasPermission> <shiro:hasPermission name="product:productCategory:add">
+													<a href="#"
+														onclick="openDialog('添加下级分类', '${ctx}/productManager/productCategory/form?pid=${productCategory.id}&action=add','800px', '500px')"
+														class="btn btn-primary btn-xs add-next-level"><i class="fa fa-plus"></i>
+														添加下级分类</a>
+												</shiro:hasPermission></td>
+										</tr>
+									</c:forEach>
+								</c:otherwise>
+							</c:choose>
 						</tbody>
 					</table>
 				</form>

@@ -5,6 +5,7 @@
 	<sql id="unitColumns">
 		a.id AS "id",
 		a.unit AS "unit",
+		a.supplier_id AS "supplierId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -33,6 +34,9 @@
 		<include refid="unitJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="supplierId != null and supplierId != ''">
+				AND supplier_id = #{supplierId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -51,6 +55,9 @@
 		<include refid="unitJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="supplierId != null and supplierId != ''">
+				AND supplier_id = #{supplierId}
+			</if>
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -66,6 +73,7 @@
 		INSERT INTO unit(
 			id,
 			unit,
+			supplier_id,
 			create_by,
 			create_date,
 			update_by,
@@ -76,6 +84,7 @@
 		) VALUES (
 			#{id},
 			#{unit},
+			#{supplierId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -89,6 +98,7 @@
 	<update id="update">
 		UPDATE unit SET 	
 			unit = #{unit},
+			supplier_id = #{supplierId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},

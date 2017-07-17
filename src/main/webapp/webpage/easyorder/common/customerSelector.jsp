@@ -104,7 +104,7 @@
 			return requestData;
 		}
 	
-	
+		// 页面选择元素记录组件
 		var table = $('#customerTable').easyPageRecords({
 			titles: [
 				{

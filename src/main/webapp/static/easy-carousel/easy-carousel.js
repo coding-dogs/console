@@ -75,7 +75,7 @@
 			$list.append($next);
 
 			$listItems.append($listUl);
-			if(that.options.items) {
+			if(that.options.items && that.options.items.length > 0) {
 				$primaryImage.attr('src', that.options.items[0].url);
 				$primary.append($primaryImage);
 

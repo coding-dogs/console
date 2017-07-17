@@ -202,6 +202,16 @@
 						</div>
 						
 						<div class="easy-order product-price-info">
+							<h2>单位</h2>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><em class="required-tag">* </em>商品单位</label>
+								<div class="col-sm-4">
+									<div id="unit" data-text="请选择商品单位" data-required="true" data-value="${product.unitId}" data-name='unitId'></div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="easy-order product-price-info">
 							<h2>价格</h2>
 							<!-- start 商品价格信息 -->
 							<div class="form-group">
@@ -428,10 +438,11 @@
 			});
 		});
 		
-	
+		
+		// 页签组件的使用
 		$('#tabs-content').easyTabs({
-			selectedId: '#baseInfo',
-			targetElement: '#ibox-content'
+			selectedId: '#baseInfo',				// 指定要选中"小页面"的id属性
+			targetElement: '#ibox-content'			// 页签元素们的父元素
 		});
 	
 		var descEditor = UE.getEditor('desc');
@@ -447,6 +458,37 @@
 		    return this.getContent().length;
 		}
 		
+		/**
+		 * 获取单位数据
+		 */
+		function getUnits() {
+			var units = [];
+			$.ajax({
+				url : "${ctx}/productManager/unit/async/list",
+				async : false,
+				type : "GET",
+				data : {},
+				dataType : "json",
+				success : function(data) {
+					var _item = [];
+					if(SUCCESS_CODE === data.code) {
+						if(data.result && data.result.length > 0) {
+							$.each(data.result, function(index, unit) {
+								var item = {};
+								item.value = unit.id;
+								item.text = unit.unit;
+								units.push(item);
+							});
+						}
+					}
+				}
+			});	
+			return units;
+		}
+		
+		/**
+		 * 获取商品分类数据
+		 */
 		function getProductCategory() {
 			var items = [];
 			$.ajax({
@@ -473,7 +515,44 @@
 			return items;
 		}
 		var items = getProductCategory();
-		// 构建客户组选择器
+		var units = getUnits();
+		$("#unit").easySelector({
+			maxHeight : 250,
+			hasMore: true,
+			moreText : "<span style='text-weight:bold'> + </span> 新增单位",
+			items: units,
+			moreCallback: function() {
+				openDialogWithCallback('新增单位', '${ctx}/productManager/unit/form','800px', '500px', null, function(index, layero) {
+					var body = top.layer.getChildFrame('body', index);
+					var inputForm = body.find("#inputForm");
+					var unit = inputForm.find("#unit").val();
+					var remarks = inputForm.find("#remarks").val();
+					// 保存客户组
+					$.ajax({
+						url : "${ctx}/productManager/unit/async/save",
+						type : "POST",
+						data : {"unit" : unit, "remarks" : remarks},
+						dataType : "JSON",
+						success : function(data) {
+							if(SUCCESS_CODE === data.code) {
+								// 更新选择项
+								$("#unit").easySelector("setOptions", "items", getUnits());
+								// 选择当前值
+								$("#unit").easySelector("select", data.result);
+							} else {
+								top.layer.alert(data.msg);
+							}
+							top.layer.close(index);
+						},
+						error : function(XMLHttpRequest, errorMsg, ex) {
+							top.layer.alert("单位新增失败");
+							top.layer.close(index);
+						}
+					});
+				});
+			}
+		});
+		// 构建商品分类选择器
 		$("#productCategory").easySelector({
 			type : 'tree',
 			maxHeight : 250,
@@ -506,7 +585,7 @@
 							top.layer.close(index);
 						},
 						error : function(XMLHttpRequest, errorMsg, ex) {
-							top.layer.alert("新增失败");
+							top.layer.alert("商品类目新增失败");
 							top.layer.close(index);
 						}
 					});
@@ -539,7 +618,7 @@
 			return items;
 		}
 		var items = getProductBrands();
-		// 构建客户组选择器
+		// 构建商品品牌选择器
 		$("#productBrand").easySelector({
 			maxHeight : 250,
 			hasMore : true,
@@ -571,7 +650,7 @@
 							top.layer.close(index);
 						},
 						error : function() {
-							top.layer.alert("新增失败");
+							top.layer.alert("商品品牌新增失败");
 							top.layer.close(index);
 						}
 					});
@@ -580,6 +659,7 @@
 			}
 		});
 		
+		// 后台获取图片信息，用于回显
 		var pictureDatas = [];
 		$.ajax({
 			url: '${ctx}/productManager/productPicture/async/list',
@@ -618,23 +698,23 @@
 			error: function() {
 				top.layer.alert('上传失败,请联系管理员');
 			},
-			multiple: true,
-			targetName: 'pictures',
-			fileTypes: 'image/jpg,image/jpeg,image/png',					// 限制文件格式(相应格式后缀名)，多个以','分割
-			maxSize: 5 * 1024,							// 限制单文件大小					
-			maxLength: 24,								// 限制文件个数
-			mainSetting: true,
-			mainSettingPlaceholder: '设为封面图片',
-			mainSettingText: '封面图片',
-			mainSettingHandler: function(e, uploader) {
+			multiple: true,									// 开启多文件上传
+			targetName: 'pictures',							// 后台接收文件对象属性的属性名
+			fileTypes: 'image/jpg,image/jpeg,image/png',	// 限制文件格式(相应格式后缀名)，多个以','分割
+			maxSize: 5 * 1024,								// 限制单文件大小					
+			maxLength: 24,									// 限制文件个数
+			mainSetting: true,								// 是否需要封面图片设置位
+			mainSettingPlaceholder: '设为封面图片',			// 封面文件设置位提示语
+			mainSettingText: '封面图片',						// 封面文件设置位设置后提示文本
+			mainSettingHandler: function(e, uploader) {		// 设置为封面文件后的函数，uploader为上传位jquery元素，审查元素即可知晓
 				$('#coverUrl').val(uploader.find('.hidden-value').val());
 			},
-			uploaderError : function(detailMsg, simpleMsg) {
+			uploaderError : function(detailMsg, simpleMsg) {// 上传过程出错处理函数，detailMsg为英文错误提示，simpleMsg为简体中文错误提示
 				top.layer.alert(simpleMsg);
 			},
-			uploaderBtnClass: 'btn btn-success',
+			uploaderBtnClass: 'btn btn-success',			// 上传按钮样式
 			/* mode: 'readonly', */
-			closeHandler : function(uploader) {
+			closeHandler : function(uploader) {				// 点击图片右上角的移除按钮时的处理函数
 				var $img = uploader.find('.file-preview').find('img');
 				if($img.length > 0) {
 					var src = $img.attr('_src');

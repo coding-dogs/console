@@ -40,6 +40,7 @@ public class Product extends DataEntity<Product> {
 	
 	private String productCategoryName;
 	private String productBrandName;
+	private String unitName;
 	
 	private Map<String, Double> customerPrice;	// 客户指定价格
 	private Map<String, Double> customerGroupPrice; // 客户组指定价格
@@ -301,6 +302,14 @@ public class Product extends DataEntity<Product> {
 
 	public void setProductBrandName(String productBrandName) {
 		this.productBrandName = productBrandName;
+	}
+
+	public String getUnitName() {
+		return unitName;
+	}
+
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
 	}
 	
 }

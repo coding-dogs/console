@@ -98,46 +98,55 @@
 			</tr>
 		</thead>
 		<tbody>
-		<c:forEach items="${page.list}" var="customer">
-			<tr>
-				<td> <input type="checkbox" id="${customer.id}" class="i-checks"></td>
-				<td>
-					${customer.customerNo}
-				</td>
-				<td><a  href="${ctx}/customerManager/customer/form?id=${customer.id}&action=view">
-					${customer.name}
-				</a></td>
-				<td>
-					${customer.accountNo}
-				</td>
-				<td>
-					${customer.customerGroupName}
-				</td>
-				<td>
-					${customer.mtCityCd}
-				</td>
-				<td>
-					${fns:getDictLabel(customer.mtCustomerStatusCd, "mtCustomerStatusCd", "-") }
-				</td>
-				<td>
-					<fmt:formatDate value="${customer.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
-					${customer.remarks}
-				</td>
-				<td>
-					<shiro:hasPermission name="customer:customer:view">
-						<a href="${ctx}/customerManager/customer/form?id=${customer.id}&action=view" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
-					</shiro:hasPermission>
-					<shiro:hasPermission name="customer:customer:edit">
-    					<a href="${ctx}/customerManager/customer/form?id=${customer.id}&action=edit" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
-    				</shiro:hasPermission>
-    				<shiro:hasPermission name="customer:customer:del">
-						<a href="${ctx}/customerManager/customer/delete?id=${customer.id}" onclick="return confirmx('确认要删除该客户吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
-					</shiro:hasPermission>
-				</td>
-			</tr>
-		</c:forEach>
+			<c:choose>
+				<c:when test="${empty page or empty page.list }">
+					<tr>
+						<td colspan="10" align="center">暂无客户信息</td>
+					</tr>
+				</c:when>
+				<c:otherwise>
+					<c:forEach items="${page.list}" var="customer">
+						<tr>
+							<td> <input type="checkbox" id="${customer.id}" class="i-checks"></td>
+							<td>
+								${customer.customerNo}
+							</td>
+							<td><a  href="${ctx}/customerManager/customer/form?id=${customer.id}&action=view">
+								${customer.name}
+							</a></td>
+							<td>
+								${customer.accountNo}
+							</td>
+							<td>
+								${customer.customerGroupName}
+							</td>
+							<td>
+								${customer.mtCityCd}
+							</td>
+							<td>
+								${fns:getDictLabel(customer.mtCustomerStatusCd, "mtCustomerStatusCd", "-") }
+							</td>
+							<td>
+								<fmt:formatDate value="${customer.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+							</td>
+							<td>
+								${customer.remarks}
+							</td>
+							<td>
+								<shiro:hasPermission name="customer:customer:view">
+									<a href="${ctx}/customerManager/customer/form?id=${customer.id}&action=view" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+								</shiro:hasPermission>
+								<shiro:hasPermission name="customer:customer:edit">
+			    					<a href="${ctx}/customerManager/customer/form?id=${customer.id}&action=edit" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
+			    				</shiro:hasPermission>
+			    				<shiro:hasPermission name="customer:customer:del">
+									<a href="${ctx}/customerManager/customer/delete?id=${customer.id}" onclick="return confirmx('确认要删除该客户吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
+								</shiro:hasPermission>
+							</td>
+						</tr>
+					</c:forEach>
+				</c:otherwise>
+			</c:choose>
 		</tbody>
 	</table>
 	
