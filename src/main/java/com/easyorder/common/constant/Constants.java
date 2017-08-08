@@ -21,6 +21,8 @@ public class Constants {
 	
 	// 空字符串
 	public static final String EMPTY_STRING = "";
+	// 空格字符
+	public static final String BLANK_SPACE_STRING = " ";
 	// 常用拆分符
 	public static final String SPLIT_SEPERATOR = ",";
 }

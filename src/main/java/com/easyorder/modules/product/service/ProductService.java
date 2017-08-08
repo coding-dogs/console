@@ -21,6 +21,7 @@ import com.easyorder.modules.product.entity.ProductPicture;
 import com.easyorder.common.constant.Constants;
 import com.easyorder.common.utils.BeanUtils;
 import com.easyorder.common.utils.CollectionUtils;
+import com.easyorder.common.utils.IDUtils;
 import com.easyorder.common.utils.StringUtils;
 import com.easyorder.modules.product.dao.ProductDao;
 
@@ -95,9 +96,9 @@ public class ProductService extends CrudService<ProductDao, Product> {
 
 	@Transactional(readOnly = false)
 	public void save(Product product) {
-		if (StringUtils.isEmpty(product.getId())) {
-			product.setProductNo("SP" + System.currentTimeMillis());
-		}
+//		if (StringUtils.isEmpty(product.getId())) {
+//			product.setProductNo(IDUtils.generateProductId());
+//		}
 		super.save(product);
 		String productId = product.getId();
 		// 查询商品分类和品牌的关系，不存在关联关系，否则向数据库插入一条数据

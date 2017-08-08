@@ -13,7 +13,8 @@ public class Specification extends DataEntity<Specification> {
 	private static final long serialVersionUID = 1L;
 	private String name;		// 规格名称
 	private String no;		// 规格编号
-	private String pecificationGroupId;		// 规格组ID
+	private String supplierId; // 供应商ID
+	private String data;		// 规格数据
 	
 	public Specification() {
 		super();
@@ -41,13 +42,21 @@ public class Specification extends DataEntity<Specification> {
 		this.no = no;
 	}
 	
-	@ExcelField(title="规格组ID", align=2, sort=3)
-	public String getPecificationGroupId() {
-		return pecificationGroupId;
+	@ExcelField(title="规格数据", align=2, sort=3)
+	public String getData() {
+		return data;
 	}
 
-	public void setPecificationGroupId(String pecificationGroupId) {
-		this.pecificationGroupId = pecificationGroupId;
+	public void setData(String data) {
+		this.data = data;
+	}
+
+	public String getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(String supplierId) {
+		this.supplierId = supplierId;
 	}
 	
 }

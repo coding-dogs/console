@@ -24,7 +24,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.easyorder.common.constant.Constants;
 import com.easyorder.common.enums.EasyResponseEnums;
+import com.easyorder.common.enums.SequenceTypeEnums;
 import com.easyorder.common.utils.BeanUtils;
+import com.easyorder.modules.common.service.SequenceService;
 import com.easyorder.modules.product.entity.Product;
 import com.easyorder.modules.product.service.ProductCustomerGroupPriceService;
 import com.easyorder.modules.product.service.ProductCustomerPriceService;
@@ -55,6 +57,8 @@ public class ProductController extends BaseController {
 	ProductCustomerPriceService productCustomerPriceService;
 	@Autowired
 	ProductCustomerGroupPriceService productCustomerGroupPriceService;
+	@Autowired
+	SequenceService sequenceService;
 
 	@ModelAttribute
 	public Product get(@RequestParam(required=false) String id) {
@@ -103,6 +107,12 @@ public class ProductController extends BaseController {
 		if(Constants.ACTION_VIEW.equals(product.getAction())) {
 			return "easyorder/product/productDetail";
 		}
+		if(Constants.ACTION_ADD.equals(product.getAction())) {
+			Long seq = sequenceService.getSeqByType(SequenceTypeEnums.PRODUCT_NO.type);
+			if(seq != null) {
+				product.setProductNo(String.valueOf(seq));
+			}
+		}
 		return "easyorder/product/productForm";
 	}
 
@@ -122,6 +132,8 @@ public class ProductController extends BaseController {
 		if (!beanValidator(model, product)){
 			return form(product, model);
 		}
+		
+		product.setSpecJson(StringEscapeUtils.unescapeHtml4(product.getSpecJson()));;
 		if(!product.getIsNewRecord()){//编辑表单保存
 			Product t = productService.get(product.getId());//从数据库取出记录的值
 			MyBeanUtils.copyBeanNotNull2Bean(product, t);//将编辑表单中的非NULL值覆盖数据库记录中的值

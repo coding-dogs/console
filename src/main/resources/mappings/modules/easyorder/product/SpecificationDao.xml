@@ -6,7 +6,8 @@
 		a.id AS "id",
 		a.name AS "name",
 		a.no AS "no",
-		a.pecification_group_id AS "pecificationGroupId",
+		a.supplier_id AS supplierId,
+		a.data AS "data",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -41,6 +42,9 @@
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -59,6 +63,9 @@
 		<include refid="specificationJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -75,7 +82,8 @@
 			id,
 			name,
 			no,
-			pecification_group_id,
+			supplier_id,
+			data,
 			create_by,
 			create_date,
 			update_by,
@@ -87,7 +95,8 @@
 			#{id},
 			#{name},
 			#{no},
-			#{pecificationGroupId},
+			#{supplierId},
+			#{data},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -102,7 +111,8 @@
 		UPDATE specification SET 	
 			name = #{name},
 			no = #{no},
-			pecification_group_id = #{pecificationGroupId},
+			supplier_id = #{supplierId},
+			data = #{data},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},

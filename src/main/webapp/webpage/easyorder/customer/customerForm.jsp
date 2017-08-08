@@ -105,7 +105,7 @@
 						</c:if>
 						<div class="form-group">
 							<label for="mtCustomerStatusCd" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>账号状态</label>
-							<div class="col-sm-10 easy-form-ichecks">
+							<div class="col-sm-10 easy-form-ichecks" style="margin-right: 0;">
 								<c:choose>
 									<c:when test="${customer.action eq 'view'}">
 										<span class="easy-form-span">${fns:getDictLabel(customer.mtCustomerStatusCd,"mtCustomerStatusCd", "-")}</span>
@@ -171,7 +171,7 @@
 						<div class="form-group">
 							<label for="contactEmail" class="col-sm-2 ctrl-label">电子邮箱</label>
 							<div class="col-sm-10">
-								<input type="text" id="contactEmail" name="contactEmail" placeholder="请输入电子邮箱" maxlength="50" class="form-control" value="${customer.contactEmail}"/>
+								<input type="email" id="contactEmail" name="contactEmail" placeholder="请输入电子邮箱" maxlength="50" class="form-control" value="${customer.contactEmail}"/>
 							</div>
 						</div>
 						<div class="form-group">
@@ -235,7 +235,7 @@
 					var remarks = inputForm.find("#remarks").val();
 					// 保存客户组
 					$.ajax({
-						url : "${ctx}/customerManager/customerGroup/save",
+						url : "${ctx}/customerManager/customerGroup/async/save",
 						type : "POST",
 						data : {"name" : name, "remarks" : remarks},
 						dataType : "JSON",

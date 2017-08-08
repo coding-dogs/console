@@ -39,7 +39,7 @@
 	<!--查询条件-->
 	<div class="row">
 	<div class="col-sm-12">
-	<form:form id="searchForm" modelAttribute="specification" action="${ctx}/product/specification/" method="post" class="form-inline">
+	<form:form id="searchForm" modelAttribute="specification" action="${ctx}/productManager/specification/" method="post" class="form-inline">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<table:sortColumn id="orderBy" name="orderBy" value="${page.orderBy}" callback="sortOrRefresh();"/><!-- 支持排序 -->
@@ -57,19 +57,19 @@
 	<div class="col-sm-12">
 		<div class="pull-left">
 			<shiro:hasPermission name="product:specification:add">
-				<table:addRow url="${ctx}/product/specification/form" title="商品规格"></table:addRow><!-- 增加按钮 -->
+				<table:addRow url="${ctx}/productManager/specification/form" title="商品规格"></table:addRow><!-- 增加按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="product:specification:edit">
-			    <table:editRow url="${ctx}/product/specification/form" title="商品规格" id="contentTable"></table:editRow><!-- 编辑按钮 -->
+			    <table:editRow url="${ctx}/productManager/specification/form" title="商品规格" id="contentTable"></table:editRow><!-- 编辑按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="product:specification:del">
-				<table:delRow url="${ctx}/product/specification/deleteAll" id="contentTable"></table:delRow><!-- 删除按钮 -->
+				<table:delRow url="${ctx}/productManager/specification/deleteAll" id="contentTable"></table:delRow><!-- 删除按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="product:specification:import">
-				<table:importExcel url="${ctx}/product/specification/import"></table:importExcel><!-- 导入按钮 -->
+				<table:importExcel url="${ctx}/productManager/specification/import"></table:importExcel><!-- 导入按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="product:specification:export">
-	       		<table:exportExcel url="${ctx}/product/specification/export"></table:exportExcel><!-- 导出按钮 -->
+	       		<table:exportExcel url="${ctx}/productManager/specification/export"></table:exportExcel><!-- 导出按钮 -->
 	       	</shiro:hasPermission>
 	       <button class="btn btn-white btn-sm " data-toggle="tooltip" data-placement="left" onclick="sortOrRefresh()" title="刷新"><i class="glyphicon glyphicon-repeat"></i> 刷新</button>
 		
@@ -87,37 +87,50 @@
 			<tr>
 				<th> <input type="checkbox" class="i-checks"></th>
 				<th  class="sort-column name">规格名称</th>
+				<th>规格值</th>
 				<th  class="sort-column updateDate">更新时间</th>
 				<th  class="sort-column remarks">备注</th>
 				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
-		<c:forEach items="${page.list}" var="specification">
-			<tr>
-				<td> <input type="checkbox" id="${specification.id}" class="i-checks"></td>
-				<td><a  href="#" onclick="openDialogView('查看商品规格', '${ctx}/product/specification/form?id=${specification.id}','800px', '500px')">
-					${specification.name}
-				</a></td>
-				<td>
-					<fmt:formatDate value="${specification.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
-					${specification.remarks}
-				</td>
-				<td>
-					<shiro:hasPermission name="product:specification:view">
-						<a href="#" onclick="openDialogView('查看商品规格', '${ctx}/product/specification/form?id=${specification.id}','800px', '500px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
-					</shiro:hasPermission>
-					<shiro:hasPermission name="product:specification:edit">
-    					<a href="#" onclick="openDialog('修改商品规格', '${ctx}/product/specification/form?id=${specification.id}','800px', '500px')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
-    				</shiro:hasPermission>
-    				<shiro:hasPermission name="product:specification:del">
-						<a href="${ctx}/product/specification/delete?id=${specification.id}" onclick="return confirmx('确认要删除该商品规格吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
-					</shiro:hasPermission>
-				</td>
-			</tr>
-		</c:forEach>
+			<c:choose>
+				<c:when test="${not empty page and not empty page.list}">
+					<c:forEach items="${page.list}" var="specification">
+						<tr>
+							<td> <input type="checkbox" id="${specification.id}" class="i-checks"></td>
+							<td><a  href="#" onclick="openDialogView('查看商品规格', '${ctx}/productManager/specification/form?id=${specification.id}','800px', '500px')">
+								${specification.name}
+							</a></td>
+							<td>
+								<span class="overflow-ellipsis-300" title="${fns:specificationShow(specification.data)}">${fns:specificationShow(specification.data)}</span>
+							</td>
+							<td>
+								<fmt:formatDate value="${specification.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+							</td>
+							<td>
+								${specification.remarks}
+							</td>
+							<td>
+								<shiro:hasPermission name="product:specification:view">
+									<a href="#" onclick="openDialogView('查看商品规格', '${ctx}/productManager/specification/form?id=${specification.id}','800px', '500px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+								</shiro:hasPermission>
+								<shiro:hasPermission name="product:specification:edit">
+			    					<a href="#" onclick="openDialog('修改商品规格', '${ctx}/productManager/specification/form?id=${specification.id}','800px', '500px')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
+			    				</shiro:hasPermission>
+			    				<shiro:hasPermission name="product:specification:del">
+									<a href="${ctx}/productManager/specification/delete?id=${specification.id}" onclick="return confirmx('确认要删除该商品规格吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
+								</shiro:hasPermission>
+							</td>
+						</tr>
+					</c:forEach>
+				</c:when>
+				<c:otherwise>
+					<tr>
+						<td colspan="6" align="center">暂无多规格信息</td>
+					</tr>
+				</c:otherwise>
+			</c:choose>
 		</tbody>
 	</table>
 	

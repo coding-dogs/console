@@ -77,7 +77,7 @@
 			    			<c:if test="${not empty product && not empty product.minimumOrderNumber }">
 			    				<li>
 				    				<span>起订量：</span>
-				    				<span>${product.minimumOrderNumber}</span>
+				    				<span>${product.minimumOrderNumber}${product.unitName}</span>
 				    			</li>
 			    			</c:if>
 			    			<c:if test="${not empty product && not empty product.productCategoryName }">

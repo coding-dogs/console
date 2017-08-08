@@ -36,7 +36,10 @@
 							<table:sortColumn id="orderBy" name="orderBy"
 								value="${page.orderBy}" callback="sortOrRefresh();" />
 							<!-- 支持排序 -->
-							<div class="form-group"></div>
+							<div class="form-group">
+								<span>单位名称：</span>
+								<form:input path="unit" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
+							 </div>	
 						</form:form>
 						<br />
 					</div>
@@ -100,34 +103,44 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach items="${page.list}" var="unit">
-							<tr>
-								<td><input type="checkbox" id="${unit.id}" class="i-checks"></td>
-								<td>${unit.unit}</td>
-								<td><a href="#"
-									onclick="openDialogView('查看商品类目单位', '${ctx}/productManager/unit/form?id=${unit.id}','800px', '500px')">
-										<fmt:formatDate value="${unit.updateDate}"
-											pattern="yyyy-MM-dd HH:mm:ss" />
-								</a></td>
-								<td>${unit.remarks}</td>
-								<td><shiro:hasPermission name="product:unit:view">
-										<a href="#"
-											onclick="openDialogView('查看商品类目单位', '${ctx}/productManager/unit/form?id=${unit.id}','800px', '500px')"
-											class="btn btn-info btn-xs"><i class="fa fa-search-plus"></i>
-											查看</a>
-									</shiro:hasPermission> <shiro:hasPermission name="product:unit:edit">
-										<a href="#"
-											onclick="openDialog('修改商品类目单位', '${ctx}/productManager/unit/form?id=${unit.id}','800px', '500px')"
-											class="btn btn-success btn-xs"><i class="fa fa-edit"></i>
-											修改</a>
-									</shiro:hasPermission> <shiro:hasPermission name="product:unit:del">
-										<a href="${ctx}/productManager/unit/delete?id=${unit.id}"
-											onclick="return confirmx('确认要删除该商品类目单位吗？', this.href)"
-											class="btn btn-danger btn-xs"><i class="fa fa-trash"></i>
-											删除</a>
-									</shiro:hasPermission></td>
-							</tr>
-						</c:forEach>
+						<c:choose>
+							<c:when test="${not empty page and not empty page.list}">
+								<c:forEach items="${page.list}" var="unit">
+									<tr>
+										<td><input type="checkbox" id="${unit.id}" class="i-checks"></td>
+										<td>${unit.unit}</td>
+										<td><a href="#"
+											onclick="openDialogView('查看商品类目单位', '${ctx}/productManager/unit/form?id=${unit.id}','800px', '500px')">
+												<fmt:formatDate value="${unit.updateDate}"
+													pattern="yyyy-MM-dd HH:mm:ss" />
+										</a></td>
+										<td>${unit.remarks}</td>
+										<td><shiro:hasPermission name="product:unit:view">
+												<a href="#"
+													onclick="openDialogView('查看商品类目单位', '${ctx}/productManager/unit/form?id=${unit.id}','800px', '500px')"
+													class="btn btn-info btn-xs"><i class="fa fa-search-plus"></i>
+													查看</a>
+											</shiro:hasPermission> <shiro:hasPermission name="product:unit:edit">
+												<a href="#"
+													onclick="openDialog('修改商品类目单位', '${ctx}/productManager/unit/form?id=${unit.id}','800px', '500px')"
+													class="btn btn-success btn-xs"><i class="fa fa-edit"></i>
+													修改</a>
+											</shiro:hasPermission> <shiro:hasPermission name="product:unit:del">
+												<a href="${ctx}/productManager/unit/delete?id=${unit.id}"
+													onclick="return confirmx('确认要删除该商品类目单位吗？', this.href)"
+													class="btn btn-danger btn-xs"><i class="fa fa-trash"></i>
+													删除</a>
+											</shiro:hasPermission></td>
+									</tr>
+								</c:forEach>
+							</c:when>
+							<c:otherwise>
+								<tr>
+									<td colspan="5" align="center">暂无单位信息</td>
+								</tr>
+							</c:otherwise>
+						</c:choose>
+						
 					</tbody>
 				</table>
 

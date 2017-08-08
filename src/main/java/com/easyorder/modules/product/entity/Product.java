@@ -49,6 +49,8 @@ public class Product extends DataEntity<Product> {
 	
 	private String[] pictures;
 	
+	private String specJson;
+	
 	public Product() {
 		super();
 	}
@@ -310,6 +312,14 @@ public class Product extends DataEntity<Product> {
 
 	public void setUnitName(String unitName) {
 		this.unitName = unitName;
+	}
+
+	public String getSpecJson() {
+		return specJson;
+	}
+
+	public void setSpecJson(String specJson) {
+		this.specJson = specJson;
 	}
 	
 }

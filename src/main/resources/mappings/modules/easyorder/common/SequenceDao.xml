@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.common.dao.SequenceDao">
+    
+	<sql id="contactColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.increment AS "increment",
+		a.start_value AS "startValue",
+		a.min_value AS "minValue",
+		a.max_value AS "maxValue",
+		a.current_value AS "currentValue",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<select id="getSeqByType" resultType="java.lang.Long">
+		select getSeqByType(#{type}) from dual;
+	</select>
+	
+</mapper>

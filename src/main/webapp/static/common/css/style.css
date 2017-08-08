@@ -8017,6 +8017,7 @@ body.skin-3 {
 .easy-form-ichecks {
 	height: 34px;
 	line-height: 34px;
+	margin-right: 5px;
 }
 
 .easy-form-ichecks span,
@@ -8098,5 +8099,25 @@ label {
 
 .paddingT-20 {
 	padding-top: 20px;
+}
+
+.fs-18 {
+	font-size: 18px;
+}
+
+.left-square-3 {
+	border-radius: 0 3px 3px 0 !important;
+}
+
+.right-square-3 {
+	border-radius: 3px 0 0 3px !important;
+}
+
+.overflow-ellipsis-300 {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: 300px;
+	white-space: nowrap;
+	display: inline-block;
 }
 

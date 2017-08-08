@@ -11,7 +11,9 @@
 		moreCallback : function() {		// 点击更多选项时的回调函数
 
 		},
-		targetLevel: 3,		// 指定树形菜单可选择的层级【暂只支持指定一个层级】，type为tree时生效
+		required: false,
+		disabled: [],
+		targetLevel: 2,		// 指定树形菜单可选择的层级【暂只支持指定一个层级】，type为tree时生效，从0开始
 		defaults: {
 			value : '',
 			text : '请选择',
@@ -21,7 +23,10 @@
 		zIndex : 9999999,	
 		maxHeight : 300,
 		width : null,
-		height : null
+		height : null,
+		selectedCallback: function(selector) {
+			
+		}
 	};
 
 	function EasySelector(element, options) {
@@ -48,9 +53,9 @@
 
 	EasySelector.prototype._init = function() {
 		var that = this;
-		this.text = that.$element.data('text');
-		this.value = that.$element.data('value');
-		this.required = that.$element.data('required') || false;
+		this.text = that.$element.attr('data-text') || that.options.defaults.text;
+		this.value = that.$element.attr('data-value');
+		this.required = (that.$element.attr('data-required') == 'true') || that.options.required;
 
 		if(this.options.type === 'tree') {
 			var treeData = this.generateTreeData();
@@ -186,7 +191,7 @@
 				}
 			} else {
 				if(that.$element.position().top >= menuHeight) {
-					$dropdownMenu.css({'top' : -(menuHeight + 4) + 'px'});
+					$dropdownMenu.css({'top' : - (menuHeight + 4) + 'px'});
 					if($caret.length > 0) {
 						$caret.removeClass('caret-bottom').addClass('caret-top');
 					}
@@ -226,7 +231,7 @@
 	EasySelector.prototype.setOptions = function(key, value) {
 		var that = this;
 		if(value) {
-			this.options[key] = value;
+			that.options[key] = value;
 			if(key === 'items') {
 				if(that.options.type === 'tree') {
 					var treeData = that.generateTreeData();
@@ -235,7 +240,15 @@
 				that.renderItems();
 			}
 		}
-		return this.options[key];
+		return that.options[key];
+	}
+	
+	EasySelector.prototype.getOptions = function(key) {
+		var that = this;
+		if(!key) {
+			return null;
+		}
+		return that.options[key];
 	}
 
 	EasySelector.prototype.drawItem = function(item, pid, level, hasArrow) {
@@ -331,8 +344,15 @@
 			});
 		}
 		$ul.find('li').hover(function(e) {
+			var _this = $(this);
+			var dataId = _this.attr('data-id');
+			if(that.isDisabled(dataId)) {
+				_this.addClass('disabled');
+				return;
+			}
+			_this.removeClass('disabled');
 			if(!$(this).hasClass('selected')) {
-				if(that.options.type === 'tree' && $(this).data('role') != 'default' && ($(this).attr('data-level') == that.options.targetLevel - 1)) {
+				if(that.options.type === 'tree' && ($(this).data('role') == 'default' || ($(this).attr('data-level') == that.options.targetLevel))) {
 					$(this).addClass('hover');
 				} else if(that.options.type !== 'tree'){ 
 					$(this).addClass('hover');
@@ -347,7 +367,13 @@
 
 		$ul.find('li').on('click', function(e) {
 			e.stopPropagation();
-			
+			var _this = $(this);
+			var dataId = _this.attr('data-id');
+			if(that.isDisabled(dataId)) {
+				_this.addClass('disabled');
+				return;
+			}
+			_this.removeClass('disabled');
 			var $target = $(e.target);
 			var isArrow = $target.hasClass('easy-arrow');
 			if(isArrow) {
@@ -362,7 +388,7 @@
 				return;
 			}
 			
-			if(that.options.type === 'tree' && $(this).data('role') != 'default' && ($(this).attr('data-level') != that.options.targetLevel - 1)) {
+			if(that.options.type === 'tree' && $(this).data('role') != 'default' && ($(this).attr('data-level') != that.options.targetLevel)) {
 				return;
 			}
 
@@ -382,6 +408,7 @@
 			that.$element.siblings('.error').remove();
 			that.$element.removeClass('error');
 			that.close();
+			that.options.selectedCallback(that.$element);
 		});
 	}
 
@@ -426,14 +453,12 @@
 		var items = that.options.items;
 		
 		var $valueLi = that.$element.find('.menu-wrapper ul li[data-id="' + value + '"]');
-		if($valueLi.length > 0 && that.options.targetLevel) {
+		if($valueLi.length > 0 && that.options.type === 'tree' && that.options.targetLevel) {
 			var valueLevel = $valueLi.attr('data-level');
-			if(valueLevel != that.targetLevel) {
+			if(valueLevel != that.options.targetLevel) {
 				return;
 			}
 		}
-		
-		
 		
 		if(items.length > 0) {
 			$.each(items, function(index, item) {
@@ -443,7 +468,8 @@
 					that.$element.find('.value-area').find('input').val(item.value);
 					that.$element.find('.value-area').find('span').html(item.text);
 					that.$element.find('.menu-wrapper ul li').removeClass('selected');
-					that.$element.find('.menu-wrapper ul li').eq(index).addClass('selected');
+					var $selectedLi = that.$element.find('.menu-wrapper ul li[data-id="' + value +'"]');
+					$selectedLi.addClass('selected');
 					return false;
 				}
 				if(item.children && item.children.length > 0){
@@ -458,6 +484,22 @@
 		}
 	}
 	
+	EasySelector.prototype.isDisabled = function(id) {
+		var that = this;
+		var isDisabled = false;
+		var disabled = that.options.disabled;
+		if(!disabled || disabled.length == 0) {
+			return isDisabled;
+		}
+		$.each(disabled, function(index, item) {
+			if(item == id) {
+				isDisabled = true;
+				return false;
+			}
+		});
+		return isDisabled;
+	}
+	
 	EasySelector.prototype._recurseSelect = function(items, value) {
 		var that = this,
 			result = false;
@@ -469,7 +511,8 @@
 					that.$element.find('.value-area').find('input').val(item.value);
 					that.$element.find('.value-area').find('span').html(item.text);
 					that.$element.find('.menu-wrapper ul li').removeClass('selected');
-					that.$element.find('.menu-wrapper ul li').eq(index).addClass('selected');
+					var $selectedLi = that.$element.find('.menu-wrapper ul li[data-id="' + value +'"]');
+					$selectedLi.addClass('selected');
 					result = true;
 					return false;
 				} else if(item.children && item.children.length > 0){

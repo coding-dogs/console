@@ -23,7 +23,7 @@
 .product-detail-top-right {
 	float:left;
 	padding: 15px 30px;
-	width: 560px;
+	width: 550px;
 	height: auto;
 	
 }
@@ -45,7 +45,7 @@ ul.product-price:after {
 }
 
 ul.product-base-info li {
-	width: 250px;
+	width: 242px;
 	font-size: 14px;
 	line-height: 24px;
 	float: left;
@@ -58,7 +58,7 @@ ul.product-price {
 
 ul.product-price li {
 	float: left;
-	width: 250px;
+	width: 242px;
 	font-size: 14px;
 	line-height: 24px;
 }
@@ -78,6 +78,50 @@ ul.product-price li {
 	overflow: auto;
 }
 
+
+
+.spec-selector {
+	margin-bottom: 10px;
+	padding: 0 15px;
+	width: 100%;
+}
+
+.spec-selector * {
+	box-sizing: border-box;
+}
+
+.spec-selector .spec-selector-header {
+	padding: 8px 0;
+	background: #f5f5f6;
+	height: 48px;
+	width: 100%;
+}
+
+.spec-selector .spec-selector-body {
+	padding: 10px 0;
+	background: #fbfbfb;
+	width: 100%;
+}
+
+.spec-selector-remove {
+	padding-right: 8px;
+	line-height: 40px;
+}
+
+.spec-selector-remove .fa {
+	color: #666;
+}
+
+.spec-sub-add {
+	padding: 0 15px;
+	margin-bottom: 10px;
+	width: 100%;
+}
+
+.spec-sub-check {
+	padding: 0 15px;
+	width: 100%;
+}
 
 
 

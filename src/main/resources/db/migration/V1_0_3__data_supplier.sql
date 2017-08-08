@@ -20,17 +20,6 @@ VALUES
 	('6a7c017f244a4b598e09a99bc4eec0dc', '', '供应商管理员', 'GYS_ADMIN', 'assignment', '8', '1', '1', '1', '2017-05-07 15:21:42', '1', '2017-05-07 15:33:46', '', '0');
 
 
--- 配置供应商管理员菜单
-INSERT INTO `sys_role_menu` (`role_id`, `menu_id`)
-VALUES
-	('6a7c017f244a4b598e09a99bc4eec0dc', '1'),
-	('6a7c017f244a4b598e09a99bc4eec0dc', '27'),
-	('6a7c017f244a4b598e09a99bc4eec0dc', '29'),
-	('6a7c017f244a4b598e09a99bc4eec0dc', '56e274e0ec1c41298e19ab46cf4e001f'),
-	('6a7c017f244a4b598e09a99bc4eec0dc', 'e3b80fae59ab4b4099d8349ecaf8c4dc'),
-	('6a7c017f244a4b598e09a99bc4eec0dc', 'e4e64e24aa134deaa9d69c3b9495c997');
-
-
 -- 添加供应商管理员用户
 INSERT INTO `sys_user` (`id`, `company_id`, `office_id`, `login_name`, `password`, `no`, `name`, `email`, `phone`, `mobile`, `user_type`, `photo`, `login_ip`, `login_date`, `login_flag`, `create_by`, `create_date`, `update_by`, `update_date`, `remarks`, `del_flag`, `qrcode`, `sign`)
 VALUES
