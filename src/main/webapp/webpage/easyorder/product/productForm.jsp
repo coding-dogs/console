@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="${ctxStatic}/easy-selector/easy-selector.css">
 <link rel="stylesheet" href="${ctxStatic}/easy-uploader/easy-uploader.css">
 <link rel="stylesheet" href="${ctxStatic}/easy-tabs/easy-tabs.css">
+<link rel="stylesheet" href="${ctxStatic}/easyorder/css/product.css">
 <style type="text/css">
 	.ibox-content {
 		padding: 15px 0;
@@ -21,7 +22,6 @@
 	var descForm;
 	function doSubmit() {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
 		if (validateForm.form()) {
-			$('#description').val(descEditor.getContent());
 			$("#inputForm").submit();
 			return true;
 		}
@@ -43,6 +43,7 @@
 			},
 			submitHandler : function(form) {
 				loading('正在提交，请稍等...');
+				$('#specJson').val(JSON.stringify(getSpec4Json()));
 				form.submit();
 			},
 			errorContainer : "#messageBox",
@@ -153,46 +154,52 @@
 								<div class="col-sm-4">
 									<input type="text" id="name" name="name" value="${product.name}" placeholder="请输入商品名称" maxlength="50" class="form-control required"/>
 								</div>
+								<label for="productNo" class="col-sm-2 control-label"><em class="required-tag">* </em>商品编号</label>
+								<div class="col-sm-4">
+									<input type="text" id="productNo" name="productNo" value="${product.productNo}" placeholder="请输入商品编号" maxlength="50" class="form-control required" readonly="readonly"/>
+								</div>
+							</div>
+							<div class="form-group">
 								<label for="title" class="col-sm-2 control-label"><em class="required-tag">* </em>商品标题</label>
 								<div class="col-sm-4">
 									<input type="text" id="title" name="title" value="${product.title}" placeholder="请输入商品标题" maxlength="100" class="form-control required"/>
 								</div>
-							</div>
-							<div class="form-group">
 								<label for="modelNumber" class="col-sm-2 control-label"><em class="required-tag">* </em>商品型号</label>
 								<div class="col-sm-4">
 									<input type="text" id="modelNumber" name="modelNumber" value="${product.modelNumber}" placeholder="请输入商品型号" maxlength="100" class="form-control required"/>
 								</div>
+							</div>
+							<div class="form-group">
 								<label class="col-sm-2 control-label"><em class="required-tag">* </em>商品分类</label>
 								<div class="col-sm-4">
 									<div id="productCategory" data-text="请选择商品分类" data-required="true" data-value="${product.productCategoryId}" data-name='productCategoryId'></div>
 								</div>
-							</div>
-							<div class="form-group">
 								<label class="col-sm-2 control-label">商品品牌</label>
 								<div class="col-sm-4">
 									<div id="productBrand" data-text="请选择商品品牌" data-required="false" data-value="${product.productBrandId}" data-name='productBrandId'></div>
 								</div>
+							</div>
+							<div class="form-group">
 								<label for="key" class="col-sm-2 control-label">商品关键字</label>
 								<div class="col-sm-4">
 									<input type="text" id="key" name="key" maxlength="300" placeholder="请输入商品搜索关键字，多个以空格隔开" value="${product.key}" class="form-control" />
 								</div>
-							</div>
-							<div class="form-group">
 								<label for="minimumOrderNumber" class="col-sm-2 control-label"><em class="required-tag">* </em>起订量</label>
 								<div class="col-sm-4">
 									<input type="text" id="minimumOrderNumber" name="minimumOrderNumber" value="${product.minimumOrderNumber}" maxlength="50" placeholder="请输入商品起订量" class="form-control required"/>
 								</div>
+							</div>
+							<div class="form-group">
 								<label for="barCode" class="col-sm-2 control-label">商品条形码</label>
 								<div class="col-sm-4">
 									<input type="text" id="barCode" name="barCode" maxlength="50" placeholder="请输入商品包装上的条形码" value="${product.barCode}" class="form-control" />
 								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-2 control-label">上架下架</label>
+								<label class="col-sm-2 control-label"><em class="required-tag">* </em>上架下架</label>
 								<div class="col-sm-4 easy-form-ichecks">
 									<form:radiobuttons path="mtProductUpdownCd" items="${fns:getDictList('mtProductUpdownCd')}" itemLabel="label" itemValue="value" class="required i-checks"/>
 								</div>
+							</div>
+							<div class="form-group">
 								<label for="remarks" class="col-sm-2 control-label">备注</label>
 								<div class="col-sm-4">
 									<textarea id="remarks" name="remarks" maxlength="300" class="form-control">${product.remarks}</textarea>
@@ -201,6 +208,7 @@
 							<!-- 商品基本信息 end -->
 						</div>
 						
+						<!-- start 商品单位 -->
 						<div class="easy-order product-price-info">
 							<h2>单位</h2>
 							<div class="form-group">
@@ -210,6 +218,28 @@
 								</div>
 							</div>
 						</div>
+						<!-- 商品单位 end -->
+						
+						<!-- start 商品多规格开启与设置 -->
+						<div class="easy-order product-price-info" id="variousSpecManager">
+							<h2>多规格</h2>
+							<input type="hidden" name="specJson" id="specJson">
+							<div class="form-group">
+								<!-- 多规格开启及关闭 -->
+								<div class="col-sm-2 control-label">
+									<label><input id="openMultiple" name="openVariousSepc" class="form-control i-checks openVariousSepc" type="checkbox"/> 开启多规格</label>
+								</div>
+								<!-- <div id="spec-opera-control">
+									<a id="addSpec" href="javascript:void(0);" class="easy-form-span"><i class="fa fa-plus"></i> 新增多规格</a>
+									<a id="specManager" href="javascript:void(0);" class="easy-form-span"><i class="fa fa-gears"></i> 管理多规格</a>
+								</div> -->
+							</div>
+							<!-- 多规格设置区域 -->
+							<div class="variousSpec form-group" id="variousSpecArea">
+
+							</div>
+						</div>
+						<!-- 商品多规格开启与设置 end -->
 						
 						<div class="easy-order product-price-info">
 							<h2>价格</h2>
@@ -445,15 +475,18 @@
 			targetElement: '#ibox-content'			// 页签元素们的父元素
 		});
 	
+		// UEditor编辑器使用
 		var descEditor = UE.getEditor('desc');
 		UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
 		UE.Editor.prototype.getActionUrl = function(action) {
+			// 调用后台用于UEditor上传图片的方法
 			if(action == 'uploadimage') {
 				return "${ctx}/upload/image?utype=product"
 			} else {
                  return this._bkGetActionUrl.call(this, action);
             }
 		}
+		// 处理内容长度问题
 		UE.Editor.prototype.getContentLength =function() {
 		    return this.getContent().length;
 		}
@@ -519,6 +552,11 @@
 		$("#unit").easySelector({
 			maxHeight : 250,
 			hasMore: true,
+			defaults: {
+				value : '',
+				text : '请选择商品单位',
+				selected: true
+			},
 			moreText : "<span style='text-weight:bold'> + </span> 新增单位",
 			items: units,
 			moreCallback: function() {
@@ -557,6 +595,11 @@
 			type : 'tree',
 			maxHeight : 250,
 			hasMore : true,
+			defaults: {
+				value : '',
+				text : '请选择商品分类',
+				selected: true
+			},
 			moreText : "<span style='text-weight:bold'> + </span> 新增商品分类",
 			items : items,
 			moreCallback : function() {
@@ -622,6 +665,11 @@
 		$("#productBrand").easySelector({
 			maxHeight : 250,
 			hasMore : true,
+			defaults: {
+				value : '',
+				text : '请选择商品品牌',
+				selected: true
+			},
 			moreText : "<span style='text-weight:bold'> + </span> 新增商品品牌",
 			items : items,
 			moreCallback : function() {
@@ -658,6 +706,164 @@
 				});
 			}
 		});
+		
+		
+		
+		function getSpecifications() {
+			var items = [];
+			$.ajax({
+				url: "${ctx}/productManager/specification/async/list",
+				async: false,
+				type: "GET",
+				dataType: "json",
+				success: function(data) {
+					if(SUCCESS_CODE == data.code && data.result && data.result.length != 0){
+						$.each(data.result, function(index, item) {
+							var _item = {};
+							_item.text = item.name;
+							_item.value = item.id;
+							_item.data = item.data;
+							items.push(_item);
+						});
+					}
+				}
+			});
+			return items;
+		};
+		
+		var specItems = getSpecifications();
+		
+		// 构建多规格选择器
+		function buildEasySelector(ele) {
+			$(ele).easySelector({
+				maxHeight : 250,
+				hasMore : true,
+				moreText : "<span style='text-weight:bold'> + </span> 新增多规格",
+				defaults: {
+					value : '',
+					text : '请选择商品多规格',
+					selected: true
+				},
+				items : specItems,
+				moreCallback : function() {
+					openDialogWithCallback('新增多规格', '${ctx}/productManager/specification/form','800px', '500px', null, function(index, layero) {
+						var body = top.layer.getChildFrame('body', index);
+						var inputForm = body.find("#inputForm");
+						var name = inputForm.find("#name").val();
+						var no = inputForm.find("#no").val();
+						var data = inputForm.find("#data").val();
+						// 保存多规格
+						$.ajax({
+							url : "${ctx}/productManager/specification/async/save",
+							type : "POST",
+							data : {"name" : name, "no" : no, "data" : data},
+							dataType : "JSON",
+							success : function(data) {
+								if(SUCCESS_CODE === data.code) {
+									// 更新选择项
+									$("#specGroupSelector").easySelector("setOptions", "items", getProductBrands());
+									// 选择当前值
+									$("#specGroupSelector").easySelector("select", data.result);
+								} else{
+									top.layer.alert(data.msg);
+								}
+								top.layer.close(index);
+							},
+							error : function() {
+								top.layer.alert("新增多规格失败");
+								top.layer.close(index);
+							}
+						});
+						
+					});
+				},
+				selectedCallback: function($selector) {
+					var $selected = $selector.find('.menu-wrapper ul li.selected');
+					if($selected.length == 0) {
+						return;
+					}
+					var $ss = $selector.parents('.spec-selector');
+					var $checks = $ss.find('.spec-sub-check');
+					if($checks.length != 0) {
+						$checks.html('');
+					}
+					var id = $selected.attr('data-id');
+					var sibs = $ss.siblings();
+					$selector.attr('data-no', '');
+					$.ajax({
+						url: "${ctx}/productManager/specification/detail",
+						data: {id: id},
+						type: "GET",
+						dataType: "json",
+						success: function(data) {
+							if(SUCCESS_CODE == data.code && data.result) {
+								$selector.attr('data-no', data.result.no);
+								var _data = JSON.parse(data.result.data);
+								$.each(_data.children, function(index, item) {
+									var $label = $('<label class="easy-form-span">');
+									var $icheck = $('<input class="form-control i-checks" type="checkbox"/>');
+									$label.appendTo($checks);
+									$icheck.appendTo($label);
+									$label.append(' ' + item.name);
+									
+									$icheck.attr('data-no', item.no);
+								});
+								var $ichecks = $checks.find('.i-checks');
+								if($ichecks.length > 0){
+									$ichecks.iCheck({
+							            checkboxClass: 'icheckbox_flat-green',
+							            radioClass: 'iradio_flat-green',
+							        });
+								}
+								$ichecks.on('ifChanged', function(e) {
+									var $specSelector = $('.spec-selector');
+									if($specSelector.length == 0) {
+										return;
+									}
+									var item1;
+									var item2;
+									$.each($specSelector, function(index, ss) {
+										var $ss = $(ss);
+										var no = $ss.find('.easy-selector').attr('data-no');
+										var name = $ss.find('.easy-selector').find('span[role="text-container"]').text();
+										var item = {name: name, no: no};
+										item.children = [];
+										var $ichecks = $ss.find('.i-checks');
+										if($ichecks.length > 0) {
+											$.each($ichecks, function(index, icheck) {
+												var $icheck = $(icheck);
+												if($icheck.is(':checked')) {
+													var dataNo = $icheck.attr('data-no');
+													var dataName = $icheck.parents('label').text();
+													item.children.push({name: dataName, no: dataNo});
+												}
+											});
+										}
+										if(index == 0) {
+											item1 = item;
+										} else if(index == 1) {
+											item2 = item;
+										}
+									});
+									createSpecTable(item1, item2);
+								});
+								
+								if(sibs.length != 0) {
+									$.each(sibs, function(index, sib) {
+										var $sib = $(sib);
+										var $select = $sib.find('.easy-selector');
+										var disabled = [];
+										disabled.push(id);
+										$select.easySelector('setOptions', 'disabled', disabled);
+									});
+								}
+							}
+						}
+					});
+				}
+			});
+		}
+		
 		
 		// 后台获取图片信息，用于回显
 		var pictureDatas = [];
@@ -725,6 +931,216 @@
 				}
 			}
 		});
+		
+		/* <div class="variousSpec form-group" id="variousSpecArea">
+			<div class="spec-selector">
+				<div class="spec-selector-header clearfix">
+					<div class="col-sm-4 pull-left">
+						<!-- 规格组选择器 -->
+						<div id="specGroupSelector" data-text="请选择规格组"></div>
+					</div>
+					<div class="pull-right spec-selector-remove">
+						<a href="javascript:void(0);"><i class="fa fa-times fs-18"></i></a>
+					</div>
+				</div>
+				<div class="spec-selector-body">
+					<div class="spec-sub-add clearfix">
+						<input type="text" class="form-control pull-left right-square-3" placeholder="请输入要新增的子规格名称，多个以空格分隔" style="width: 50%;"/>
+						<button type="button" class="btn btn-primary pull-left left-square-3">新增子规格</button>
+					</div>
+					<div class="spec-sub-check easy-form-ichecks">
+						<input class="form-control i-checks" type="checkbox"/> <span class="easy-form-span">全选</span>
+						<input class="form-control i-checks" type="checkbox"/> <span class="easy-form-span">青柠味</span>
+						<input class="form-control i-checks" type="checkbox"/> <span class="easy-form-span">芒果味</span>
+						<input class="form-control i-checks" type="checkbox"/> <span class="easy-form-span">香橙味</span>
+						<input class="form-control i-checks" type="checkbox"/> <span class="easy-form-span">西瓜味</span>
+					</div>
+				</div>
+			</div>
+	
+		</div> */
+		function buildSpecSelector(data) {
+			var $ss = $('<div class="spec-selector">');
+			var $ssHeader = $('<div class="spec-selector-header clearfix">');
+			var $ssBody = $('<div class="spec-selector-body">');
+			
+			$ssHeader.appendTo($ss);
+			$ssBody.appendTo($ss);
+			
+			var $ssHeaderLeft = $('<div class="col-sm-4 pull-left">');
+			var $ssHeaderRight = $('<div class="pull-right spec-selector-remove">');
+			$ssHeaderLeft.appendTo($ssHeader);
+			$ssHeaderRight.appendTo($ssHeader);
+			
+			var $sgs = $('<div class="specGroupSelector" data-text="请选择多规格"></div>');
+			$sgs.appendTo($ssHeaderLeft);
+			buildEasySelector($sgs);
+			
+			/* var $remove = $('<a href="javascript:void(0);"><i class="fa fa-times fs-18"></i></a>');
+			$remove.appendTo($ssHeaderRight);
+			$remove.on('click', function(e) {
+				$ss.remove();
+			}); */
+			
+			var $ssc = $('<div class="spec-sub-check easy-form-ichecks">');
+			$ssc.appendTo($ssBody);
+			$ss.appendTo($('#variousSpecArea'));
+		}
+		
+		// 开启多规格
+		$('#openMultiple').on('ifChecked', function(e) {
+			var $selectors = $('#variousSpecArea').find('.spec-selector');
+			if($selectors.length != 0) {
+				$.each($selectors, function(index, selector) {
+					$(selector).show();
+				});
+				return;
+			}
+			buildSpecSelector(specItems);
+			buildSpecSelector(specItems);
+		});
+		$('#openMultiple').on('ifUnchecked', function(e) {
+			var $selectors = $('#variousSpecArea').find('.spec-selector');
+			if($selectors.length != 0) {
+				$.each($selectors, function(index, selector) {
+					$(selector).hide();
+				});
+				return;
+			}
+		});
+		
+		
+		function createSpecTable(firstItem, secondItem) {
+			var $manager = $('#variousSpecManager');
+			if($manager.length == 0) {
+				return;
+			}
+			
+			if(firstItem.children && firstItem.children.length == 0 && secondItem.children && secondItem.children.length > 0) {
+				var tempItem = firstItem;
+				firstItem = secondItem;
+				secondItem = tempItem;
+			}
+			
+			if($manager.find('.spec-table').length > 0) {
+				$manager.find('.spec-table').remove();
+			}
+			var $table = $('<table class="spec-table table table-striped table-bordered table-hover table-condensed dataTables-example dataTable">');
+			var $headerTr = $('<tr class="spec-theader">');
+			
+			var $f = $('<th>');
+			$f.text(firstItem.name);
+			$f.appendTo($headerTr);
+			
+			var hasSecond = secondItem.children && secondItem.children.length > 0;
+			
+			if(hasSecond) {
+				var $s = $('<th>');
+				$s.text(secondItem.name);
+				$s.appendTo($headerTr);
+			}
+			
+			$headerTr.appendTo($table);
+			
+			var $no = $('<th>');
+			$no.text('规格编号');
+			$no.appendTo($headerTr);
+			
+			var $opera = $('<th>');
+			$opera.text('操作');
+			$opera.appendTo($headerTr);
+			$table.appendTo($manager);
+			
+			$.each(firstItem.children, function(index, fi) {
+				var $tbodyTr = $('<tr class="spec-tbody">');
+				var $fv = $('<td>');
+				
+				if(hasSecond) {
+					$.each(secondItem.children, function(index2, si) {
+						var $tbodyTr = $('<tr class="spec-tbody">');
+						var $fv = $('<td>');
+						$fv.text(fi.name);
+						$fv.appendTo($tbodyTr);
+						var $sv = $('<td>');
+						$sv.text(si.name);
+						$sv.appendTo($tbodyTr);
+						var $nov = $('<td>');
+						var $novInput = $('<input type="text" class="form-control required">');
+						
+						$novInput.val('${product.productNo}' + fi.no + si.no);
+						$novInput.appendTo($nov);
+						$nov.appendTo($tbodyTr);
+						
+						var $ope = $('<td class="spec-opera">');
+						var $remove = $('<a href="javascript:void(0);">');
+						var $removeI = $('<i class="fa fa-times">');
+						$removeI.appendTo($remove);
+						$remove.appendTo($ope);
+						$ope.appendTo($tbodyTr);
+						
+						$remove.on('click', function(e) {
+							$tbodyTr.remove();
+						});
+						$tbodyTr.appendTo($table);
+					});
+				} else {
+					$fv.text(fi.name);
+					$fv.appendTo($tbodyTr);
+					var $nov = $('<td>');
+					var $novInput = $('<input type="text" class="form-control required">');
+					$novInput.val('${product.productNo}' + fi.no);
+					$novInput.appendTo($nov);
+					$nov.appendTo($tbodyTr);
+					
+					var $ope = $('<td class="spec-opera">');
+					var $remove = $('<a href="javascript:void(0);">');
+					var $removeI = $('<i class="fa fa-times">');
+					$removeI.appendTo($remove);
+					$remove.append($ope);
+					$ope.appendTo($tbodyTr);
+					
+					$remove.on('click', function(e) {
+						$tbodyTr.remove();
+					});
+					$tbodyTr.appendTo($table);
+				}
+				
+				
+			});
+		}
+		
+		function getSpec4Json() {
+			var $specTable = $('.spec-table');
+			var isOpen = $('#openMultiple').is(':checked');
+			var specData = null;
+			if($specTable.length == 0 || !isOpen) {
+				return specData;
+			}
+			var $specTbody = $specTable.find('.spec-tbody');
+			if($specTbody.length == 0) {
+				return specData;
+			}
+			specData = [];
+			$.each($specTbody, function(index, item) {
+				var $tr = $(item);
+				var $tds = $tr.find('td');
+				var sdItem = [];
+				$.each($tds, function(idx, td) {
+					var $td = $(td);
+					if($td.hasClass('spec-opera')) {
+						return true;
+					}
+					var value = $td.text() || $td.find('input').val();
+					var key = $specTable.find('.spec-theader th').eq(idx).text();
+					var dataItem = {k: key, v: value};
+					sdItem.push(dataItem);
+				});
+				specData.push(sdItem);
+			});
+			console.log(specData);
+			return specData;
+		}
+		
 	</script>
 </body>
 </html>

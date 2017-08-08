@@ -37,6 +37,9 @@
 			<if test="supplierId != null and supplierId != ''">
 				AND supplier_id = #{supplierId}
 			</if>
+			<if test="unit != null and unit != ''">
+				AND unit = #{unit}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -57,6 +60,9 @@
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="supplierId != null and supplierId != ''">
 				AND supplier_id = #{supplierId}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND unit = #{unit}
 			</if>
 		</where>		
 		<choose>

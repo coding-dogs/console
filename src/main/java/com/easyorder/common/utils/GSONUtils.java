@@ -12,4 +12,12 @@ public class GSONUtils {
 	public static String toJSON(Object object) {
 		return GSON.toJson(object);
 	}
+	
+	public static <T> T fromJson(String json, Class<T> clz) {
+		T t = null;
+		if(GSON != null) {
+			t = GSON.fromJson(json, clz);
+		}
+		return t;
+	} 
 }

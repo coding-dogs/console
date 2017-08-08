@@ -61,6 +61,10 @@
 	padding: 3px 0 3px 10px;
 }
 
+.easy-selector .dropdown-menu ul li.disabled {
+	cursor: not-allowed;
+}
+
 .easy-selector-indent {
 	background-color: transparent;
 	padding: 0 13px;

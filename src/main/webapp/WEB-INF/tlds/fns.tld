@@ -280,4 +280,12 @@
     <example>${fns:getByLoginName(loginName)}</example>  
   </function>
   
+  <function>
+    <description>用于多规格值的展示</description>
+    <name>specificationShow</name>
+    <function-class>com.easyorder.common.utils.StringUtils</function-class>
+    <function-signature>com.easyorder.common.utils.StringUtils specificationShow(java.lang.String)</function-signature>
+    <example>${fns:specificationShow(json)}</example>  
+  </function>
+  
 </taglib>

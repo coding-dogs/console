@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +19,24 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.easyorder.common.beans.EasyResponse;
+import com.easyorder.common.enums.EasyResponseEnums;
+import com.easyorder.modules.product.entity.Specification;
+import com.easyorder.modules.product.service.SpecificationService;
 import com.google.common.collect.Lists;
-import com.jeeplus.common.utils.DateUtils;
-import com.jeeplus.common.utils.MyBeanUtils;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.persistence.Page;
-import com.jeeplus.common.web.BaseController;
+import com.jeeplus.common.utils.DateUtils;
+import com.jeeplus.common.utils.MyBeanUtils;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
-import com.easyorder.modules.product.entity.Specification;
-import com.easyorder.modules.product.service.SpecificationService;
+import com.jeeplus.common.web.BaseController;
+import com.jeeplus.modules.sys.utils.UserUtils;
 
 /**
  * 商品规格Controller
@@ -63,6 +68,13 @@ public class SpecificationController extends BaseController {
 	@RequiresPermissions("product:specification:list")
 	@RequestMapping(value = {"list", ""})
 	public String list(Specification specification, HttpServletRequest request, HttpServletResponse response, Model model) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			addMessage(model, EasyResponseEnums.NOT_FOUND_SUPPLIER.message);
+			return "easyorder/product/specificationList";
+		}
+		specification.setSupplierId(supplierId);
 		Page<Specification> page = specificationService.findPage(new Page<Specification>(request, response), specification); 
 		model.addAttribute("page", page);
 		return "easyorder/product/specificationList";
@@ -74,6 +86,13 @@ public class SpecificationController extends BaseController {
 	@RequiresPermissions(value={"product:specification:view","product:specification:add","product:specification:edit"},logical=Logical.OR)
 	@RequestMapping(value = "form")
 	public String form(Specification specification, Model model) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			addMessage(model, EasyResponseEnums.NOT_FOUND_SUPPLIER.message);
+			return "easyorder/product/specificationForm";
+		}
+		specification.setSupplierId(supplierId);
 		model.addAttribute("specification", specification);
 		return "easyorder/product/specificationForm";
 	}
@@ -84,6 +103,14 @@ public class SpecificationController extends BaseController {
 	@RequiresPermissions(value={"product:specification:add","product:specification:edit"},logical=Logical.OR)
 	@RequestMapping(value = "save")
 	public String save(Specification specification, Model model, RedirectAttributes redirectAttributes) throws Exception{
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			addMessage(redirectAttributes, EasyResponseEnums.NOT_FOUND_SUPPLIER.message);
+			return "redirect:"+Global.getAdminPath()+"/productManager/specification/?repage";
+		}
+		specification.setSupplierId(supplierId);
+		specification.setData(StringEscapeUtils.unescapeHtml4(specification.getData()));
 		if (!beanValidator(model, specification)){
 			return form(specification, model);
 		}
@@ -190,6 +217,27 @@ public class SpecificationController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/productManager/specification/?repage";
 	}
 
+	@RequiresPermissions("product:specification:list")
+	@RequestMapping(value = "async/list", method = RequestMethod.GET)
+	@ResponseBody
+	public EasyResponse<List<Specification>> asyncList(Specification specification) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
+		}
+		specification.setSupplierId(supplierId);
+		List<Specification> list = specificationService.findList(specification);
+		return EasyResponse.buildSuccess(list);
+	}
+	
+	@RequiresPermissions("product:specification:list")
+	@RequestMapping(value = "detail", method = RequestMethod.GET)
+	@ResponseBody
+	public EasyResponse<Specification> asyncGetById(String id) {
+		Specification specification = specificationService.get(id);
+		return EasyResponse.buildSuccess(specification);
+	}
 
 
 
