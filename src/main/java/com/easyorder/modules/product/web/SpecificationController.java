@@ -3,13 +3,13 @@
  */
 package com.easyorder.modules.product.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.easyorder.common.beans.EasyResponse;
 import com.easyorder.common.enums.EasyResponseEnums;
+import com.easyorder.common.utils.BeanUtils;
+import com.easyorder.common.utils.CollectionUtils;
 import com.easyorder.modules.product.entity.Specification;
+import com.easyorder.modules.product.entity.SpecificationItem;
+import com.easyorder.modules.product.service.SpecificationItemService;
 import com.easyorder.modules.product.service.SpecificationService;
 import com.google.common.collect.Lists;
 import com.jeeplus.common.config.Global;
@@ -49,6 +53,8 @@ public class SpecificationController extends BaseController {
 
 	@Autowired
 	private SpecificationService specificationService;
+	@Autowired
+	private SpecificationItemService specificationItemService;
 
 	@ModelAttribute
 	public Specification get(@RequestParam(required=false) String id) {
@@ -110,7 +116,6 @@ public class SpecificationController extends BaseController {
 			return "redirect:"+Global.getAdminPath()+"/productManager/specification/?repage";
 		}
 		specification.setSupplierId(supplierId);
-		specification.setData(StringEscapeUtils.unescapeHtml4(specification.getData()));
 		if (!beanValidator(model, specification)){
 			return form(specification, model);
 		}
@@ -228,6 +233,15 @@ public class SpecificationController extends BaseController {
 		}
 		specification.setSupplierId(supplierId);
 		List<Specification> list = specificationService.findList(specification);
+		if(CollectionUtils.isNotEmpty(list)) {
+			list.forEach(spec -> {
+				SpecificationItem si = new SpecificationItem();
+				si.setSupplierId(supplierId);
+				si.setSpecificationId(spec.getId());
+				List<SpecificationItem> sis = specificationItemService.findList(si);
+				spec.setItems(sis);
+			});
+		}
 		return EasyResponse.buildSuccess(list);
 	}
 	
@@ -235,10 +249,95 @@ public class SpecificationController extends BaseController {
 	@RequestMapping(value = "detail", method = RequestMethod.GET)
 	@ResponseBody
 	public EasyResponse<Specification> asyncGetById(String id) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
+		}
 		Specification specification = specificationService.get(id);
+		if(BeanUtils.isNotEmpty(specification)) {
+			SpecificationItem si = new SpecificationItem();
+			si.setSpecificationId(specification.getId());
+			si.setSupplierId(supplierId);
+			List<SpecificationItem> sis = specificationItemService.findList(si);
+			specification.setItems(sis);
+		}
 		return EasyResponse.buildSuccess(specification);
 	}
 
+	
+	/**
+	 * 保存商品规格
+	 */
+	@RequiresPermissions(value={"product:specification:add","product:specification:edit"},logical=Logical.OR)
+	@RequestMapping(value = "async/save")
+	@ResponseBody
+	public EasyResponse<String> asyncSave(Specification specification, Model model) throws Exception{
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
+		}
+		specification.setSupplierId(supplierId);
+		if (!beanValidator(model, specification)){
+			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
+		}
+		if(!specification.getIsNewRecord()){//编辑表单保存
+			Specification t = specificationService.get(specification.getId());//从数据库取出记录的值
+			MyBeanUtils.copyBeanNotNull2Bean(specification, t);//将编辑表单中的非NULL值覆盖数据库记录中的值
+			specificationService.save(t);//保存
+		}else{//新增表单保存
+			specificationService.save(specification);//保存
+		}
+		return EasyResponse.buildSuccess(specification.getId(), "新增成功");
+	}
+	
+	/**
+	 * 查询指定规格下的规格项
+	 * @return
+	 */
+	@RequiresPermissions(value={"product:specification:list"},logical=Logical.OR)
+	@RequestMapping(value = "items")
+	@ResponseBody
+	public EasyResponse<List<SpecificationItem>> getItems(SpecificationItem specificationItem) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
+		}
+		
+		if(!com.easyorder.common.utils.StringUtils.hasText(specificationItem.getSpecificationId())) {
+			logger.error("When querying the specificationItem, the param specificationId is empty.");
+			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
+		}
+		
+		specificationItem.setSupplierId(supplierId);
+		specificationItem.setSpecificationId(specificationItem.getSpecificationId());
+		List<SpecificationItem> resultList = specificationItemService.findList(specificationItem);
+		return EasyResponse.buildSuccess(resultList);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	@RequiresPermissions(value={"product:specification:list"},logical=Logical.OR)
+	@RequestMapping(value = "details")
+	@ResponseBody
+	public EasyResponse<List<Specification>> getByIds(String itemIds) {
+		if(!com.easyorder.common.utils.StringUtils.hasText(itemIds)) {
+			logger.error("When querying the specification details, the param itemIds is empty.");
+			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
+		}
+		List<Specification> specs = new ArrayList<>();
+		String[] ids = itemIds.split(",");
+		for (String itemId : ids) {
+			SpecificationItem si = specificationItemService.get(itemId);
+			Specification specification = specificationService.get(si.getSpecificationId());
+			specs.add(specification);
+		}
+		return EasyResponse.buildSuccess(specs);
+	}
 
 
 }

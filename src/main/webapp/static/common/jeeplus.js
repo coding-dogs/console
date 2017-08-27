@@ -384,3 +384,31 @@ function page(n,s){//翻页
 	return false;
 }
 
+function isExistsOfArray(item, array){
+	var exists = false;
+	if(!item || !array || array.length == 0) {
+		return exists;
+	}
+	$.each(array, function(index, arr) {
+		if(item == arr) {
+			exists = true;
+			return false;
+		}
+	});
+	return exists;
+}
+
+function existsOfArray(item, array){
+	var index = -1;
+	if(!item || !array || array.length == 0) {
+		return index;
+	}
+	$.each(array, function(i, arr) {
+		if(item == arr) {
+			index = i;
+			return false;
+		}
+	});
+	return index;
+}
+

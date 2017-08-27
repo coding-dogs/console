@@ -11,19 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jeeplus.common.persistence.Page;
-import com.jeeplus.common.service.CrudService;
+import com.easyorder.common.constant.Constants;
+import com.easyorder.common.utils.BeanUtils;
+import com.easyorder.common.utils.CollectionUtils;
+import com.easyorder.common.utils.GSONUtils;
+import com.easyorder.common.utils.StringUtils;
+import com.easyorder.modules.product.dao.ProductDao;
 import com.easyorder.modules.product.entity.Product;
 import com.easyorder.modules.product.entity.ProductCategoryBrand;
 import com.easyorder.modules.product.entity.ProductCustomerGroupPrice;
 import com.easyorder.modules.product.entity.ProductCustomerPrice;
 import com.easyorder.modules.product.entity.ProductPicture;
-import com.easyorder.common.constant.Constants;
-import com.easyorder.common.utils.BeanUtils;
-import com.easyorder.common.utils.CollectionUtils;
-import com.easyorder.common.utils.IDUtils;
-import com.easyorder.common.utils.StringUtils;
-import com.easyorder.modules.product.dao.ProductDao;
+import com.easyorder.modules.product.entity.ProductSpecification;
+import com.jeeplus.common.persistence.Page;
+import com.jeeplus.common.service.CrudService;
 
 /**
  * 商品Service
@@ -43,13 +44,57 @@ public class ProductService extends CrudService<ProductDao, Product> {
 	ProductCustomerPriceService productCustomerPriceService;
 	@Autowired
 	ProductCustomerGroupPriceService productCustomerGroupPriceService;
+	@Autowired
+	ProductSpecificationService productSpecificationService;
 
 	public Product get(String id) {
 		Product product = super.get(id);
 		if(BeanUtils.isNotEmpty(product)) {
 			handlerPrice(product, HANDLER_TYPE_LIST);
+			handlerSpecification(product);
 		}
 		return product;
+	}
+	
+	private void handlerSpecification(Product product) {
+		ProductSpecification ps = new ProductSpecification();
+		String productId = product.getId();
+		String supplierId = product.getSupplierId();
+		ps.setProductId(productId);
+		ps.setSupplierId(supplierId);
+		List<ProductSpecification> psList = productSpecificationService.findList(ps);
+		if(CollectionUtils.isNotEmpty(psList)) {
+			product.setSpecJson(GSONUtils.toJSON(psList));
+		}
+	}
+
+	/**
+	 * 处理商品多规格
+	 * @param product
+	 */
+	private void saveSpecification(Product product) {
+		ProductSpecification ps = new ProductSpecification();
+		String productId = product.getId();
+		String supplierId = product.getSupplierId();
+		ps.setProductId(productId);
+		ps.setSupplierId(supplierId);
+		List<ProductSpecification> psList = productSpecificationService.findList(ps);
+		if(CollectionUtils.isNotEmpty(psList)) {
+			psList.forEach(psl -> {
+				productSpecificationService.delete(psl);
+			});
+		}
+		String specJson = product.getSpecJson();
+		if(StringUtils.hasText(specJson)) {
+			List<ProductSpecification> pss = GSONUtils.jsonToList(specJson, ProductSpecification.class);
+			if(CollectionUtils.isNotEmpty(pss)) {
+				pss.forEach(productSpec -> {
+					productSpec.setSupplierId(supplierId);
+					productSpec.setProductId(productId);
+					productSpecificationService.save(productSpec);
+				});
+			}
+		}
 	}
 
 	public List<Product> findList(Product product) {
@@ -96,9 +141,6 @@ public class ProductService extends CrudService<ProductDao, Product> {
 
 	@Transactional(readOnly = false)
 	public void save(Product product) {
-//		if (StringUtils.isEmpty(product.getId())) {
-//			product.setProductNo(IDUtils.generateProductId());
-//		}
 		super.save(product);
 		String productId = product.getId();
 		// 查询商品分类和品牌的关系，不存在关联关系，否则向数据库插入一条数据
@@ -180,6 +222,9 @@ public class ProductService extends CrudService<ProductDao, Product> {
 				productPictureService.save(productPicture);
 			}
 		}
+		
+		// 保存多规格
+		saveSpecification(product);
 		
 	}
 

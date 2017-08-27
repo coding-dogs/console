@@ -470,6 +470,7 @@
 					that.$element.find('.menu-wrapper ul li').removeClass('selected');
 					var $selectedLi = that.$element.find('.menu-wrapper ul li[data-id="' + value +'"]');
 					$selectedLi.addClass('selected');
+					that.options.selectedCallback(that.$element);
 					return false;
 				}
 				if(item.children && item.children.length > 0){
@@ -513,6 +514,7 @@
 					that.$element.find('.menu-wrapper ul li').removeClass('selected');
 					var $selectedLi = that.$element.find('.menu-wrapper ul li[data-id="' + value +'"]');
 					$selectedLi.addClass('selected');
+					that.options.selectedCallback(that.$element);
 					result = true;
 					return false;
 				} else if(item.children && item.children.length > 0){
@@ -527,6 +529,11 @@
 			});
 		}
 		return result;
+	}
+	
+	EasySelector.prototype.getValue = function() {
+		var that = this;
+		return that.value;
 	}
 
 

@@ -260,12 +260,14 @@ public class CustomerGroupController extends BaseController {
 
 	@RequiresPermissions("customer:customerGroup:list")
 	@RequestMapping(value = "/selector", method = RequestMethod.GET)
-	public String getCustomerGroupSelector(Model model) {
+	public String getCustomerGroupSelector(Model model, String type, String productId) {
 		String supplierId = UserUtils.getUser().getSupplierId();
 		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
 			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
 			addMessage(model, EasyResponseEnums.NOT_FOUND_SUPPLIER.message);
 		}
+		model.addAttribute("type", type);
+		model.addAttribute("productId", productId);
 		return "easyorder/common/customerGroupSelector";
 	}
 

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -30,6 +31,8 @@ import com.jeeplus.common.web.BaseController;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
+import com.easyorder.common.beans.EasyResponse;
+import com.easyorder.common.enums.EasyResponseEnums;
 import com.easyorder.modules.product.entity.ProductCustomerGroupPrice;
 import com.easyorder.modules.product.service.ProductCustomerGroupPriceService;
 
@@ -190,7 +193,17 @@ public class ProductCustomerGroupPriceController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/productManager/productCustomerGroupPrice/?repage";
 	}
 
-
+	@RequiresPermissions("product:product:list")
+	@RequestMapping(value = "customerGroupIds")
+	@ResponseBody
+	public EasyResponse<List<String>> getCustomerGroupIds(String productId) {
+		if(!com.easyorder.common.utils.StringUtils.hasText(productId)) {
+			logger.error("When querying the customerPrices, the param productId is empty.");
+			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
+		}
+		List<String> customerGroupIds = productCustomerGroupPriceService.getCustomerGroupIds(productId);
+		return EasyResponse.buildSuccess(customerGroupIds);
+	}
 
 
 }

@@ -103,7 +103,7 @@
 								${specification.name}
 							</a></td>
 							<td>
-								<span class="overflow-ellipsis-300" title="${fns:specificationShow(specification.data)}">${fns:specificationShow(specification.data)}</span>
+								<span class="overflow-ellipsis-300" title="">${specification.specificationItemText}</span>
 							</td>
 							<td>
 								<fmt:formatDate value="${specification.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

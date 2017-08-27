@@ -12,7 +12,8 @@
 		pageItemCount: 10,			// 分页条显示总个数
 		errorCallback: function() {	// 请求错误回调函数
 			
-		}
+		},
+		disabled: []
 	};
 
 	function EasyPageRecords(element, options) {
@@ -36,7 +37,17 @@
 
 	EasyPageRecords.prototype.getRecords = function() {
 		var that = this;
-		return that.records;
+		var records = [];
+		if(that.records) {
+			$.each(that.records, function(index, record) {
+				var recordId = record[ID_KEY];
+				if(that.isDisabled(recordId)) {
+					return true;
+				}
+				records.push(record);
+			});
+		}
+		return records;
 	}
 
 	EasyPageRecords.prototype._init = function() {
@@ -101,6 +112,11 @@
 							$icheck.attr('type', that.options.type);
 							$icheck.appendTo($icheckTd);
 							$icheckTd.appendTo($tr);
+							
+							if(that.options.disabled && that.options.disabled.length != 0
+									&& that.isDisabled(item[ID_KEY])) {
+								$icheck.iCheck('disable');
+							}
 						}
 						$.each(that.options.titles, function(index, title) {
 							var $td = $('<td>');
@@ -361,6 +377,21 @@
 				}
 			}
 		});
+	}
+	
+	EasyPageRecords.prototype.isDisabled = function(item) {
+		var that = this;
+		var exists = false;
+		if(!item || !that.options.disabled || that.options.disabled.length == 0) {
+			return exists;
+		}
+		$.each(that.options.disabled, function(index, arr) {
+			if(item == arr) {
+				exists = true;
+				return false;
+			}
+		});
+		return exists;
 	}
 	
 	EasyPageRecords.prototype.indexOf = function(id) {
