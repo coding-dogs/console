@@ -1,5 +1,7 @@
 package com.easyorder.modules.product.entity;
 
+import java.util.List;
+
 import com.jeeplus.common.persistence.DataEntity;
 import com.jeeplus.common.utils.excel.annotation.ExcelField;
 
@@ -14,7 +16,10 @@ public class Specification extends DataEntity<Specification> {
 	private String name;		// 规格名称
 	private String no;		// 规格编号
 	private String supplierId; // 供应商ID
-	private String data;		// 规格数据
+	
+	private String children;
+	private String specificationItemText;
+	private List<SpecificationItem> items;
 	
 	public Specification() {
 		super();
@@ -42,21 +47,36 @@ public class Specification extends DataEntity<Specification> {
 		this.no = no;
 	}
 	
-	@ExcelField(title="规格数据", align=2, sort=3)
-	public String getData() {
-		return data;
-	}
-
-	public void setData(String data) {
-		this.data = data;
-	}
-
 	public String getSupplierId() {
 		return supplierId;
 	}
 
 	public void setSupplierId(String supplierId) {
 		this.supplierId = supplierId;
+	}
+
+	public String getChildren() {
+		return children;
+	}
+
+	public void setChildren(String children) {
+		this.children = children;
+	}
+
+	public String getSpecificationItemText() {
+		return specificationItemText;
+	}
+
+	public void setSpecificationItemText(String specificationItemText) {
+		this.specificationItemText = specificationItemText;
+	}
+
+	public List<SpecificationItem> getItems() {
+		return items;
+	}
+
+	public void setItems(List<SpecificationItem> items) {
+		this.items = items;
 	}
 	
 }

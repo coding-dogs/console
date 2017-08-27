@@ -4,9 +4,10 @@
     
 	<sql id="productSpecificationColumns">
 		a.id AS "id",
-		a.specification_id AS "specificationId",
-		a.price AS "price",
 		a.product_id AS "productId",
+		a.supplier_id AS "supplierId",
+		a.specification_item_path AS "specificationItemPath",
+		a.specification_no AS "specificationNo",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -25,7 +26,17 @@
 			<include refid="productSpecificationColumns"/>
 		FROM product_specification a
 		<include refid="productSpecificationJoins"/>
-		WHERE a.id = #{id}
+		<where>
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+		</where>
 	</select>
 	
 	<select id="findList" resultType="ProductSpecification" >
@@ -35,6 +46,12 @@
 		<include refid="productSpecificationJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -53,6 +70,12 @@
 		<include refid="productSpecificationJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -67,9 +90,10 @@
 	<insert id="insert">
 		INSERT INTO product_specification(
 			id,
-			specification_id,
-			price,
 			product_id,
+			supplier_id,
+			specification_item_path,
+			specification_no,
 			create_by,
 			create_date,
 			update_by,
@@ -79,9 +103,10 @@
 			version
 		) VALUES (
 			#{id},
-			#{specificationId},
-			#{price},
 			#{productId},
+			#{supplierId},
+			#{specificationItemPath},
+			#{specificationNo},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -94,9 +119,10 @@
 	
 	<update id="update">
 		UPDATE product_specification SET 	
-			specification_id = #{specificationId},
-			price = #{price},
 			product_id = #{productId},
+			supplier_id = #{supplierId},
+			specification_item_path = #{specificationItemPath},
+			specification_no = #{specificationNo},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},

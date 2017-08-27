@@ -8,6 +8,7 @@
 	var validateForm;
 	function doSubmit() {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
 		if (validateForm.form()) {
+			$('#children').val(JSON.stringify(wrapJson()));
 			$("#inputForm").submit();
 			return true;
 		}
@@ -20,7 +21,7 @@
 						.validate(
 								{
 									submitHandler : function(form) {
-										$('#data').val(JSON.stringify(wrapJson()));
+										$('#children').val(JSON.stringify(wrapJson()));
 										loading('正在提交，请稍等...');
 										form.submit();
 									},
@@ -47,7 +48,7 @@
 		action="${ctx}/productManager/specification/save" method="post"
 		class="form-horizontal">
 		<form:hidden path="id" />
-		<form:hidden path="data"/>
+		<form:hidden path="children"/>
 		<sys:message content="${message}" />
 		<table class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
 			<tbody>
@@ -87,18 +88,7 @@
 	
 	<script type="text/javascript" src="${ctxStatic}/easyorder/js/common/own-validation.js"></script>
 	<script type="text/javascript">
-	
-		
-	
-	
-	
-	
 		var subIndex = 0;
-		var data= '${specification.data}';
-		var jsonData;
-		if(data) {
-			jsonData = JSON.parse('${specification.data}')
-		}
 		function createRow(subName, subNo) {
 			var subTable = $("#subSpecTable").find('tbody');
 			var $tr = $('<tr class="sub-spec-data">');
@@ -127,6 +117,8 @@
 			}
 			if(subNo) {
 				$subNoInput.val(subNo);
+			} else {
+				$subNoInput.val(subIndex);
 			}
 			
 			var $del = $('<a>');
@@ -160,13 +152,40 @@
 			});
 		}
 		
-		if(jsonData && jsonData.children) {
+		var specId = '${specification.id}';
+		if(specId) {
+			$.ajax({
+				url: '${ctx}/productManager/specification/items',
+				type: "GET",
+				data: {specificationId: specId},
+				dataType: 'JSON',
+				success: function(data) {
+					if(data.code == SUCCESS_CODE) {
+						var specItem = data.result;
+						if(specItem && specItem.length != 0) {
+							$.each(specItem, function(index, si) {
+								createRow(si.name, si.no);
+							});
+						}
+					} else {
+						top.layer.alert(data.msg);
+					}
+				},
+				error: function() {
+				}
+				
+			});
+		} else {
+			createRow();
+		}
+		
+		/* if(jsonData && jsonData.children) {
 			$.each(jsonData.children, function(index, sub) {
 				createRow(sub.name, sub.no);
 			});
 		} else {
 			createRow();
-		}
+		} */
 		
 		$('#addSubSpec').on('click', function(e) {
 			createRow();
@@ -174,16 +193,11 @@
 		
 		
 		function wrapJson() {
-			var data = {};
+			var children = [];
 			var $trs = $('#subSpecTable').find('.sub-spec-data');
 			if($trs.length == 0) {
-				return data;
+				return children;
 			}
-			var name = $('#name').val();
-			var no = $('#no').val();
-			data.name = name;
-			data.no = no;
-			data.children = [];
 			$.each($trs, function(index, tr) {
 				var $tr = $(tr);
 				var $subName = $tr.find('td .sub-spec-name');
@@ -193,9 +207,10 @@
 				subData.name = $subName.val();
 				subData.no = $subNo.val();
 				
-				data.children.push(subData);
+				children.push(subData);
 			});
-			return data;
+			console.log(children);
+			return children;
 		}
 	</script>
 </body>

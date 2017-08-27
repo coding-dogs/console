@@ -14,6 +14,5 @@ import com.easyorder.modules.product.entity.ProductSpecification;
  */
 @MyBatisDao
 public interface ProductSpecificationDao extends CrudDao<ProductSpecification> {
-
 	
 }

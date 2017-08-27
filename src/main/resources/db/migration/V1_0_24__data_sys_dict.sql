@@ -1,0 +1,1 @@
+UPDATE `sys_dict` SET `value` = 'PENDING_SHIP' WHERE ID = 'ffd9614ca1a3496ab03c698231978fce';

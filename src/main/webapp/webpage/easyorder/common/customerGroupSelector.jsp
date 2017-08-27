@@ -46,14 +46,15 @@
 <body class="hideScroll">
 	
 	<div class="easy-order customer-list col-sm-12 col-md-12 col-xs-12">
-		<div class="form-inline">
+		<%-- <div class="form-inline">
 			<div class="form-group">
 				<span>客户组：</span>
 				<div class="max-width-300" id="customerGroup" data-text=""
 					data-required="true" data-value="${customer.customerGroupId}"
 					data-name='customerGroupId'></div>
 			</div>
-		</div>
+		</div> --%>
+		<input type="hidden" id="disabledIds" name="disabledIds"/>
 		
 		<table id="customerGroupTable"
 		class="table table-bordered  table-condensed dataTables-example dataTable no-footer">
@@ -70,21 +71,7 @@
 			'pageNo' : 1,
 			'pageSize' : 5
 		};
-		function execQuery() {
-			var rd = getRequestData();
-			// 重置查询条件
-			table.easyPageRecords('setOptions', 'requestData', rd);
-			// 执行请求
-			table.easyPageRecords('request');
-		}
 		
-		function getRequestData() {
-			var customerGroupId = $('#customerGroup').find('input[name="customerGroupId"]').val();
-			requestData['customerGroupId'] = customerGroupId;
-			return requestData;
-		}
-	
-		// 页面选择元素记录组件
 		var table = $('#customerGroupTable').easyPageRecords({
 			titles: [
 				{
@@ -102,6 +89,38 @@
 			url: '${ctx}/customerManager/customerGroup/async/list'
 		});
 		
+		var productId = '${productId}';
+		$('#disabledIds').data('value', []);
+		if(productId) {
+			$.ajax({
+				url: '${ctx}/productManager/productCustomerGroupPrice/customerGroupIds',
+				type: 'GET',
+				data: {productId: '${productId}'},
+				dataType: 'JSON',
+				success: function(data) {
+					if(SUCCESS_CODE == data.code) {
+						$('#disabledIds').data('value', data.result);
+						table.easyPageRecords('setOptions', 'disabled', data.result);
+					}
+				}
+			});
+		}
+		
+		
+		function execQuery() {
+			var rd = getRequestData();
+			// 重置查询条件
+			table.easyPageRecords('setOptions', 'requestData', rd);
+			// 执行请求
+			table.easyPageRecords('request');
+		}
+		
+		function getRequestData() {
+			var customerGroupId = $('#customerGroup').find('input[name="customerGroupId"]').val();
+			requestData['customerGroupId'] = customerGroupId;
+			return requestData;
+		}
+	
 		var records = [];
 
 		function getCustomerGroups() {

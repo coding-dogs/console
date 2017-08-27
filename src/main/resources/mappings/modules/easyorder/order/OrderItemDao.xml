@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.order.dao.OrderItemDao">
+    
+	<sql id="orderItemColumns">
+		a.id AS "id",
+		a.order_id AS "orderId",
+		a.product_id AS "productId",
+		a.specification_id AS "specificationId",
+		a.total_count AS "totalCount",
+		a.price AS "price",
+		a.total_price AS "totalPrice",
+		a.product_title AS "productTitle",
+		a.product_pic_url AS "productPicUrl",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="orderItemJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="OrderItem" >
+		SELECT 
+			<include refid="orderItemColumns"/>
+		FROM order_item a
+		<where>
+			AND a.id = #{id}
+		</where>
+	</select>
+	
+	<select id="findList" resultType="OrderItem" >
+		SELECT 
+			<include refid="orderItemColumns"/>,
+			p.product_no AS "productNo"
+		FROM order_item a
+		LEFT JOIN product p on p.id = a.product_id
+		<include refid="orderItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderId != null and orderId != ''">
+				AND a.order_id = #{orderId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OrderItem" >
+		SELECT 
+			<include refid="orderItemColumns"/>
+		FROM order_item a
+		<include refid="orderItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO order_item(
+			id,
+			order_id,
+			product_id,
+			specification_id,
+			total_count,
+			price,
+			total_price,
+			product_title,
+			product_pic_url,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{orderId},
+			#{productId},
+			#{specificationId},
+			#{totalCount},
+			#{price},
+			#{totalPrice},
+			#{productTitle},
+			#{productPicUrl},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE order_item SET 	
+			order_id = #{orderId},
+			product_id = #{productId},
+			specification_id = #{specificationId},
+			total_count = #{totalCount},
+			price = #{price},
+			total_price = #{totalPrice},
+			product_title = #{productTitle},
+			product_pic_url = #{productPicUrl},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM order_item
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE order_item SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="OrderItem" statementType="STATEMENT">
+		select * FROM order_item  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

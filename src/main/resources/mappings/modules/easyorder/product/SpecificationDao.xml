@@ -7,7 +7,6 @@
 		a.name AS "name",
 		a.no AS "no",
 		a.supplier_id AS supplierId,
-		a.data AS "data",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -31,7 +30,8 @@
 	
 	<select id="findList" resultType="Specification" >
 		SELECT 
-			<include refid="specificationColumns"/>
+			<include refid="specificationColumns"/>,
+			(select group_concat(name SEPARATOR ' ') from specification_item where specification_id = a.id) AS "specificationItemText"
 		FROM specification a
 		<include refid="specificationJoins"/>
 		<where>
@@ -83,7 +83,6 @@
 			name,
 			no,
 			supplier_id,
-			data,
 			create_by,
 			create_date,
 			update_by,
@@ -96,7 +95,6 @@
 			#{name},
 			#{no},
 			#{supplierId},
-			#{data},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -112,7 +110,6 @@
 			name = #{name},
 			no = #{no},
 			supplier_id = #{supplierId},
-			data = #{data},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},

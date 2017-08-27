@@ -3,9 +3,9 @@
  */
 package com.easyorder.modules.product.dao;
 
+import com.easyorder.modules.product.entity.SpecificationItem;
 import com.jeeplus.common.persistence.CrudDao;
 import com.jeeplus.common.persistence.annotation.MyBatisDao;
-import com.easyorder.modules.product.entity.SpecificationGroup;
 
 /**
  * 商品规格组DAO接口
@@ -13,7 +13,7 @@ import com.easyorder.modules.product.entity.SpecificationGroup;
  * @version 2017-06-09
  */
 @MyBatisDao
-public interface SpecificationGroupDao extends CrudDao<SpecificationGroup> {
+public interface SpecificationItemDao extends CrudDao<SpecificationItem> {
 
 	
 }

@@ -3,9 +3,13 @@
  */
 package com.easyorder.modules.product.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.easyorder.modules.product.entity.ProductCustomerPrice;
 import com.jeeplus.common.persistence.CrudDao;
 import com.jeeplus.common.persistence.annotation.MyBatisDao;
-import com.easyorder.modules.product.entity.ProductCustomerPrice;
 
 /**
  * 商品客户指定价DAO接口
@@ -16,4 +20,6 @@ import com.easyorder.modules.product.entity.ProductCustomerPrice;
 public interface ProductCustomerPriceDao extends CrudDao<ProductCustomerPrice> {
 
 	void deleteByCondition(ProductCustomerPrice customerPrice);
+	
+	List<String> getCustomerIds(@Param(value = "productId") String productId);
 }

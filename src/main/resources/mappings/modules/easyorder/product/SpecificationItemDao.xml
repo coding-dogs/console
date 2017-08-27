@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.product.dao.SpecificationItemDao">
+    
+	<sql id="specificationItemColumns">
+		a.id AS "id",
+		a.specification_id AS "specificationId",
+		a.supplier_id AS "supplierId",
+		a.name AS "name",
+		a.no AS "no",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="specificationItemJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="SpecificationItem" >
+		SELECT 
+			<include refid="specificationItemColumns"/>
+		FROM specification_item a
+		<include refid="specificationItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SpecificationItem" >
+		SELECT 
+			<include refid="specificationItemColumns"/>
+		FROM specification_item a
+		<include refid="specificationItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="specificationId != null and specificationId != ''">
+				AND a.specification_id = #{specificationId}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SpecificationItem" >
+		SELECT 
+			<include refid="specificationItemColumns"/>
+		FROM specification_item a
+		<include refid="specificationItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="specificationId != null and specificationId != ''">
+				AND a.specification_id = #{specificationId}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO specification_item(
+			id,
+			specification_id,
+			supplier_id,
+			name,
+			no,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{specificationId},
+			#{supplierId},
+			#{name},
+			#{no},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE specification_item SET 	
+			specification_id = #{specificationId},
+			supplier_id = #{supplierId},
+			name = #{name},
+			no = #{no},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM specification_item
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE specification_item SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="SpecificationItem" statementType="STATEMENT">
+		select * FROM specification_item  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

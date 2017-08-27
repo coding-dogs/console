@@ -239,12 +239,14 @@ public class CustomerController extends BaseController {
 	 */
 	@RequiresPermissions("customer:customer:list")
 	@RequestMapping(value = {"selector"})
-	public String page(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
+	public String page(Customer customer, String type, String productId, Model model) {
 		String supplierId = UserUtils.getUser().getSupplierId();
 		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
 			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
 			addMessage(model, EasyResponseEnums.NOT_FOUND_SUPPLIER.message);
 		}
+		model.addAttribute("type", type);
+		model.addAttribute("productId", productId);
 		return "easyorder/common/customerSelector";
 	}
 	

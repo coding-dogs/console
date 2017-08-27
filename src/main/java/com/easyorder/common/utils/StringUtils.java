@@ -1,10 +1,5 @@
 package com.easyorder.common.utils;
 
-import java.util.List;
-
-import com.easyorder.common.constant.Constants;
-import com.easyorder.modules.product.entity.SpecificationItem;
-
 /**
  * @Project : spring-boot-sample
  * @Program Name : com.ljt.springboot.common.utils.StringUtils.java
@@ -296,24 +291,24 @@ public abstract class StringUtils extends org.springframework.util.StringUtils {
    * @param json
    * @return
    */
-  public static String specificationShow(String json) {
-  	SpecificationItem specificationItem = GSONUtils.fromJson(json, SpecificationItem.class);
-  	if(specificationItem == null) {
-  		return Constants.EMPTY_STRING;
-  	}
-  	// 获取规格值
-  	List<SpecificationItem> children = specificationItem.getChildren();
-  	if(CollectionUtils.isEmpty(children)) {
-  		return Constants.EMPTY_STRING;
-  	}
-  	StringBuilder specBuilder = new StringBuilder();
-  	for (SpecificationItem si : children) {
-			specBuilder.append(si.getName()).append(Constants.BLANK_SPACE_STRING);
-		}
-  	if(specBuilder.length() != 0) { 
-  		specBuilder.deleteCharAt(specBuilder.length() - 1);
-  	}
-  	return specBuilder.toString();
-  }
+//  public static String specificationShow(String json) {
+//  	SpecificationItem specificationItem = GSONUtils.fromJson(json, SpecificationItem.class);
+//  	if(specificationItem == null) {
+//  		return Constants.EMPTY_STRING;
+//  	}
+//  	// 获取规格值
+//  	List<SpecificationItem> children = specificationItem.getChildren();
+//  	if(CollectionUtils.isEmpty(children)) {
+//  		return Constants.EMPTY_STRING;
+//  	}
+//  	StringBuilder specBuilder = new StringBuilder();
+//  	for (SpecificationItem si : children) {
+//			specBuilder.append(si.getName()).append(Constants.BLANK_SPACE_STRING);
+//		}
+//  	if(specBuilder.length() != 0) { 
+//  		specBuilder.deleteCharAt(specBuilder.length() - 1);
+//  	}
+//  	return specBuilder.toString();
+//  }
   
 }

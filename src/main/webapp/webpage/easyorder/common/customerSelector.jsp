@@ -94,16 +94,6 @@
 			table.easyPageRecords('request');
 		}
 		
-		function getRequestData() {
-			var name = $('#name').val();
-			var mtCityCd = $('#mtCityCd').val();
-			var customerGroupId = $('#customerGroup').find('input[name="customerGroupId"]').val();
-			requestData['name'] = name;
-			requestData['mtCityCd'] = mtCityCd;
-			requestData['customerGroupId'] = customerGroupId;
-			return requestData;
-		}
-	
 		// 页面选择元素记录组件
 		var table = $('#customerTable').easyPageRecords({
 			titles: [
@@ -129,6 +119,29 @@
 			type: 'checkbox',
 			url: '${ctx}/customerManager/customer/async/list'
 		});
+		
+		var disabledIds = [];
+		$.ajax({
+			url: '${ctx}/productManager/productCustomerPrice/customers',
+			data: {productId: '${productId}'},
+			type: 'GET',
+			dataType: 'JSON',
+			success: function(data) {
+				if(SUCCESS_CODE == data.code) {
+					
+				}
+			}
+		});
+		
+		function getRequestData() {
+			var name = $('#name').val();
+			var mtCityCd = $('#mtCityCd').val();
+			var customerGroupId = $('#customerGroup').find('input[name="customerGroupId"]').val();
+			requestData['name'] = name;
+			requestData['mtCityCd'] = mtCityCd;
+			requestData['customerGroupId'] = customerGroupId;
+			return requestData;
+		}
 		
 		var records = [];
 

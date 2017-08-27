@@ -154,4 +154,13 @@
 		</where>
 	</delete>
 	
+	<select id="getCustomerIds" resultType="java.lang.String">
+		select
+			customer_id
+		from
+			product_customer_price
+		where
+			product_id = #{productId}
+	</select>
+	
 </mapper>

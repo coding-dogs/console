@@ -49,5 +49,7 @@ public class ProductCustomerPriceService extends CrudService<ProductCustomerPric
 		dao.deleteByCondition(customerPrice);
 	}
 	
-	
+	public List<String> getCustomerIds(String productId) {
+		return dao.getCustomerIds(productId);
+	}
 }

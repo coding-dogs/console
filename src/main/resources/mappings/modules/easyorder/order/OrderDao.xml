@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.order.dao.OrderDao">
+    
+	<sql id="orderColumns">
+		a.id AS "id",
+		a.order_no AS "orderNo",
+		a.total_price AS "totalPrice",
+		a.reduction_fee AS "reductionFee",
+		a.actual_price AS "actualPrice",
+		a.total_count AS "totalCount",
+		a.fare AS "fare",
+		a.pay_time AS "payTime",
+		a.ship_time AS "shipTime",
+		a.mt_order_status_cd AS "mtOrderStatusCd",
+		a.shipping_address_id AS "shippingAddressId",
+		a.customer_id AS "customerId",
+		a.mt_payment_method_cd AS "mtPaymentMethodCd",
+		a.completed_time AS "completedTime",
+		a.close_time AS "closeTime",
+		a.supplier_id AS "supplierId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="orderJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="Order" >
+		SELECT 
+			<include refid="orderColumns"/>
+		FROM `order` a
+		<where>
+			AND a.id = #{id}
+		</where>
+	</select>
+	
+	<select id="findList" resultType="Order" >
+		SELECT 
+			<include refid="orderColumns"/>,
+			c.name AS "customerName"
+		FROM `order` a
+		LEFT JOIN customer c on c.id = a.customer_id
+		<include refid="orderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Order" >
+		SELECT 
+			<include refid="orderColumns"/>
+		FROM `order` a
+		<include refid="orderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO `order`(
+			id,
+			order_no,
+			total_price,
+			reduction_fee,
+			actual_price,
+			total_count,
+			fare,
+			pay_time,
+			ship_time,
+			mt_order_status_cd,
+			shipping_address_id,
+			customer_id,
+			mt_payment_method_cd,
+			completed_time,
+			close_time,
+			supplier_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{orderNo},
+			#{totalPrice},
+			#{reductionFee},
+			#{actualPrice},
+			#{totalCount},
+			#{fare},
+			#{payTime},
+			#{shipTime},
+			#{mtOrderStatusCd},
+			#{shippingAddressId},
+			#{customerId},
+			#{mtPaymentMethodCd},
+			#{completedTime},
+			#{closeTime},
+			#{supplierId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE `order` SET 	
+			order_no = #{orderNo},
+			total_price = #{totalPrice},
+			reduction_fee = #{reductionFee},
+			actual_price = #{actualPrice},
+			total_count = #{totalCount},
+			fare = #{fare},
+			pay_time = #{payTime},
+			ship_time = #{shipTime},
+			mt_order_status_cd = #{mtOrderStatusCd},
+			shipping_address_id = #{shippingAddressId},
+			customer_id = #{customerId},
+			mt_payment_method_cd = #{mtPaymentMethodCd},
+			completed_time = #{completedTime},
+			close_time = #{closeTime},
+			supplier_id = #{supplierId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM `order`
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE `order` SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="Order" statementType="STATEMENT">
+		select * FROM `order`  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

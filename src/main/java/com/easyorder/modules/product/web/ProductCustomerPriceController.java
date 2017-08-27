@@ -18,20 +18,23 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.easyorder.common.beans.EasyResponse;
+import com.easyorder.common.enums.EasyResponseEnums;
+import com.easyorder.modules.product.entity.ProductCustomerPrice;
+import com.easyorder.modules.product.service.ProductCustomerPriceService;
 import com.google.common.collect.Lists;
-import com.jeeplus.common.utils.DateUtils;
-import com.jeeplus.common.utils.MyBeanUtils;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.persistence.Page;
-import com.jeeplus.common.web.BaseController;
+import com.jeeplus.common.utils.DateUtils;
+import com.jeeplus.common.utils.MyBeanUtils;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
-import com.easyorder.modules.product.entity.ProductCustomerPrice;
-import com.easyorder.modules.product.service.ProductCustomerPriceService;
+import com.jeeplus.common.web.BaseController;
 
 /**
  * 商品客户指定价Controller
@@ -190,7 +193,18 @@ public class ProductCustomerPriceController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/productManager/productCustomerPrice/?repage";
 	}
 
-
+	@RequiresPermissions("product:product:list")
+	@RequestMapping(value = "customers")
+	@ResponseBody
+	public EasyResponse<List<String>> getCustomers(String productId) {
+		if(!com.easyorder.common.utils.StringUtils.hasText(productId)) {
+			logger.error("When querying the customerPrices, the param productId is empty.");
+			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
+		}
+		
+		List<String> customerIds = productCustomerPriceService.getCustomerIds(productId);
+		return EasyResponse.buildSuccess(customerIds);
+	}
 
 
 }

@@ -11,9 +11,10 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
 public class ProductSpecification extends DataEntity<ProductSpecification> {
 	
 	private static final long serialVersionUID = 1L;
-	private String specificationId;		// 规格id
-	private Double price;		// 规格价格
 	private String productId;		// 商品ID
+	private String supplierId;	// 供应商ID
+	private String specificationItemPath;		// 规格项组合ID
+	private String specificationNo;					// 规格项编号
 	
 	public ProductSpecification() {
 		super();
@@ -21,24 +22,6 @@ public class ProductSpecification extends DataEntity<ProductSpecification> {
 
 	public ProductSpecification(String id){
 		super(id);
-	}
-
-	@ExcelField(title="规格id", align=2, sort=1)
-	public String getSpecificationId() {
-		return specificationId;
-	}
-
-	public void setSpecificationId(String specificationId) {
-		this.specificationId = specificationId;
-	}
-	
-	@ExcelField(title="规格价格", align=2, sort=2)
-	public Double getPrice() {
-		return price;
-	}
-
-	public void setPrice(Double price) {
-		this.price = price;
 	}
 	
 	@ExcelField(title="商品ID", align=2, sort=3)
@@ -48,6 +31,30 @@ public class ProductSpecification extends DataEntity<ProductSpecification> {
 
 	public void setProductId(String productId) {
 		this.productId = productId;
+	}
+
+	public String getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(String supplierId) {
+		this.supplierId = supplierId;
+	}
+
+	public String getSpecificationItemPath() {
+		return specificationItemPath;
+	}
+
+	public void setSpecificationItemPath(String specificationItemPath) {
+		this.specificationItemPath = specificationItemPath;
+	}
+
+	public String getSpecificationNo() {
+		return specificationNo;
+	}
+
+	public void setSpecificationNo(String specificationNo) {
+		this.specificationNo = specificationNo;
 	}
 	
 }
