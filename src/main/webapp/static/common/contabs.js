@@ -171,7 +171,7 @@ function menuItem() {
 
     // 选项卡菜单不存在
     if (flag) {
-        var str = '<a href="javascript:;" class="active J_menuTab" data-id="' + dataUrl + '">' + menuName + ' <i class="fa fa-times-circle"></i></a>';
+        var str = '<a href="javascript:;" class="active J_menuTab" title="' + menuName + '" data-id="' + dataUrl + '">' + menuName + ' <i class="fa fa-times-circle"></i></a>';
         $('.J_menuTab').removeClass('active');
 
         // 添加选项卡对应的iframe
@@ -363,7 +363,7 @@ function openTab(url,title, isNew){//isNew 为true时，打开一个新的选项
     }
     
     if(isNew || flag){//isNew为true，打开一个新的选项卡； flag为true，选项卡不存在，打开一个新的选项卡。
-	        var str = '<a href="javascript:;" class="active J_menuTab" data-id="' + dataUrl + '">' + menuName + ' <i class="fa fa-times-circle"></i></a>';
+	        var str = '<a href="javascript:;" class="active J_menuTab" title="' + menuName + '" data-id="' + dataUrl + '">' + menuName + ' <i class="fa fa-times-circle"></i></a>';
 	        top.$('.J_menuTab').removeClass('active');
 	
 	        // 添加选项卡对应的iframe
