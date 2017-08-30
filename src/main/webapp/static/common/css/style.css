@@ -3442,7 +3442,7 @@ nav.page-tabs .page-tabs-content {
 	display: block;
 	float: left;
 	border-right: solid 1px #eee;
-	padding: 0 15px;
+	padding: 0 20px;
 }
 
 .page-tabs a i:hover {
@@ -7880,6 +7880,17 @@ body.skin-3 {
 .J_menuTab {
 	-webkit-transition: all .3s ease-out 0s;
 	transition: all .3s ease-out 0s;
+	max-width: 160px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	position: relative;
+}
+
+.J_menuTab .fa.fa-times-circle {
+	position: absolute;
+	top: 12px;
+	right: 4px;
 }
 
 ::-webkit-scrollbar-track {

@@ -33,6 +33,7 @@ import com.aliyun.oss.model.ObjectListing;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PolicyConditions;
 import com.aliyun.oss.model.SimplifiedObjectMeta;
+import com.jeeplus.common.config.Global;
 import com.jeeplus.common.utils.FileUtils;
 import com.jeeplus.modules.oss.entity.FileInfoVO;
 
@@ -45,9 +46,9 @@ import com.jeeplus.modules.oss.entity.FileInfoVO;
  */
 public class OSSUtils implements Closeable {
 	private static final Logger logger = LoggerFactory.getLogger(OSSUtils.class);
-	private static final String endpoint = PropertyUtils.getProperty("oss.access.servicePath");
-	private static final String accessKeyId = PropertyUtils.getProperty("oss.access.key");
-	private static final String accessKeySecret = PropertyUtils.getProperty("oss.access.secret");
+	private static final String endpoint = Global.getConfig("oss.access.servicePath");
+	private static final String accessKeyId = Global.getConfig("oss.access.key");
+	private static final String accessKeySecret = Global.getConfig("oss.access.secret");
 	// 云存储中路径分隔符（与本地操作系统无关）
 	public static final String OSS_FILE_DELLIMITER = "/";
 

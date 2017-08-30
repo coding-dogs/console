@@ -17,23 +17,23 @@ import com.easyorder.common.beans.EasyResponse;
 import com.easyorder.common.constant.Constants;
 import com.easyorder.common.enums.EasyResponseEnums;
 import com.easyorder.common.utils.OSSUtils;
-import com.easyorder.common.utils.PropertyUtils;
 import com.easyorder.common.utils.StringUtils;
 import com.easyorder.modules.product.entity.ProductPicture;
 import com.easyorder.modules.product.service.ProductPictureService;
+import com.jeeplus.common.config.Global;
 import com.jeeplus.common.web.BaseController;
 import com.jeeplus.modules.sys.utils.UserUtils;
 
 @Controller
 @RequestMapping(value = "${adminPath}/upload")
 public class UploadController extends BaseController {
-	private static final String bucketName = PropertyUtils.getProperty("oss.access.bucket");
+	private static String bucketName = Global.getConfig("oss.access.bucket");
 	// OSS系统文件根目录
-	public static final String OSS_ROOT = PropertyUtils.getProperty("oss.access.root");
+	public static String OSS_ROOT = Global.getConfig("oss.access.root");
 	// 存储商品相关文件的文件夹
-	public static final String PRODUCT_DIC = PropertyUtils.getProperty("oss.access.product");
+	public static String PRODUCT_DIC = Global.getConfig("oss.access.product");
 	// 存储品牌相关文件的文件夹
-	public static final String BRAND_DIC = PropertyUtils.getProperty("oss.access.brand");
+	public static String BRAND_DIC = Global.getConfig("oss.access.brand");
 	
 	@Autowired
 	private ProductPictureService productPictureService;

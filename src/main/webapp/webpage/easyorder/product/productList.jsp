@@ -114,11 +114,13 @@
 									</c:otherwise>
 								</c:choose>
 							</td>
-							<td><a  href="${ctx}/productManager/product/form?action=view&id=${product.id}">
+							<td><a href="javascript:void(0);" onclick="openTab('${ctx}/productManager/product/form?action=view&id=${product.id}', '${product.name}', false)">
 								${product.name}
 							</a></td>
 							<td>
-								${product.title}
+								<a href="javascript:void(0);" onclick="openTab('${ctx}/productManager/product/form?action=view&id=${product.id}', '${product.name}', false)">
+									${product.title}
+								</a>
 							</td>
 							<td>
 								${product.productNo}
@@ -140,7 +142,7 @@
 							</td>
 							<td>
 								<shiro:hasPermission name="product:product:view">
-									<a href="${ctx}/productManager/product/form?action=view&id=${product.id}" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+									<a href="javascript:void(0);" onclick="openTab('${ctx}/productManager/product/form?action=view&id=${product.id}', '${product.name}', false)" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
 								</shiro:hasPermission>
 								<shiro:hasPermission name="product:product:edit">
 			    					<a href="${ctx}/productManager/product/form?action=edit&id=${product.id}" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
@@ -163,5 +165,6 @@
 	</div>
 	</div>
 </div>
+<script type="text/javascript" src="${ctxStatic}/common/contabs.js"></script>
 </body>
 </html>
