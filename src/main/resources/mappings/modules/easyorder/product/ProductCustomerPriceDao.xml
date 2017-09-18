@@ -29,7 +29,8 @@
 			customer.customer_no AS "customerNo"
 		FROM product_customer_price a
 		LEFT JOIN customer ON customer.id = a.customer_id
-		LEFT JOIN customer_group ON customer_group.id = customer.customer_group_id
+		LEFT JOIN supplier_customer on supplier_customer.customer_id = customer.id
+		LEFT JOIN customer_group ON customer_group.id = supplier_customer.customer_group_id
 		<include refid="productCustomerPriceJoins"/>
 		WHERE a.id = #{id}
 	</select>
@@ -43,7 +44,8 @@
 			customer.customer_no AS "customerNo"
 		FROM product_customer_price a
 		LEFT JOIN customer ON customer.id = a.customer_id
-		LEFT JOIN customer_group ON customer_group.id = customer.customer_group_id
+		LEFT JOIN supplier_customer on supplier_customer.customer_id = customer.id
+		LEFT JOIN customer_group ON customer_group.id = supplier_customer.customer_group_id
 		<include refid="productCustomerPriceJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}

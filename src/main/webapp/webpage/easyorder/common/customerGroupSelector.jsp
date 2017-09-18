@@ -65,12 +65,18 @@
 
 	<script type="text/javascript" src="${ctxStatic}/easy-selector/easy-selector.js"></script>
 	<script type="text/javascript" src="${ctxStatic}/easy-page-records/easy-page-records.js"></script>
-
+	<script type="text/javascript" src="${ctxStatic}/common/contabs.js"></script>
 	<script type="text/javascript">
 		var requestData = {
 			'pageNo' : 1,
 			'pageSize' : 5
 		};
+		
+		var disabledIds = [];
+		var customerGroupIds = $(getActiveIframe()[0].contentWindow.document).find('#customerGroupIds').val();
+		if(customerGroupIds) {
+			disabledIds = customerGroupIds.split(',');
+		}
 		
 		var table = $('#customerGroupTable').easyPageRecords({
 			titles: [
@@ -85,13 +91,12 @@
 			],
 			listProp: 'list',
 			requestData : getRequestData(),
-			type: 'checkbox',
-			url: '${ctx}/customerManager/customerGroup/async/list'
+			type: '${type}',
+			url: '${ctx}/customerManager/customerGroup/async/list',
+			disabled: disabledIds
 		});
 		
-		var productId = '${productId}';
-		$('#disabledIds').data('value', []);
-		if(productId) {
+		/* if(productId) {
 			$.ajax({
 				url: '${ctx}/productManager/productCustomerGroupPrice/customerGroupIds',
 				type: 'GET',
@@ -99,12 +104,11 @@
 				dataType: 'JSON',
 				success: function(data) {
 					if(SUCCESS_CODE == data.code) {
-						$('#disabledIds').data('value', data.result);
 						table.easyPageRecords('setOptions', 'disabled', data.result);
 					}
 				}
 			});
-		}
+		} */
 		
 		
 		function execQuery() {

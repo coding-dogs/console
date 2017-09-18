@@ -14,7 +14,8 @@ public enum EasyResponseEnums {
 	ERROR("500", "内部服务异常，请联系管理员"),
 	
 	NOT_FOUND_SUPPLIER("601", "未找到指定供应商"),
-	NOT_FOUND_PRODUCT("602", "未找到商品信息")
+	NOT_FOUND_PRODUCT("602", "未找到商品信息"),
+	NOT_FOUND_CUSTOMER("603", "未找到客户信息")
 	;
 	
 	

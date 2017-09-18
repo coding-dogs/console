@@ -20,7 +20,6 @@ public class Contact extends DataEntity<Contact> {
 	private String mtCountyCd;		// 收货地址所在区县
 	private String address;		// 联系人地址
 	private String customerId;		// 客户ID
-	private String action;
 	
 	public Contact() {
 		super();
@@ -109,14 +108,6 @@ public class Contact extends DataEntity<Contact> {
 
 	public void setCustomerId(String customerId) {
 		this.customerId = customerId;
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
 	}
 	
 }

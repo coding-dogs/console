@@ -22,7 +22,7 @@
 		<tbody>
 			<c:forEach items="${userList}" var="user" varStatus="status">
 				<tr>
-					<td><input type="radio" value="${user.id}" class="i-checks <c:if test="${status.index == 0}">checked</c:if>" /></td>
+					<td><input type="radio" name="userSelect" value="${user.id}" class="i-checks <c:if test="${status.index == 0}">checked</c:if>" /></td>
 					<td><a href="${ctx}/sys/user/form?id=${user.id}">${user.loginName}</a></td>
 					<td class="userName">${user.name}</td>
 					<td>${user.phone}</td>

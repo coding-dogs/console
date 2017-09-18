@@ -3,9 +3,11 @@
  */
 package com.easyorder.modules.customer.dao;
 
+import java.util.List;
+
+import com.easyorder.modules.customer.entity.Customer;
 import com.jeeplus.common.persistence.CrudDao;
 import com.jeeplus.common.persistence.annotation.MyBatisDao;
-import com.easyorder.modules.customer.entity.Customer;
 
 /**
  * 客户DAO接口
@@ -15,5 +17,5 @@ import com.easyorder.modules.customer.entity.Customer;
 @MyBatisDao
 public interface CustomerDao extends CrudDao<Customer> {
 
-	
+	List<Customer> findByCondition(Customer customer);
 }

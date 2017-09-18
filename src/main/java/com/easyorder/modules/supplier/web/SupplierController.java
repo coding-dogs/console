@@ -34,6 +34,7 @@ import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
 import com.jeeplus.common.web.BaseController;
+import com.jeeplus.modules.sys.utils.UserUtils;
 
 /**
  * 供货商Controller
@@ -46,7 +47,7 @@ public class SupplierController extends BaseController {
 
 	@Autowired
 	private SupplierService supplierService;
-	
+
 	@ModelAttribute
 	public SupplierVO get(@RequestParam(required=false) String id) {
 		SupplierVO entity = null;
@@ -58,7 +59,7 @@ public class SupplierController extends BaseController {
 		}
 		return entity;
 	}
-	
+
 	/**
 	 * 供货商列表页面
 	 */
@@ -86,7 +87,7 @@ public class SupplierController extends BaseController {
 	 */
 	@RequiresPermissions(value={"supplier:supplier:add","supplier:supplier:edit"},logical=Logical.OR)
 	@RequestMapping(value = "save")
-	public String save(SupplierVO supplierVo, Model model, RedirectAttributes redirectAttributes) throws Exception{
+	public String save(SupplierVO supplierVo, Model model, RedirectAttributes redirectAttributes, String type) throws Exception{
 		if (!beanValidator(model, supplierVo)){
 			return form(supplierVo, model, "save");
 		}
@@ -99,10 +100,15 @@ public class SupplierController extends BaseController {
 			BeanUtils.consoleCopy(supplierVo, supplier);
 			supplierService.save(supplier);//保存
 		}
+		
+		if("store".equals(type)) {
+			addMessage(redirectAttributes, "保存店铺信息成功");
+			return "redirect:" + Global.getAdminPath() + "/supplier/store";
+		}
 		addMessage(redirectAttributes, "保存供货商成功");
 		return "redirect:"+Global.getAdminPath()+"/supplier/?repage";
 	}
-	
+
 	/**
 	 * 删除供货商
 	 */
@@ -113,7 +119,7 @@ public class SupplierController extends BaseController {
 		addMessage(redirectAttributes, "删除供货商成功");
 		return "redirect:"+Global.getAdminPath()+"/supplier/?repage";
 	}
-	
+
 	/**
 	 * 批量删除供货商
 	 */
@@ -127,31 +133,31 @@ public class SupplierController extends BaseController {
 		addMessage(redirectAttributes, "删除供货商成功");
 		return "redirect:"+Global.getAdminPath()+"/supplier/?repage";
 	}
-	
+
 	/**
 	 * 导出excel文件
 	 */
 	@RequiresPermissions("supplier:supplier:export")
-    @RequestMapping(value = "export", method=RequestMethod.POST)
-    public String exportFile(Supplier supplier, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "export", method=RequestMethod.POST)
+	public String exportFile(Supplier supplier, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
-            String fileName = "供货商"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
-            Page<Supplier> page = supplierService.findPage(new Page<Supplier>(request, response, -1), supplier);
-    		new ExportExcel("供货商", Supplier.class).setDataList(page.getList()).write(response, fileName).dispose();
-    		return null;
+			String fileName = "供货商"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+			Page<Supplier> page = supplierService.findPage(new Page<Supplier>(request, response, -1), supplier);
+			new ExportExcel("供货商", Supplier.class).setDataList(page.getList()).write(response, fileName).dispose();
+			return null;
 		} catch (Exception e) {
 			addMessage(redirectAttributes, "导出供货商记录失败！失败信息："+e.getMessage());
 		}
 		return "redirect:"+Global.getAdminPath()+"/supplier/?repage";
-    }
+	}
 
 	/**
 	 * 导入Excel数据
 
 	 */
 	@RequiresPermissions("supplier:supplier:import")
-    @RequestMapping(value = "import", method=RequestMethod.POST)
-    public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "import", method=RequestMethod.POST)
+	public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
 		try {
 			int successNum = 0;
 			int failureNum = 0;
@@ -176,26 +182,58 @@ public class SupplierController extends BaseController {
 			addMessage(redirectAttributes, "导入供货商失败！失败信息："+e.getMessage());
 		}
 		return "redirect:"+Global.getAdminPath()+"/supplier/?repage";
-    }
-	
+	}
+
 	/**
 	 * 下载导入供货商数据模板
 	 */
 	@RequiresPermissions("supplier:supplier:import")
-    @RequestMapping(value = "import/template")
-    public String importFileTemplate(HttpServletResponse response, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "import/template")
+	public String importFileTemplate(HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
-            String fileName = "供货商数据导入模板.xlsx";
-    		List<Supplier> list = Lists.newArrayList(); 
-    		new ExportExcel("供货商数据", Supplier.class, 1).setDataList(list).write(response, fileName).dispose();
-    		return null;
+			String fileName = "供货商数据导入模板.xlsx";
+			List<Supplier> list = Lists.newArrayList(); 
+			new ExportExcel("供货商数据", Supplier.class, 1).setDataList(list).write(response, fileName).dispose();
+			return null;
 		} catch (Exception e) {
 			addMessage(redirectAttributes, "导入模板下载失败！失败信息："+e.getMessage());
 		}
 		return "redirect:"+Global.getAdminPath()+"/supplier/?repage";
-    }
+	}
+
+	/**
+	 * 供应商自行查看店铺信息
+	 */
+	@RequiresPermissions(value={"supplier:supplier:view"})
+	@RequestMapping(value = "store")
+	public String store(SupplierVO supplierVo, Model model) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(StringUtils.isBlank(supplierId)) {
+			logger.error("When querying store information, the parameter[supplierId] is empty.");
+			addMessage(model, "未找到供应商");
+			return "easyorder/supplier/storeForm";
+		}
+		SupplierVO supplier = supplierService.getById(supplierId);
+		model.addAttribute("supplier", supplier);
+		return "easyorder/supplier/storeForm";
+	}
 	
-	
-	
+	/**
+	 * 供应商自行查看店铺信息
+	 */
+	@RequiresPermissions(value={"supplier:supplier:edit"})
+	@RequestMapping(value = "infoEdit")
+	public String editSupplierInfo(SupplierVO supplierVo, Model model) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(StringUtils.isBlank(supplierId)) {
+			logger.error("When querying store information, the parameter[supplierId] is empty.");
+			addMessage(model, "未找到供应商");
+			return "easyorder/supplier/supplierInfoEdit";
+		}
+		SupplierVO supplier = supplierService.getById(supplierId);
+		model.addAttribute("supplier", supplier);
+		return "easyorder/supplier/supplierInfoEdit";
+	}
+
 
 }

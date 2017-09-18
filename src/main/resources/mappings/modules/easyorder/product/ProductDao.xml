@@ -77,6 +77,9 @@
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
 			</if>
+			<if test="productCategoryId != null and productCategoryId != ''">
+				AND a.product_category_id = #{productCategoryId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -97,6 +100,9 @@
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="productCategoryId != null and productCategoryId != ''">
+				AND a.product_category_id = #{productCategoryId}
 			</if>
 		</where>		
 		<choose>

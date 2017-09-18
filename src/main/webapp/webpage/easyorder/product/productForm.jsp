@@ -260,6 +260,7 @@
 							<!-- start 客户指定价 -->
 							<div class="form-group">
 								<label class="col-sm-2 control-label">客户价</label>
+								<input id="customerIds" type="hidden"/>
 								<div class="col-sm-10 display-ib">
 									<button type="button" class="btn btn-white btn-sm" id="customerSelector">选择客户</button>
 								</div>
@@ -277,7 +278,7 @@
 										</thead>
 										<tbody>
 											<c:forEach items="${product.productCustomerPrices}" var="cp">
-												<tr>
+												<tr data-id="${cp.customerId}">
 													<td>${cp.customerName}</td>
 													<td>${cp.customerNo}</td>
 													<td>${cp.customerGroupName}</td>
@@ -299,6 +300,7 @@
 							<!-- start 客户组指定价 -->
 							<div class="form-group">
 								<label class="col-sm-2 control-label">客户组价</label>
+								<input id="customerGroupIds" type="hidden"/>
 								<div class="col-sm-10 display-ib">
 									<button type="button" class="btn btn-white btn-sm" id="customerGroupSelector">选择客户组</button>
 								</div>
@@ -313,7 +315,7 @@
 										</thead>
 										<tbody>
 											<c:forEach items="${product.productCustomerGroupPrices}" var="cgp">
-												<tr>
+												<tr data-id='${cgp.customerGroupId}'>
 													<td>${cgp.customerGroupName}</td>
 													<td>
 														<input name="customerGroupPrice[${cgp.customerGroupId}]" type="number" value="${cgp.price}" maxlength="20" class="form-control">

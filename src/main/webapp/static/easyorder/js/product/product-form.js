@@ -1,10 +1,50 @@
 $(".fa-times").on('click', function(e) {
-	$(this).parents('tr').remove();
+	var tableId = $(this).parents('table').attr('id');
+	var $ptr = $(this).parents('tr');
+	if($ptr.length > 0) {
+		$ptr.remove();
+		if(tableId == 'customerPrice') {
+			$('#customerIds').val(getCustomerIds());
+		} else if(tableId == 'customerGroupPrice') {
+			$('#customerGroupIds').val(getCustomerGroupIds());
+		}
+	}
 });
+
+function getCustomerGroupIds() {
+	var customerGroupIds = [];
+	var $trs = $("#customerGroupPrice").find('tbody tr');
+	if($trs && $trs.length > 0) {
+		
+		$.each($trs, function(index, tr) {
+			var $tr = $(tr);
+			var id = $tr.attr('data-id');
+			customerGroupIds.push(id);
+		});
+	}
+	return customerGroupIds;
+}
+
+function getCustomerIds() {
+	var customerIds = [];
+	var $trs = $("#customerPrice").find('tbody tr');
+	if($trs && $trs.length > 0) {
+		
+		$.each($trs, function(index, tr) {
+			var $tr = $(tr);
+			var id = $tr.attr('data-id');
+			customerIds.push(id);
+		});
+	}
+	return customerIds;
+}
+
+$('#customerGroupIds').val(getCustomerGroupIds());
+$('#customerIds').val(getCustomerIds());
 
 
 $('#customerSelector').on('click', function(e) {
-	openDialogWithCallback('选择客户', ctx + '/customerManager/customer/selector?type=customerPrice&productId=' + productId, '800px', '600px', null, function(index, layero) {
+	openDialogWithCallback('选择客户', ctx + '/customerManager/customer/selector?type=checkbox&productId=' + productId, '800px', '600px', null, function(index, layero) {
 		var body = top.layer.getChildFrame('body', index);
 		var iframeWin = layero.find('iframe')[0];
      	var $table = iframeWin.contentWindow.table;
@@ -31,7 +71,7 @@ $('#customerSelector').on('click', function(e) {
      			$td.appendTo($tr);
      		});
      		var $td = $('<td>');
-     		var $inputPrice = $('<input name="customerPrice[' + record.id + ']" type="number" maxlength="20" class="form-control">');
+     		var $inputPrice = $('<input name="customerPrice[' + record.id + ']" type="number" maxlength="20" class="form-control required">');
      		$inputPrice.appendTo($td);
      		$td.appendTo($tr);
      		var $operateTd = $('<td>');
@@ -40,17 +80,22 @@ $('#customerSelector').on('click', function(e) {
      		$operateTd.appendTo($tr);
      		
      		$remove.on('click', function(e) {
-     			$(this).parents('tr').remove();
+     			var $ptr = $(this).parents('tr');
+     			if($ptr.length > 0) {
+     				$ptr.remove();
+     				$('#customerIds').val(getCustomerGroupIds());
+     			}
      		});
      		
      		$tr.appendTo($tbody);
      	});
+     	$('#customerIds').val(getCustomerIds());
      	top.layer.close(index);
 	});
 });
 	
 $('#customerGroupSelector').on('click', function(e) {
-	openDialogWithCallback('选择客户组', ctx + '/customerManager/customerGroup/selector?type=customerGroupPrice&productId=' + productId, '800px', '600px', null, function(index, layero) {
+	openDialogWithCallback('选择客户组', ctx + '/customerManager/customerGroup/selector?type=checkbox&productId=' + productId, '800px', '600px', null, function(index, layero) {
 		var body = top.layer.getChildFrame('body', index);
 		var iframeWin = layero.find('iframe')[0];
      	var $table = iframeWin.contentWindow.table;
@@ -77,7 +122,7 @@ $('#customerGroupSelector').on('click', function(e) {
      			$td.appendTo($tr);
      		});
      		var $td = $('<td>');
-     		var $inputPrice = $('<input name="customerGroupPrice[' + record.id + ']" type="number" maxlength="20" class="form-control">');
+     		var $inputPrice = $('<input name="customerGroupPrice[' + record.id + ']" type="number" maxlength="20" class="form-control required">');
      		$inputPrice.appendTo($td);
      		$td.appendTo($tr);
      		var $operateTd = $('<td>');
@@ -86,11 +131,16 @@ $('#customerGroupSelector').on('click', function(e) {
      		$operateTd.appendTo($tr);
      		
      		$remove.on('click', function(e) {
-     			$(this).parents('tr').remove();
+     			var $ptr = $(this).parents('tr');
+     			if($ptr.length > 0) {
+     				$ptr.remove();
+     				$('#customerGroupIds').val(getCustomerGroupIds());
+     			}
      		});
      		
      		$tr.appendTo($tbody);
      	});
+     	$('#customerGroupIds').val(getCustomerGroupIds());
      	top.layer.close(index);
 	});
 });

@@ -9,11 +9,8 @@
 		a.account_no AS "accountNo",
 		a.password AS "password",
 		a.mt_cust_type_cd AS "mtCustTypeCd",
-		a.mt_customer_status_cd AS "mtCustomerStatusCd",
 		a.mt_city_cd AS "mtCityCd",
 		a.mt_customer_source_cd AS "mtCustomerSourceCd",
-		a.supplier_id AS "supplierId",
-		a.customer_group_id AS "customerGroupId",
 		a.tel AS "tel",
 		a.phone AS "phone",
 		a.email AS "email",
@@ -39,26 +36,43 @@
 			c.address AS "contactAddress",
 			c.email AS "contactEmail",
 			c.phone AS "contactPhone",
-			cg.name AS "customerGroupName"
+			cg.name AS "customerGroupName",
+			cg.id AS "customerGroupId",
+			sc.mt_customer_status_cd AS "mtCustomerStatusCd"
 		FROM customer a
+		LEFT JOIN supplier_customer sc ON sc.customer_id = a.id
 		LEFT JOIN contact c ON c.customer_id = a.id
-		LEFT JOIN customer_group cg ON cg.supplier_id = a.supplier_id AND a.customer_group_id = cg.id
+		LEFT JOIN customer_group cg ON sc.customer_group_id = cg.id
 		<include refid="customerJoins"/>
-		WHERE a.id = #{id}
-	</select>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND sc.supplier_id = #{supplierId}
+			</if>
+			<if test="accountNo != null and accountNo != ''">
+				AND a.account_no = #{accountNo}
+			</if>
+		</where>
+	</select>  
 	
 	<select id="findList" resultType="Customer" >
-		SELECT 
+		SELECT
 			<include refid="customerColumns"/>,
 			c.id AS "contactId",
 			c.name AS "contactName",
 			c.address AS "contactAddress",
 			c.email AS "contactEmail",
 			c.phone AS "contactPhone",
-			cg.name AS "customerGroupName"
+			cg.name AS "customerGroupName", 
+			cg.id AS "customerGroupId",
+			sc.mt_customer_status_cd AS "mtCustomerStatusCd"
 		FROM customer a
+		LEFT JOIN supplier_customer sc ON sc.customer_id = a.id
 		LEFT JOIN contact c ON c.customer_id = a.id
-		LEFT JOIN customer_group cg ON cg.supplier_id = a.supplier_id AND a.customer_group_id = cg.id
+		LEFT JOIN customer_group cg ON sc.customer_group_id = cg.id
 		<include refid="customerJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -68,20 +82,20 @@
 					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
-			<if test="supplierId != null and supplierId != ''">
-				AND a.supplier_id = #{supplierId}
-			</if>
-			
-			<if test="supplierId == null">
-				AND a.supplier_id is NULL
-			</if>
-			
 			<if test="customerGroupId != null and customerGroupId != ''">
 				AND cg.id = #{customerGroupId}
 			</if>
 			
 			<if test="mtCityCd != null and mtCityCd != ''">
 				AND a.mt_city_cd = #{mtCityCd}
+			</if>
+			
+			<if test="supplierId != null and supplierId != ''">
+				AND sc.supplier_id = #{supplierId} 
+			</if>
+			
+			<if test="accountNo != null and accountNo != ''">
+				AND a.account_no = #{accountNo}
 			</if>
 			
 		</where>
@@ -102,11 +116,11 @@
 		<include refid="customerJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
+		</where>		 
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
-			</when>
+			</when> 
 			<otherwise>
 				ORDER BY a.update_date DESC
 			</otherwise>
@@ -124,8 +138,6 @@
 			mt_customer_status_cd,
 			mt_city_cd,
 			mt_customer_source_cd,
-			supplier_id,
-			customer_group_id,
 			tel,
 			phone,
 			email,
@@ -147,8 +159,6 @@
 			#{mtCustomerStatusCd},
 			#{mtCityCd},
 			#{mtCustomerSourceCd},
-			#{supplierId},
-			#{customerGroupId},
 			#{tel},
 			#{phone},
 			#{email},
@@ -173,8 +183,6 @@
 			mt_customer_status_cd = #{mtCustomerStatusCd},
 			mt_city_cd = #{mtCityCd},
 			mt_customer_source_cd = #{mtCustomerSourceCd},
-			supplier_id = #{supplierId},
-			customer_group_id = #{customerGroupId},
 			tel = #{tel},
 			phone = #{phone},
 			email = #{email},
@@ -204,6 +212,19 @@
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
 	<select id="findUniqueByProperty" resultType="Customer" statementType="STATEMENT">
 		select * FROM customer  where ${propertyName} = '${value}'
+	</select>
+	
+	<select id="findByCondition" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM
+			customer a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="accountNo != null and accountNo != ''">
+				AND a.account_no = #{accountNo}
+			</if>
+		</where>
 	</select>
 	
 </mapper>

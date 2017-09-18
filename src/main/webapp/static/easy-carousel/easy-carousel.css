@@ -3,7 +3,7 @@
 	position: relative;
 	border: 1px solid #ddd;
 	width: 520px;
-	height: 520px;
+	height: 410px;
 	text-align: center;
 }
 
@@ -14,12 +14,12 @@
 .easy-carousel-container .easy-carousel-primary {
 	padding: 5px;
 	width: 510px;
-	height: 510px;
+	height: 400px;
 }
 
 .easy-carousel-container .easy-carousel-primary img{
 	width: 510px;
-	height: 510px;
+	height: 400px;
 }
 
 .easy-carousel-container .easy-carousel-list {

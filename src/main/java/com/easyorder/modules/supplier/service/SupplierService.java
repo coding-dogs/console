@@ -44,13 +44,16 @@ public class SupplierService extends CrudService<SupplierDao, Supplier> {
 	public void save(Supplier supplier) {
 		String supplierNo = "GHS" + System.currentTimeMillis();
 		supplier.setSupplierNo(supplierNo);
+		boolean isNewRecord = supplier.getIsNewRecord();
 		super.save(supplier);
-		// 保存用户与供应商关系
-		SysUserSupplier sysUserSupplier = new SysUserSupplier();
-		sysUserSupplier.preInsert();
-		sysUserSupplier.setSysUserId(supplier.getManagerId());
-		sysUserSupplier.setSupplierId(supplier.getId());
-		sysUserSupplierDao.insert(sysUserSupplier);
+		if(isNewRecord) {
+			// 保存用户与供应商关系
+			SysUserSupplier sysUserSupplier = new SysUserSupplier();
+			sysUserSupplier.preInsert();
+			sysUserSupplier.setSysUserId(supplier.getManagerId());
+			sysUserSupplier.setSupplierId(supplier.getId());
+			sysUserSupplierDao.insert(sysUserSupplier);
+		}
 	}
 	
 	@Transactional(readOnly = false)

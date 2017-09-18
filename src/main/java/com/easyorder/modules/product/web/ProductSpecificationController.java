@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -27,9 +28,12 @@ import com.jeeplus.common.utils.MyBeanUtils;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.persistence.Page;
 import com.jeeplus.common.web.BaseController;
+import com.jeeplus.modules.sys.utils.UserUtils;
 import com.jeeplus.common.utils.StringUtils;
 import com.jeeplus.common.utils.excel.ExportExcel;
 import com.jeeplus.common.utils.excel.ImportExcel;
+import com.easyorder.common.beans.EasyResponse;
+import com.easyorder.common.enums.EasyResponseEnums;
 import com.easyorder.modules.product.entity.ProductSpecification;
 import com.easyorder.modules.product.service.ProductSpecificationService;
 
@@ -191,6 +195,26 @@ public class ProductSpecificationController extends BaseController {
 	}
 
 
-
-
+	/**
+	 * 商品关联规格获取
+	 */
+	@RequiresPermissions("product:specification:list")
+	@RequestMapping(value = {"async/list"})
+	@ResponseBody
+	public EasyResponse<List<ProductSpecification>> getProductSpecification(ProductSpecification productSpecification, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
+		}
+		
+		if(!com.easyorder.common.utils.StringUtils.hasText(productSpecification.getProductId())) {
+			logger.error("Did not find the product.[productId : {}]", productSpecification.getProductId());
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_PRODUCT);
+		}
+		productSpecification.setSupplierId(supplierId);
+		List<ProductSpecification> resultList = productSpecificationService.findList(productSpecification);
+		return EasyResponse.buildSuccess(resultList);
+	}
+	
 }

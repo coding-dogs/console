@@ -79,7 +79,7 @@
 		<c:forEach items="${page.list}" var="user">
 			<tr>
 				<td> <input type="checkbox" id="${user.id}" class="i-checks"></td>
-				<td><a  href="#" onclick="openDialogView('查看用户', '${ctx}/sys/user/form?id=${user.id}','800px', '680px')">${user.loginName}</a></td>
+				<td><a  href="#" onclick="openDialogView('查看用户', '${ctx}/sys/user/form?id=${user.id}&action=view','800px', '680px')">${user.loginName}</a></td>
 				<td>${user.name}</td>
 				<td>${user.phone}</td>
 				<td>${user.mobile}</td>
@@ -87,10 +87,10 @@
 				<td>${user.office.name}</td>
 				<td>
 					<shiro:hasPermission name="sys:user:view">
-						<a href="#" onclick="openDialogView('查看用户', '${ctx}/sys/user/form?id=${user.id}','800px', '680px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+						<a href="#" onclick="openDialogView('查看用户', '${ctx}/sys/user/form?id=${user.id}&action=view','800px', '680px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="sys:user:edit">
-						<a href="#" onclick="openDialog('修改用户', '${ctx}/sys/user/form?id=${user.id}','800px', '700px', 'officeContent')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
+						<a href="#" onclick="openDialog('修改用户', '${ctx}/sys/user/form?id=${user.id}&action=edit','800px', '700px', 'officeContent')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="sys:user:del">
 						<a href="${ctx}/sys/user/delete?id=${user.id}" onclick="return confirmx('确认要删除该用户吗？', this.href)" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>

@@ -4,6 +4,7 @@
 <head>
 	<title>订货单管理</title>
 	<meta name="decorator" content="default"/>
+	<link rel="stylesheet" href="${ctxStatic}/easy-selector/easy-selector.css">
 	<script type="text/javascript">
 		$(document).ready(function() {
 		});
@@ -35,8 +36,14 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<table:sortColumn id="orderBy" name="orderBy" value="${page.orderBy}" callback="sortOrRefresh();"/><!-- 支持排序 -->
 		<div class="form-group">
-			<span>订货单号：</span>
-				<form:input path="orderNo" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
+			<label>订货单号：</label>
+			<form:input path="orderNo" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
+		 </div>	
+		 <div class="form-group">
+			<label>订货状态：</label>
+			<div class="display-ib">
+				<div id="orderStatus" data-text="请选择订单状态" data-value="${order.mtOrderStatusCd}" data-name='mtOrderStatusCd'></div>
+			</div>
 		 </div>	
 	</form:form>
 	<br/>
@@ -144,5 +151,44 @@
 	</div>
 	</div>
 </div>
+<script type="text/javascript" src="${ctxStatic}/easy-selector/easy-selector.js"></script>
+<script type="text/javascript">
+/**
+ * 获取订单状态
+ */
+function getOrderStatus() {
+	var items = [];
+	$.ajax({
+		url : ctx + "/sys/dict/listData",
+		async : false,
+		type : "GET",
+		data : {"type" : "mtOrderStatusCd"},
+		dataType : "json",
+		success : function(data) {
+			if(data && data.length > 0) {
+				$.each(data, function(index, status) {
+					var item = {};
+					item.value = status.value;
+					item.text = status.label;
+					items.push(item);
+				});
+			}
+		}
+	});	
+	return items;
+}
+var items = getOrderStatus();
+// 构建订单状态选择器
+$("#orderStatus").easySelector({
+	type : 'select',
+	maxHeight : 250,
+	defaults: {
+		value : '',
+		text : '请选择订单状态',
+		selected: true
+	},
+	items : items
+});
+</script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 <head>
 	<title>商品管理</title>
 	<meta name="decorator" content="default"/>
+	<link rel="stylesheet" href="${ctxStatic}/easy-selector/easy-selector.css">
 	<script type="text/javascript">
 		$(document).ready(function() {
 		});
@@ -35,12 +36,22 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<table:sortColumn id="orderBy" name="orderBy" value="${page.orderBy}" callback="sortOrRefresh();"/><!-- 支持排序 -->
 		<div class="form-group">
-			<span>商品名称：</span>
-				<form:input path="name" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
-			<span>商品标题：</span>
-				<form:input path="title" htmlEscape="false" maxlength="100"  class=" form-control input-sm"/>
-			<span>商品编号：</span>
-				<form:input path="productNo" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
+			<label>商品名称：</label>
+			<form:input path="name" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
+		</div>
+		<div class="form-group">
+			<label>商品标题：</label>
+			<form:input path="title" htmlEscape="false" maxlength="100"  class=" form-control input-sm"/>
+		</div>
+		<div class="form-group">
+			<label>商品编号：</label>
+			<form:input path="productNo" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
+		</div>
+		<div class="form-group clearfix">
+			<label>商品分类：</label>
+			<div class="display-ib">
+				<div id="productCategory" data-text="请选择商品分类" data-value="${product.productCategoryId}" data-name='productCategoryId'></div>
+			</div>
 		 </div>	
 	</form:form>
 	<br/>
@@ -165,6 +176,50 @@
 	</div>
 	</div>
 </div>
-<script type="text/javascript" src="${ctxStatic}/common/contabs.js"></script>
+	<script type="text/javascript" src="${ctxStatic}/common/contabs.js"></script>
+	<script type="text/javascript" src="${ctxStatic}/easy-selector/easy-selector.js"></script>
+	<script type="text/javascript">
+	/**
+	 * 获取商品分类数据
+	 */
+	function getProductCategory() {
+		var items = [];
+		$.ajax({
+			url : ctx + "/productManager/productCategory/tree",
+			async : false,
+			type : "GET",
+			data : {"hasRoot" : "N"},
+			dataType : "json",
+			success : function(data) {
+				var _item = [];
+				if(SUCCESS_CODE === data.code) {
+					if(data.result && data.result.length > 0) {
+						$.each(data.result, function(index, cate) {
+							var item = {};
+							item.value = cate.id;
+							item.text = cate.name;
+							item.pvalue = cate.pId;
+							items.push(item);
+						});
+					}
+				}
+			}
+		});	
+		return items;
+	}
+	var items = getProductCategory();
+	// 构建商品分类选择器
+	$("#productCategory").easySelector({
+		type : 'tree',
+		maxHeight : 250,
+		width: 200,
+		defaults: {
+			value : '',
+			text : '请选择商品分类',
+			selected: true
+		},
+		items : items
+	});
+	</script>
 </body>
 </html>

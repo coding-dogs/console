@@ -3,6 +3,10 @@
  */
 package com.easyorder.modules.product.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.easyorder.modules.product.entity.SpecificationItem;
 import com.jeeplus.common.persistence.CrudDao;
 import com.jeeplus.common.persistence.annotation.MyBatisDao;
@@ -15,5 +19,5 @@ import com.jeeplus.common.persistence.annotation.MyBatisDao;
 @MyBatisDao
 public interface SpecificationItemDao extends CrudDao<SpecificationItem> {
 
-	
+	List<SpecificationItem> findByIds(@Param(value = "ids") String[] ids);
 }

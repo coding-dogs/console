@@ -102,6 +102,7 @@ public class UserController extends BaseController {
     }
     model.addAttribute("user", user);
     model.addAttribute("allRoles", systemService.findAllRole());
+    model.addAttribute("action", user.getAction());
     return "modules/sys/userForm";
   }
 
