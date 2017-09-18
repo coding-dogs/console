@@ -24,6 +24,7 @@
 				height: 100								// 上传位高度(自适应暂未实现，不建议修改)
 			},
 			datas: [],									// 已上传图片数据，供回显
+			requestData: [],
 			targetName : '',							// 目标表单域name属性名
 			uploadUrl : '',								// 后台上传路径 
 			multiple: false,							// 是否开启多文件上传
@@ -147,25 +148,28 @@
 							if(fileUrl) {
 								$uploader.attr('data-upload', UPLOAD_SUCCESS);
 								$img.attr('_src', fileUrl);
-								
-								var $mainSetting = $('<div>');
-								var $mainSettingText = $('<span>');
-								$mainSetting.addClass(MAIN_SETTING_CLASS);
-								$mainSettingText.addClass(MAIN_SETTING_PLACEHOLDER_CLASS);
+								var hasMainSetting = that.options.mainSetting;
+								if(hasMainSetting) {
+									var $mainSetting = $('<div>');
+									var $mainSettingText = $('<span>');
+									$mainSetting.addClass(MAIN_SETTING_CLASS);
+									$mainSettingText.addClass(MAIN_SETTING_PLACEHOLDER_CLASS);
 
-								$mainSettingText.html(that.options.mainSettingPlaceholder);
+									$mainSettingText.html(that.options.mainSettingPlaceholder);
 
-								$mainSettingText.appendTo($mainSetting);
-								$mainSetting.appendTo($uploader);
-								if(that.options.mode != 'readonly') {
-									// 封面文件设置区域点击事件：回调封面文件设置处理函数，变更文字提示
-									$mainSetting.on('click', function(e) {
-										if($(e.target).hasClass(MAIN_SETTING_CLASS) || $(e.target).parents(CLASS_FLAG + MAIN_SETTING_CLASS)) {
-											that.options.mainSettingHandler(e, $uploader);
-											$uploader.find(CLASS_FLAG + MAIN_SETTING_PLACEHOLDER_CLASS).html(that.options.mainSettingText);
-											$uploader.siblings().find(CLASS_FLAG + MAIN_SETTING_PLACEHOLDER_CLASS).html(that.options.mainSettingPlaceholder);
-										}
-									});
+									$mainSettingText.appendTo($mainSetting);
+									$mainSetting.appendTo($uploader);
+									
+									if(that.options.mode != 'readonly') {
+										// 封面文件设置区域点击事件：回调封面文件设置处理函数，变更文字提示
+										$mainSetting.on('click', function(e) {
+											if($(e.target).hasClass(MAIN_SETTING_CLASS) || $(e.target).parents(CLASS_FLAG + MAIN_SETTING_CLASS)) {
+												that.options.mainSettingHandler(e, $uploader);
+												$uploader.find(CLASS_FLAG + MAIN_SETTING_PLACEHOLDER_CLASS).html(that.options.mainSettingText);
+												$uploader.siblings().find(CLASS_FLAG + MAIN_SETTING_PLACEHOLDER_CLASS).html(that.options.mainSettingPlaceholder);
+											}
+										});
+									}
 								}
 							} else {
 								$uploader.attr('data-upload', UPLOAD_FAILED);
@@ -187,10 +191,7 @@
 					});
 				}
 			});
-		}
-
-
-		if(that.options.mode != 'readonly') {
+			
 			$bit.on('click', function(e) {
 				if($(e.target).hasClass(UPLOADER_CLASS)){
 					$(e.target).find(CLASS_FLAG + FILE_SELECTOR_CLASS).trigger('click');
@@ -199,12 +200,12 @@
 				}
 			});
 		}
-			
+
 		that.$bit = $bit;
 		
 		if(that.options.datas && that.options.datas.length > 0) {
 			$.each(that.options.datas, function(index, data) {
-				that.drawUploader(data.url, '', data.isMain, true);
+				that.drawUploader(data.url, '', data.isMain, data.url);
 			});
 			if(that.options.mode != 'readonly' && that.options.datas.length < that.options.maxLength) {
 				that.drawUploader();
@@ -446,6 +447,9 @@
 		}
 	}
 
+	/**
+	 * 获取图片Blob二进制数据
+	 */
 	EasyUploader.prototype.getBlobBydataURI = function (dataURI,type) { 
 	      var binary = atob(dataURI.split(',')[1]); 
 	      var array = []; 
@@ -608,6 +612,11 @@
 
 		// 表单数据
 		formData.append('file', file);
+		if(that.options.requestData) {
+			$.each(that.options.requestData, function(index, rd) {
+				formData.append(rd.key, rd.value);
+			});
+		}
 		// ajax请求上传文件
 		$.ajax({
 			url: that.options.uploadUrl,

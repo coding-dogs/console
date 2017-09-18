@@ -80,6 +80,7 @@
 
 	<script type="text/javascript" src="${ctxStatic}/easy-selector/easy-selector.js"></script>
 	<script type="text/javascript" src="${ctxStatic}/easy-page-records/easy-page-records.js"></script>
+	<script type="text/javascript" src="${ctxStatic}/common/contabs.js"></script>
 
 	<script type="text/javascript">
 		var requestData = {
@@ -92,6 +93,11 @@
 			table.easyPageRecords('setOptions', 'requestData', rd);
 			// 执行请求
 			table.easyPageRecords('request');
+		}
+		var disabledIds = [];
+		var customerIds = $(getActiveIframe()[0].contentWindow.document).find('#customerIds').val();
+		if(customerIds) {
+			disabledIds = customerIds.split(',');
 		}
 		
 		// 页面选择元素记录组件
@@ -116,21 +122,9 @@
 			],
 			listProp: 'list',
 			requestData : getRequestData(),
-			type: 'checkbox',
-			url: '${ctx}/customerManager/customer/async/list'
-		});
-		
-		var disabledIds = [];
-		$.ajax({
-			url: '${ctx}/productManager/productCustomerPrice/customers',
-			data: {productId: '${productId}'},
-			type: 'GET',
-			dataType: 'JSON',
-			success: function(data) {
-				if(SUCCESS_CODE == data.code) {
-					
-				}
-			}
+			type: '${type}',
+			url: '${ctx}/customerManager/customer/async/list',
+			disabled: disabledIds
 		});
 		
 		function getRequestData() {

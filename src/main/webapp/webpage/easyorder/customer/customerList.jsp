@@ -47,6 +47,10 @@
 			<span>客户名称：</span>
 				<form:input path="name" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
 		 </div>	
+		 <div class="form-group">
+			<span>登录账号：</span>
+				<form:input path="accountNo" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
+		 </div>	
 	</form:form>
 	<br/>
 	</div>
@@ -57,13 +61,10 @@
 	<div class="col-sm-12">
 		<div class="pull-left">
 			<shiro:hasPermission name="customer:customer:add">
-				<table:easyAddRow url="${ctx}/customerManager/customer/form?action=add" title="客户"></table:easyAddRow><!-- 增加按钮 -->
-			</shiro:hasPermission>
-			<shiro:hasPermission name="customer:customer:edit">
-			    <table:easyEditRow url="${ctx}/customerManager/customer/form?action=edit" title="客户" id="contentTable"></table:easyEditRow><!-- 编辑按钮 -->
+				<table:easyAddRow url="${ctx}/customerManager/customer/search?action=add" title="客户"></table:easyAddRow><!-- 增加按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="customer:customer:del">
-				<table:easyDelRow url="${ctx}/customerManager/customer/deleteAll" id="contentTable"></table:easyDelRow><!-- 删除按钮 -->
+				<table:easyDelRow url="${ctx}/customerManager/customer/deleteAll" id="contentTable" label="移除"></table:easyDelRow><!-- 删除按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="customer:customer:import">
 				<table:importExcel url="${ctx}/customerManager/customer/import"></table:importExcel><!-- 导入按钮 -->
@@ -118,7 +119,15 @@
 								${customer.accountNo}
 							</td>
 							<td>
-								${customer.customerGroupName}
+								<c:choose>
+									<c:when test="${not empty customer.customerGroupName }">
+										${customer.customerGroupName}
+									</c:when>
+									<c:otherwise>
+										-
+									</c:otherwise>
+								</c:choose>
+								
 							</td>
 							<td>
 								${customer.mtCityCd}
@@ -137,10 +146,11 @@
 									<a href="${ctx}/customerManager/customer/form?id=${customer.id}&action=view" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
 								</shiro:hasPermission>
 								<shiro:hasPermission name="customer:customer:edit">
-			    					<a href="${ctx}/customerManager/customer/form?id=${customer.id}&action=edit" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
-			    				</shiro:hasPermission>
+									<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="giveGroup('${customer.id}')"><i class="fa fa-refresh"> 分配客户组</i></a>
+									<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="updateStatus('${customer.id}')"><i class="fa fa-edit"> 修改状态</i></a>
+								</shiro:hasPermission>
 			    				<shiro:hasPermission name="customer:customer:del">
-									<a href="${ctx}/customerManager/customer/delete?id=${customer.id}" onclick="return confirmx('确认要删除该客户吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
+									<a href="${ctx}/customerManager/customer/delete?id=${customer.id}" onclick="return confirmx('确认要移除该客户吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 移除</a>
 								</shiro:hasPermission>
 							</td>
 						</tr>
@@ -157,5 +167,63 @@
 	</div>
 	</div>
 </div>
+<script type="text/javascript" src="${ctxStatic}/easy-page-records/easy-page-records.js"></script>
+<script type="text/javascript">
+	function giveGroup(customerId) {
+		openDialogWithCallback('选择客户组', ctx + '/customerManager/customerGroup/selector?type=radio', '800px', '600px', null, function(index, layero) {
+			var body = top.layer.getChildFrame('body', index);
+			var iframeWin = layero.find('iframe')[0];
+	     	var $table = iframeWin.contentWindow.table;
+	     	var records = $table.easyPageRecords('getRecords');
+	     	if(!records || records.length == 0) {
+	     		top.layer.close(index);
+	     		return;
+	     	}
+	     	var record = records[0];
+	     	$.ajax({
+	     		url: '${ctx}/customerManager/customerGroup/allocate',
+	     		data: {customerGroupId: record.id, customerId: customerId},
+	     		type: 'POST',
+	     		dataType: 'JSON',
+	     		success: function(data) {
+	     			if(SUCCESS_CODE == data.code) {
+	     				top.layer.close(index);
+	     				location.href = '${ctx}/customerManager/customer/';
+	     				top.layer.alert('分配成功');
+	     			} else {
+	     				top.layer.close(index);
+	     				top.layer.alert(data.msg);
+	     			}
+	     		}
+	     	});
+		});
+	}
+	
+	function updateStatus(customerId) {
+		openDialogWithCallback('修改状态', ctx + '/customerManager/customer/toUpdateStatus?id=' + customerId, '500px', '300px', null, function(index, layero) {
+			var body = top.layer.getChildFrame('body', index);
+			var iframeWin = layero.find('iframe')[0];
+	     	var doc = iframeWin.contentWindow.document;
+	     	var customerId = $(doc).find('#customerId').val();
+	     	var mtCustomerStatusCd = $(doc).find('input[name=mtCustomerStatusCd]:checked').val();
+	     	$.ajax({
+	     		url: "${ctx}/customerManager/customer/updateStatus",
+	     		data: {id: customerId, mtCustomerStatusCd: mtCustomerStatusCd},
+	     		type: "POST",
+	     		dataType: "JSON",
+	     		success: function(data) {
+	     			if(data.code == SUCCESS_CODE) {
+	     				top.layer.close(index);
+	     				top.layer.alert(data.msg);
+	     				window.location.href = "${ctx}/customerManager/customer";
+	     			} else {
+	     				top.layer.close(index);
+	     				top.layer.alert(data.msg);
+	     			}
+	     		}
+	     	});
+		});
+	}
+</script>
 </body>
 </html>

@@ -77,6 +77,7 @@
 		<thead>
 			<tr>
 				<th> <input type="checkbox" class="i-checks"></th>
+				<th>品牌LOGO</th>
 				<th  class="sort-column name">品牌名称</th>
 				<th  class="sort-column simpleName">品牌简称</th>
 				<th  class="sort-column updateDate">更新时间</th>
@@ -95,6 +96,9 @@
 				<c:forEach items="${page.list}" var="productBrand">
 					<tr>
 						<td> <input type="checkbox" id="${productBrand.id}" class="i-checks"></td>
+						<td>
+							<img width="50" height="50" alt="${productBrand.name}" title="${productBrand.name}" src="${productBrand.logoUrl}"/>
+						</td>
 						<td><a  href="#" onclick="openDialogView('查看品牌', '${ctx}/productManager/productBrand/form?action=view&id=${productBrand.id}', '800px', '500px')">
 							${productBrand.name}
 						</a></td>

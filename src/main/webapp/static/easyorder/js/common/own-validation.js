@@ -4,14 +4,11 @@
 
 $.validator.addMethod('specificationNo', function(val, element) {
 	var _this = $(element);
-	console.log('_value = ' + val);
 	var parent = _this.parents('tr');
-	console.log('parent length = ' + parent.length);
 	if(parent.length == 0) { 
 		return true;
 	}
 	var sibs = parent.siblings('.sub-spec-data');
-	console.log('sibs length = ' + sibs.length);
 	if(sibs.length == 0 ) {
 		return true;
 	}
@@ -22,7 +19,6 @@ $.validator.addMethod('specificationNo', function(val, element) {
 			return true;
 		}
 		var tvalue = subNoInput.val();
-		console.log('current tvalue = ' + tvalue);
 		if(tvalue == val) {
 			pass = false;
 			return false;
@@ -33,3 +29,16 @@ $.validator.addMethod('specificationNo', function(val, element) {
 	}
 	return true;
 }, '此值重复不可用');
+
+
+// 手机号校验
+$.validator.addMethod('phoneNo', function(val, element) {
+	var phoneRegex = /^1[3|4|5|7|8][0-9]{9}$/;
+	return this.optional(element) || (phoneRegex.test(val));
+}, '手机号码格式不正确');
+
+//邮政编码验证   
+jQuery.validator.addMethod("zipCode", function(val, element) {   
+    var zipCode = /^[0-9]{6}$/;
+    return this.optional(element) || (zipCode.test(val));
+}, "请正确填写邮政编码");

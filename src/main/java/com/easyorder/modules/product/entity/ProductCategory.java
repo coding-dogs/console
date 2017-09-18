@@ -16,6 +16,7 @@ public class ProductCategory extends DataEntity<ProductCategory> {
 	private Integer categoryNo;		// 分类编号
 	private String pid;		// 商品父分类ID
 	private String pids;	// 所有父类ID
+	private String pictureUrl;	// 类目预览图片
 	private Integer sort; // 排序值
 	private ProductCategory parent;
 	
@@ -85,6 +86,14 @@ public class ProductCategory extends DataEntity<ProductCategory> {
 
 	public void setPids(String pids) {
 		this.pids = pids;
+	}
+
+	public String getPictureUrl() {
+		return pictureUrl;
+	}
+
+	public void setPictureUrl(String pictureUrl) {
+		this.pictureUrl = pictureUrl;
 	}
 
 }

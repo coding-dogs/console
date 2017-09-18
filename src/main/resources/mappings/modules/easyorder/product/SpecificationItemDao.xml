@@ -140,4 +140,19 @@
 		select * FROM specification_item  where ${propertyName} = '${value}'
 	</select>
 	
+	<select id="findByIds" resultType="SpecificationItem">
+		SELECT
+			<include refid="specificationItemColumns"/>
+		FROM specification_item a
+		<where> 
+			a.del_flag = '${@com.jeeplus.common.persistence.BaseEntity@DEL_FLAG_NORMAL}' 
+			<if test="ids != null and ids.length != 0">
+				AND a.id in
+				<foreach collection="ids" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	
 </mapper>

@@ -2,7 +2,7 @@
 <%@ include file="/webpage/include/taglib.jsp"%>
 <html>
 <head>
-	<title>供货商管理</title>
+	<title>供应商管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -13,7 +13,7 @@
 	<div class="wrapper wrapper-content">
 	<div class="ibox">
 	<div class="ibox-title">
-		<h5>供货商列表 </h5>
+		<h5>供应商列表 </h5>
 		<div class="ibox-tools">
 			<a class="collapse-link">
 				<i class="fa fa-chevron-up"></i>
@@ -44,7 +44,7 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<table:sortColumn id="orderBy" name="orderBy" value="${page.orderBy}" callback="sortOrRefresh();"/><!-- 支持排序 -->
 		<div class="form-group">
-			<span>供货商名称：</span>
+			<span>供应商名称：</span>
 				<form:input path="name" htmlEscape="false" maxlength="50"  class=" form-control input-sm"/>
 		 </div>	
 	</form:form>
@@ -57,10 +57,10 @@
 	<div class="col-sm-12">
 		<div class="pull-left">
 			<shiro:hasPermission name="supplier:supplier:add">
-				<table:addRow url="${ctx}/supplier/form" title="供货商"></table:addRow><!-- 增加按钮 -->
+				<table:addRow url="${ctx}/supplier/form" title="供应商"></table:addRow><!-- 增加按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="supplier:supplier:edit">
-			    <table:editRow url="${ctx}/supplier/form" title="供货商" id="contentTable"></table:editRow><!-- 编辑按钮 -->
+			    <table:editRow url="${ctx}/supplier/form" title="供应商" id="contentTable"></table:editRow><!-- 编辑按钮 -->
 			</shiro:hasPermission>
 			<shiro:hasPermission name="supplier:supplier:del">
 				<table:delRow url="${ctx}/supplier/deleteAll" id="contentTable"></table:delRow><!-- 删除按钮 -->
@@ -86,8 +86,10 @@
 		<thead>
 			<tr>
 				<th> <input type="checkbox" class="i-checks"></th>
-				<th  class="sort-column supplierNo">供货商编号</th>
-				<th  class="sort-column name">供货商名称</th>
+				<th  class="sort-column supplierNo">供应商编号</th>
+				<th  class="sort-column name">供应商名称</th>
+				<th>老板姓名</th>
+				<th>供应商地址</th>
 				<th  class="sort-column updateDate">更新时间</th>
 				<th  class="sort-column remarks">备注</th>
 				<th>操作</th>
@@ -98,13 +100,24 @@
 			<tr>
 				<td> <input type="checkbox" id="${supplier.id}" class="i-checks"></td>
 				<td>
-					<a  href="#" onclick="openDialogView('查看供货商', '${ctx}/supplier/form?id=${supplier.id}','800px', '500px')">
+					<a  href="#" onclick="openDialogView('查看供应商', '${ctx}/supplier/form?id=${supplier.id}','800px', '500px')">
 						${supplier.supplierNo}
 					</a>
 				</td>
-				<td><a  href="#" onclick="openDialogView('查看供货商', '${ctx}/supplier/form?id=${supplier.id}','800px', '500px')">
+				<td><a  href="#" onclick="openDialogView('查看供应商', '${ctx}/supplier/form?id=${supplier.id}','800px', '500px')">
 					${supplier.name}
 				</a></td>
+				<td>${supplier.bossName}</td>
+				<td>
+					<c:choose>
+						<c:when test="${not empty supplier.storeAddress}">
+							${supplier.storeAddress}
+						</c:when>
+						<c:otherwise>
+							-
+						</c:otherwise>
+					</c:choose>
+				</td>
 				<td>
 					<fmt:formatDate value="${supplier.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
@@ -113,13 +126,13 @@
 				</td>
 				<td>
 					<shiro:hasPermission name="supplier:supplier:view">
-						<a href="#" onclick="openDialogView('查看供货商', '${ctx}/supplier/form?action=view&id=${supplier.id}','800px', '500px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
+						<a href="#" onclick="openDialogView('查看供应商', '${ctx}/supplier/form?action=view&id=${supplier.id}','800px', '500px')" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="supplier:supplier:edit">
-    					<a href="#" onclick="openDialog('修改供货商', '${ctx}/supplier/form?action=update&id=${supplier.id}','800px', '500px')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
+    					<a href="#" onclick="openDialog('修改供应商', '${ctx}/supplier/form?action=update&id=${supplier.id}','800px', '500px')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
     				</shiro:hasPermission>
     				<shiro:hasPermission name="supplier:supplier:del">
-						<a href="${ctx}/supplier/delete?id=${supplier.id}" onclick="return confirmx('确认要删除该供货商吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
+						<a href="${ctx}/supplier/delete?id=${supplier.id}" onclick="return confirmx('确认要删除该供应商吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
 					</shiro:hasPermission>
 				</td>
 			</tr>

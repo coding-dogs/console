@@ -5,49 +5,6 @@
 <title>客户管理</title>
 <meta name="decorator" content="default" />
 <link rel="stylesheet" href="${ctxStatic}/easy-selector/easy-selector.css">
-<script type="text/javascript">
-		var validateForm;
-		function doSubmit(){//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
-		  if(validateForm.form()){
-			  $("#inputForm").submit();
-			  return true;
-		  }
-	
-		  return false;
-		}
-		$(document).ready(function() {
-			validateForm = $("#inputForm").validate({
-				submitHandler: function(form){
-					loading('正在提交，请稍等...');
-					form.submit();
-				},
-				ignore: '',
-				rules: {
-					customerGroupId: {
-						required: true
-					}
-				},
-				messages: {
-					customerGroupId: {
-						required: '请选择客户组'
-					}
-				},
-				errorContainer: "#messageBox",
-				errorPlacement: function(error, element) {
-					$("#messageBox").text("输入有误，请先更正。");
-					if (element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
-						error.appendTo(element.parent().parent());
-					} else if(element.parents('.easy-selector').length > 0){
-						element.parents('.easy-selector').addClass('error');
-						error.insertAfter(element.parents('.easy-selector'));
-					} else {
-						error.insertAfter(element);
-					}
-				}
-			});
-			
-		});
-	</script>
 </head>
 <body class="gray-bg">
 	<div class="wrapper wrapper-content">
@@ -90,9 +47,9 @@
 					<div class="easy-order customer-base-info">
 						<h2>基本信息</h2>
 						<div class="form-group">
-							<label for="accountNo" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>登录账号</label>
+							<label for="accountNo" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>手机号(登录账号)</label>
 							<div class="col-sm-10">
-								<input type="text" id="accountNo" name="accountNo" value="${customer.accountNo}" placeholder="请输入登录账号" maxlength="50" class="form-control required"/>
+								<input type="text" id="accountNo" name="accountNo" value="${customer.accountNo}" placeholder="请输入手机号(作为登录账号使用)" maxlength="50" class="form-control required phoneNo"/>
 							</div>
 						</div>
 						<c:if test="${customer.action ne 'edit' and customer.action ne 'view'}">
@@ -133,9 +90,9 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="customerGroup" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>所属客户组</label>
+							<label for="customerGroup" class="col-sm-2 ctrl-label">所属客户组</label>
 							<div class="col-sm-10">
-								<div id="customerGroup" data-text="" data-required="true" data-value="${customer.customerGroupId}" data-name='customerGroupId'></div>
+								<div id="customerGroup" data-text="${customer.customerGroupName}" data-value="${customer.customerGroupId}" data-name='customerGroupId'></div>
 							</div>
 						</div>
 						<div class="form-group">
@@ -195,6 +152,56 @@
 	
 	
 	<script type="text/javascript" src="${ctxStatic}/easy-selector/easy-selector.js"></script>
+	<script type="text/javascript" src="${ctxStatic}/easyorder/js/common/own-validation.js"></script>
+	<script type="text/javascript">
+		var validateForm;
+		function doSubmit(){//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
+		  if(validateForm.form()){
+			  $("#inputForm").submit();
+			  return true;
+		  }
+	
+		  return false;
+		}
+		$(document).ready(function() {
+			validateForm = $("#inputForm").validate({
+				submitHandler: function(form){
+					loading('正在提交，请稍等...');
+					form.submit();
+				},
+				ignore: '',
+				rules: {
+					accountNo: {
+						remote: {
+							url: "${ctx}/customerManager/customer/usable",
+							data: {
+								accountNo: function() {
+									return $('#accountNo').val();
+								}
+							},
+							dataType: 'JSON',
+							type: 'GET'
+						}
+					}//设置了远程验证，在初始化时必须预先调用一次。
+				},
+				messages: {
+					accountNo: {remote: "此账号已被使用"},
+				},
+				errorContainer: "#messageBox",
+				errorPlacement: function(error, element) {
+					$("#messageBox").text("输入有误，请先更正。");
+					if (element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
+						error.appendTo(element.parent().parent());
+					} else if(element.parents('.easy-selector').length > 0){
+						element.parents('.easy-selector').addClass('error');
+						error.insertAfter(element.parents('.easy-selector'));
+					} else {
+						error.insertAfter(element);
+					}
+				}
+			});
+		});
+	</script>
 	<script type="text/javascript">
 		
 		function getCustomerGroups() {

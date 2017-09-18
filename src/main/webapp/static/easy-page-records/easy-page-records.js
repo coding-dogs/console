@@ -10,12 +10,23 @@
 		requestData: {},			// 请求参数
 		successCode: '200',			// 后台数据表示成功的代码
 		pageItemCount: 10,			// 分页条显示总个数
+		groupName: 'groupName',
 		errorCallback: function() {	// 请求错误回调函数
 			
 		},
-		disabled: []
+		receiveData: function(data) {
+			
+		},
+		disabled: [],				// 禁用，无法勾选
+		disabledCheck: true			// 禁用时多选框是否选中，true选中，false：不选中，只禁用
 	};
 
+	/**
+	 * 构造函数
+	 * @author qiudequan
+	 * @param element 被作用元素
+	 * @param options 配置参数
+	 */
 	function EasyPageRecords(element, options) {
 		this.element = element;
 		this.$element = $(element);
@@ -30,11 +41,15 @@
 			throw new Error('the titles of options is empty.');
 		}
 
-		this._init();
+		this._init(true);
 	}
 
 	EasyPageRecords.fn = EasyPageRecords.prototype;
 
+	/**
+	 * 获取已选中记录，此处会排除已被禁用的数据
+	 * @author qiudequan
+	 */
 	EasyPageRecords.prototype.getRecords = function() {
 		var that = this;
 		var records = [];
@@ -50,17 +65,28 @@
 		return records;
 	}
 
-	EasyPageRecords.prototype._init = function() {
+	/**
+	 * 初始化操作，此处仅初始化表头
+	 * @author qiudequan
+	 * @param hasRequest 是否需要进行数据请求，true：需要进行数据请求， false：不需要进行数据请求
+	 */
+	EasyPageRecords.prototype._init = function(hasRequest) {
 		var that = this;
+		var findThead = that.$element.find('thead');
+		if(findThead.length > 0) {
+			findThead.remove();
+		}
 		var $thead = $('<thead>');
 		var $tr = $('<tr>');
 
 		// 处理单选全选按钮
 		if(that.options.type && that.options.type !== 'none') {
 			var $td = $('<td>');
-			var $icheckAll = $('<input class="i-checks">');
-			$icheckAll.attr('type', that.options.type);
-			$icheckAll.appendTo($td);
+			if(that.options.type == 'checkbox') {
+				var $icheckAll = $('<input class="i-checks">');
+				$icheckAll.attr('type', that.options.type);
+				$icheckAll.appendTo($td);
+			}
 			$td.appendTo($tr);
 		}
 
@@ -73,15 +99,24 @@
 		$tr.appendTo($thead);
 		$thead.appendTo(that.$element);
 
-		that.request();
+		if(hasRequest) {
+			that.request();
+		}
 		
 	}
 
+	/**
+	 * 通过配置项中的url进行数据请求
+	 * @author qiudequan
+	 */
 	EasyPageRecords.prototype.request = function() {
 		var that = this;
+		// 需要分页的需要移除分页条
 		if(that.options.pagination) {
 			that.$element.siblings('.fixed-table-pagination').remove();
 		}
+		// 初始化表头
+		that._init();
 		var $tbody = that.$element.find('tbody');
 		if($tbody.length > 0) {
 			$tbody.remove();
@@ -93,6 +128,7 @@
 			dataType: "JSON",
 			success: function(data) {
 				if(that.options.successCode === data.code) {
+					// 构建表格数据主体
 					var $tbody = $('<tbody>');
 					var listProp = that.options.listProp;
 					var result = data.result;
@@ -108,16 +144,33 @@
 						$tr.data('record', item);
 						if(that.options.type && that.options.type !== 'none') {
 							var $icheckTd = $('<td>');
-							var $icheck = $('<input class="i-checks">');
+							var $icheck = $('<input class="i-checks" name="' + that.options.groupName + '">');
 							$icheck.attr('type', that.options.type);
 							$icheck.appendTo($icheckTd);
 							$icheckTd.appendTo($tr);
 							
+							// 选中已选中的记录
+							var selectedRecords = that.getRecords();
+							if(selectedRecords && selectedRecords.length > 0) {
+								$.each(selectedRecords, function(ix, sr) {
+									if(item[ID_KEY] == sr[ID_KEY]) {
+										$icheck.iCheck('check');
+										return false;
+									}
+								});
+							}
+							
+							// 判断当前值是否需要禁用
 							if(that.options.disabled && that.options.disabled.length != 0
 									&& that.isDisabled(item[ID_KEY])) {
+								if(that.options.disabledCheck) {
+									$icheck.iCheck('check');
+								}
 								$icheck.iCheck('disable');
 							}
 						}
+						
+						// 遍历标题配置项取字段及值
 						$.each(that.options.titles, function(index, title) {
 							var $td = $('<td>');
 							$td.attr('data-key', title.name);
@@ -132,10 +185,29 @@
 					});
 					$tbody.appendTo(that.$element);
 					that.ichecksInit();
+					
+					// 初始时判断是否需要全选
+					if(that.options.type == 'checkbox') {
+						var $checkAll = that.$element.find("thead tr td input.i-checks");
+						var len = that.$element.find("tbody tr td input.i-checks").length;
+						if(len != 0) {
+							var count = 0;
+							that.$element.find("tbody tr td input.i-checks").each(function(index, check) {
+								if($(check).is(":checked")) {
+									count++;
+								}
+							});
+							if(count == len) {
+								$checkAll.iCheck('check');
+							}
+						}
+						
+					}
 					that.bindEvents();
 					if(that.options.pagination) {
 						that.drawPager(data.result.pageNo, data.result.pageSize, data.result.count);
 					}
+					that.options.receiveData(data);
 				}
 			},
 			error: function() {
@@ -144,6 +216,10 @@
 		});
 	}
 	
+	/**
+	 * 初始化ichecks美化插件
+	 * @author qiudequan
+	 */
 	EasyPageRecords.prototype.ichecksInit = function() {
 		var $ichecks = $('.i-checks');
 		if($ichecks.length > 0){
@@ -154,6 +230,13 @@
 		}
 	}
 	
+	/**
+	 * 绘制分页条，仿制系统自带分页条
+	 * @author qiudequan
+	 * @param pageNo 当前页
+	 * @param pageSize 每页显示的条数
+	 * @param count 总记录数
+	 */
 	EasyPageRecords.prototype.drawPager = function(pageNo, pageSize, count) {
 		var that = this;
 		var $pager = $('<div class="fixed-table-pagination clearfix">');
@@ -306,31 +389,44 @@
 		});
 	}
 	
+	/**
+	 * 事件绑定主要为多选框/单选框的事件绑定
+	 * @author qiudequan
+	 */
 	EasyPageRecords.prototype.bindEvents = function() {
 		var that = this;
-		that.$element.find("thead tr td input.i-checks").on('ifChecked', function(e) {
-			var $checkAll = $(this);
-			if(that.$element.find("tbody tr td input.i-checks").length == 0) {
-				return;
-			}
-			that.$element.find("tbody tr td input.i-checks").each(function(index, check) {
-				$(check).iCheck('check');
+		if(that.options.type == 'checkbox') {
+			that.$element.find("thead tr td input.i-checks").on('ifChecked', function(e) {
+				var $checkAll = $(this);
+				if(that.$element.find("tbody tr td input.i-checks").length == 0) {
+					return;
+				}
+				that.$element.find("tbody tr td input.i-checks").each(function(index, check) {
+					if($(check).prop("disabled")) {
+						return true;
+					}
+					$(check).iCheck('check');
+				});
 			});
-		});
-		
-		that.$element.find("thead tr td input.i-checks").on('ifUnchecked', function(e) {
-			var $checkAll = $(this);
-			if($checkAll.attr('data-no-operate') === 'true') {
-				$checkAll.removeAttr('data-no-operate');
-				return;
-			}
-			if(that.$element.find("tbody tr td input.i-checks").length == 0) {
-				return;
-			}
-			that.$element.find("tbody tr td input.i-checks").each(function(index, check) {
-				$(check).iCheck('uncheck');
+			
+			that.$element.find("thead tr td input.i-checks").on('ifUnchecked', function(e) {
+				var $checkAll = $(this);
+				if($checkAll.attr('data-no-operate') === 'true') {
+					$checkAll.removeAttr('data-no-operate');
+					return;
+				}
+				if(that.$element.find("tbody tr td input.i-checks").length == 0) {
+					return;
+				}
+				that.$element.find("tbody tr td input.i-checks").each(function(index, check) {
+					// 跳过禁用的单选复选按钮
+					if($(check).prop("disabled")) {
+						return true;
+					}
+					$(check).iCheck('uncheck');
+				});
 			});
-		});
+		}
 		
 		that.$element.find("tbody tr td input.i-checks").on('ifChecked', function(e) {
 			var $icheck = $(this);
@@ -338,7 +434,12 @@
 			var dataId = $tr.attr('data-value');
 			var index = that.indexOf(dataId);
 			if(index == -1) {
-				that.records.push($tr.data('record'));
+				if(that.options.type == 'checkbox') {
+					that.records.push($tr.data('record'));
+				} else if(that.options.type == 'radio') {
+					that.records = [$tr.data('record')];
+				}
+				
 			}
 			var len = that.$element.find("tbody tr td input.i-checks").length;
 			var checkedLength = 0;
@@ -353,9 +454,6 @@
 					that.$element.find("thead tr td input.i-checks").iCheck('check');
 				}
 			}
-			
-			
-			console.log(that.records);
 		});
 		
 		that.$element.find("tbody tr td input.i-checks").on('ifUnchecked', function(e) {
@@ -364,7 +462,9 @@
 			var dataId = $tr.attr('data-value');
 			var index = that.indexOf(dataId);
 			if(index != -1) {
-				that.records.splice(index, 1);
+				if(that.options.type == 'checkbox') {
+					that.records.splice(index, 1);
+				}
 			}
 			var len = that.$element.find("tbody tr td input.i-checks").length;
 			var checkedLength = that.$element.find("tbody tr td input.i-checks:checked").length;
@@ -379,6 +479,11 @@
 		});
 	}
 	
+	/**
+	 * 查询数据是否在禁用列表中，现判断依据：ID值
+	 * @author qiudequan
+	 * @param item 记录ID
+	 */
 	EasyPageRecords.prototype.isDisabled = function(item) {
 		var that = this;
 		var exists = false;
@@ -394,6 +499,11 @@
 		return exists;
 	}
 	
+	/**
+	 * 查看数据是否已存在于选中记录列表中，现判断依据：ID值
+	 * @author qiudequan
+	 * @param id 记录ID
+	 */
 	EasyPageRecords.prototype.indexOf = function(id) {
 		var that = this;
 		var index = -1;
@@ -406,6 +516,12 @@
 		return index;
 	}
 	
+	/**
+	 * 修改配置参数
+	 * @author qiudequan
+	 * @param key 参数名
+	 * @param value 参数值
+	 */
 	EasyPageRecords.prototype.setOptions = function(key, value) {
 		var that = this;
 		if(!key) {
@@ -415,6 +531,11 @@
 		return that.options[key];
 	}
 
+	/**
+	 * 跨页记录组件
+	 * @author qiudequan
+	 * @param options 配置参数
+	 */
 	$.fn.easyPageRecords = function(options) {
 		var args = arguments;
         var instance;

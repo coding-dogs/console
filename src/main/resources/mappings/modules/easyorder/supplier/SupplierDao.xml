@@ -5,10 +5,12 @@
 	<sql id="supplierColumns">
 		a.id AS "id",
 		a.name AS "name",
+		a.boss_name AS "bossName",
 		a.supplier_no AS "supplierNo",
 		a.logo_picture_url AS "logoPictureUrl",
 		a.manager_id AS "manager_id",
 		a.description AS "description",
+		a.store_address AS "storeAddress",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -76,9 +78,11 @@
 		INSERT INTO supplier(
 			id,
 			name,
+			boss_name,
 			supplier_no,
 			logo_picture_url,
 			manager_id,
+			store_address,
 			description,
 			create_by,
 			create_date,
@@ -90,9 +94,11 @@
 		) VALUES (
 			#{id},
 			#{name},
+			#{bossName},
 			#{supplierNo},
 			#{logoPictureUrl},
 			#{managerId},
+			#{storeAddress},
 			#{description},
 			#{createBy.id},
 			#{createDate},
@@ -107,9 +113,11 @@
 	<update id="update">
 		UPDATE supplier SET 	
 			name = #{name},
+			boss_name = #{bossName},
 			supplier_no = #{supplierNo},
 			logo_picture_url = #{logoPictureUrl},
 			manager_id = #{managerId},
+			store_address = #{storeAddress},
 			description = #{description},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
@@ -156,7 +164,6 @@
 		FROM sys_user_supplier
 		RIGHT JOIN supplier a on sys_user_supplier.supplier_id = a.id
 		WHERE sys_user_supplier.sys_user_id = #{userId}
-		
 	</select>
 	
 </mapper>

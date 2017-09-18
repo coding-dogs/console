@@ -325,6 +325,17 @@ function getActiveTab(){
 	return $(".J_iframe:visible");
 }
 
+function getActiveIframe() {
+	var activeTab = top.$('.J_menuTabs .J_menuTab.active');
+	if(activeTab.length > 0) {
+		var dataId = activeTab.attr('data-id');
+		var activeIframe = top.$('.J_mainContent').find('iframe[data-id="' + dataId + '"]');
+		if(activeIframe.length > 0) {
+			return activeIframe;
+		}
+	}
+}
+
 
 //打开选项卡菜单
 function openTab(url,title, isNew){//isNew 为true时，打开一个新的选项卡；为false时，如果选项卡不存在，打开一个新的选项卡，如果已经存在，使已经存在的选项卡变为活跃状态。

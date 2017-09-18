@@ -15,7 +15,7 @@
 
 .easy-tabs-container .easy-tabs-list ul {
 	zoom: 1;
-	border-bottom: 2px solid #f0f3f4;
+	border-bottom: 2px solid #1ab394;
 	width: 100%;
 	overflow: auto;
 	margin: 0 0 10px 0;
@@ -36,12 +36,20 @@
 	color: #666;
 	font-size: 14px;
 	text-decoration: none;
+	font-weight: 700;
 }
 
 .easy-tabs-container .easy-tabs-list ul li.selected {
 	position: relative;
 	z-index: 100;
 }
+
+
+.easy-tabs-container .easy-tabs-list ul li.selected a {
+	color: #1ab394 !important;
+	font-size: 16px;
+}
+
 
 .easy-tabs-container .easy-tabs-list ul li.selected:before {
 	content: '';
@@ -50,7 +58,7 @@
 	left: 32%;
 	width: 0;
 	height: 0;
-	border-bottom: 10px solid #f0f3f4;
+	border-bottom: 10px solid #1ab394;
 	border-left: 10px solid transparent;
 	border-right: 10px solid transparent; 
 	z-index: 101;
@@ -68,12 +76,6 @@
 	border-left: 8px solid transparent; 
 	z-index: 101;
 }*/
-
-.easy-tabs-container .easy-tabs-list ul li.selected a {
-	color: #999;
-	font-size: 16px;
-}
-
 .easy-tabs-container .easy-tabs-pages {
 
 }

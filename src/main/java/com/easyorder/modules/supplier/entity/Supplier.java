@@ -12,9 +12,11 @@ public class Supplier extends DataEntity<Supplier> {
 	
 	private static final long serialVersionUID = 1L;
 	private String name;		// 供货商名称
+	private String bossName;	// 老板姓名
 	private String supplierNo;		// 供货商编号
 	private String logoPictureUrl;		// 供货商logo图片地址
 	private String managerId;		// 供货商管理员ID
+	private String storeAddress;	// 供应商地址
 	private String description;		// 简述
 	
 	public Supplier() {
@@ -67,6 +69,22 @@ public class Supplier extends DataEntity<Supplier> {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public String getStoreAddress() {
+		return storeAddress;
+	}
+
+	public void setStoreAddress(String storeAddress) {
+		this.storeAddress = storeAddress;
+	}
+
+	public String getBossName() {
+		return bossName;
+	}
+
+	public void setBossName(String bossName) {
+		this.bossName = bossName;
 	}
 	
 }

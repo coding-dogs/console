@@ -2,7 +2,7 @@
 <%@ include file="/webpage/include/taglib.jsp"%>
 <html>
 <head>
-<title>客户管理</title>
+<title>供应商管理</title>
 <meta name="decorator" content="default" />
 <link rel="stylesheet"
 	href="${ctxStatic}/easy-selector/easy-selector.css">

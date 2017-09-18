@@ -44,7 +44,9 @@ public class SpecificationItemService extends CrudService<SpecificationItemDao, 
 		super.delete(specificationItem);
 	}
 	
-	
+	public List<SpecificationItem> getByIds(String[] ids) {
+		return dao.findByIds(ids);
+	}
 	
 	
 }

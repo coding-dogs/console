@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.easyorder.common.beans.EasyResponse;
+import com.easyorder.common.beans.UploadBean;
 import com.easyorder.common.constant.Constants;
 import com.easyorder.common.enums.EasyResponseEnums;
 import com.easyorder.common.utils.OSSUtils;
@@ -34,7 +35,11 @@ public class UploadController extends BaseController {
 	public static String PRODUCT_DIC = Global.getConfig("oss.access.product");
 	// 存储品牌相关文件的文件夹
 	public static String BRAND_DIC = Global.getConfig("oss.access.brand");
-	
+	// 存储用户头像相关文件的文件夹
+	public static String PORTRAIT_DIC = Global.getConfig("oss.access.portrait");
+	// 存储供应商店铺相关文件的文件夹
+	public static String STORE_DIC = Global.getConfig("oss.access.store");
+
 	@Autowired
 	private ProductPictureService productPictureService;
 
@@ -63,7 +68,7 @@ public class UploadController extends BaseController {
 			if(StringUtils.isEmpty(uploadUrl)) {
 				return EasyResponse.buildError();
 			}
-			
+
 			if(StringUtils.hasText(productId)) {
 				productPicture = new ProductPicture();
 				productPicture.setProductId(productId);
@@ -71,7 +76,7 @@ public class UploadController extends BaseController {
 				productPicture.setIsMain(Constants.NO);
 				productPictureService.save(productPicture);
 			}
-			
+
 		} catch (IOException e) {
 			logger.error("reading the product file error.[fileName : {}]", fileName,e);
 			return EasyResponse.buildError("文件读取异常，请联系管理员。");
@@ -135,7 +140,7 @@ public class UploadController extends BaseController {
 		return resultMap;
 
 	}
-	
+
 	/**
 	 * 构建用于UEditor的返回结果
 	 * @param resultMap
@@ -146,7 +151,7 @@ public class UploadController extends BaseController {
 		resultMap.put("title", Constants.EMPTY_STRING);
 		resultMap.put("original", Constants.EMPTY_STRING);
 	}
-	
+
 	/**
 	 * 构建用于UEditor的返回结果
 	 * @param resultMap
@@ -156,5 +161,68 @@ public class UploadController extends BaseController {
 		resultMap.put("url", Constants.EMPTY_STRING);
 		resultMap.put("title", Constants.EMPTY_STRING);
 		resultMap.put("original", Constants.EMPTY_STRING);
+	}
+
+	@RequestMapping(value = "common/file", method = RequestMethod.POST)
+	@ResponseBody
+	public EasyResponse<String> commonUpload(MultipartFile file, UploadBean uploadBean) {
+		// 此处多为添加供应商，无需验证供应商
+		String uploadUrl = null;
+		String fileName = null;
+		try(OSSUtils ossUtils = new OSSUtils()) {
+			fileName = file.getOriginalFilename();
+			String suffix = ""; 
+			int lastIndexOf = fileName.lastIndexOf(".");
+			if(StringUtils.isNotEmpty(fileName) && lastIndexOf != -1) {
+				suffix = fileName.substring(fileName.lastIndexOf("."));
+			}
+			String path = getPath(uploadBean);
+			if(path == null) {
+				logger.error("Uploding the file error, The upload directory was not found.[fileName : {}, type : {}]", fileName, uploadBean.getType());
+				return EasyResponse.buildError("未读取到上传目录");
+			}
+
+			String uploadFileName = System.currentTimeMillis() + suffix;
+			uploadUrl = ossUtils.uploadStream(bucketName, path, uploadFileName, file.getInputStream());
+			if(StringUtils.isEmpty(uploadUrl)) {
+				return EasyResponse.buildError();
+			}
+		} catch (IOException e) {
+			logger.error("reading the product file error.[fileName : {}]", fileName,e);
+			return EasyResponse.buildError("文件读取异常，请联系管理员。");
+		} catch (Exception e) {
+			logger.error("upload the product file error.[fileName : {}]", fileName,e);
+			return EasyResponse.buildError();
+		}
+		return EasyResponse.buildSuccess(uploadUrl, "文件上传成功");
+	}
+
+	/**
+	 * 根据上传时请求参数进行目录获取
+	 * @param uploadBean
+	 * @return
+	 */
+	private String getPath(UploadBean uploadBean) {
+		String type = uploadBean.getType();
+		String tmp = "";
+		if("portrait".equals(type)) {
+			tmp = PORTRAIT_DIC;
+		} else if("store".equals(type)) {
+			tmp = STORE_DIC;
+		} else if("brand".equals(type)) {
+			tmp = BRAND_DIC;
+		}
+		int idx = tmp.indexOf("{supplierId}");
+		if(idx != -1) {
+			String supplierId = UserUtils.getUser().getSupplierId();
+			if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+				logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+				return null;
+			}
+			uploadBean.setSupplierId(supplierId);
+			tmp = tmp.replace("{supplierId}", supplierId);
+		}
+
+		return OSS_ROOT + tmp;
 	}
 }

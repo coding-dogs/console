@@ -56,6 +56,9 @@
 			<if test="orderNo != null and orderNo != ''">
 				AND a.order_no = #{orderNo}
 			</if>
+			<if test="mtOrderStatusCd != null and mtOrderStatusCd != ''">
+				AND a.mt_order_status_cd = #{mtOrderStatusCd}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -76,6 +79,12 @@
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="mtOrderStatusCd != null and mtOrderStatusCd != ''">
+				AND a.mt_order_status_cd = #{mtOrderStatusCd}
 			</if>
 		</where>		
 		<choose>
@@ -181,7 +190,44 @@
 	
 	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
 	<select id="findUniqueByProperty" resultType="Order" statementType="STATEMENT">
-		select * FROM `order`  where ${propertyName} = '${value}'
+		select * FROM `order`  where ${propertyName} = '${value}' 
 	</select>
 	
+	<!-- 获取统计数据 -->
+	<select id="findOrderStatistics" resultType="OrderStatistics">
+		SELECT
+			COUNT(1) AS 'orderCount', 
+			SUM(actual_price) AS 'orderTotalPrice', 
+			COUNT(DISTINCT customer_id) AS 'customerCount'
+		FROM 
+			`order` a
+		<where>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 分组 -->
+	<select id="findOrderStatisticsDetail" resultType="OrderStatistics">
+		SELECT
+			DATE_FORMAT(create_date,'%Y-%m-%d') AS 'groupAccordance', 
+			COUNT(1) AS 'orderCount', 
+			SUM(actual_price) AS 'orderTotalPrice', 
+			COUNT(DISTINCT customer_id)  AS 'customerCount'
+		FROM 
+			`order` a
+		<where>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+		</where>
+		GROUP BY DATE_FORMAT(create_date,'%Y-%m-%d')
+	</select>
 </mapper>

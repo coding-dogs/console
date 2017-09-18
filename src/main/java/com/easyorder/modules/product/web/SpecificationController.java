@@ -325,6 +325,11 @@ public class SpecificationController extends BaseController {
 	@RequestMapping(value = "details")
 	@ResponseBody
 	public EasyResponse<List<Specification>> getByIds(String itemIds) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
+		}
 		if(!com.easyorder.common.utils.StringUtils.hasText(itemIds)) {
 			logger.error("When querying the specification details, the param itemIds is empty.");
 			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
@@ -338,6 +343,26 @@ public class SpecificationController extends BaseController {
 		}
 		return EasyResponse.buildSuccess(specs);
 	}
+	
+	@RequiresPermissions(value={"product:specification:list"},logical=Logical.OR)
+	@RequestMapping(value = "items/ids")
+	@ResponseBody
+	public EasyResponse<List<SpecificationItem>> getItemByItemIds(String itemIds) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
+		}
+		if(!com.easyorder.common.utils.StringUtils.hasText(itemIds)) {
+			logger.error("When querying the specification items, the param itemIds is empty.");
+			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
+		}
+		List<SpecificationItem> specs = new ArrayList<>();
+		String[] ids = itemIds.split(",");
+		specs = specificationItemService.getByIds(ids);
+		return EasyResponse.buildSuccess(specs);
+	}
+	
 
 
 }

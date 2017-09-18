@@ -24,8 +24,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.easyorder.common.beans.EasyResponse;
 import com.easyorder.common.enums.EasyResponseEnums;
+import com.easyorder.common.utils.BeanUtils;
 import com.easyorder.modules.customer.entity.CustomerGroup;
+import com.easyorder.modules.customer.entity.SupplierCustomer;
 import com.easyorder.modules.customer.service.CustomerGroupService;
+import com.easyorder.modules.customer.service.SupplierCustomerService;
 import com.google.common.collect.Lists;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.persistence.Page;
@@ -48,6 +51,8 @@ public class CustomerGroupController extends BaseController {
 
 	@Autowired
 	private CustomerGroupService customerGroupService;
+	@Autowired
+	private SupplierCustomerService supplierCustomerService;
 
 	@ModelAttribute
 	public CustomerGroup get(@RequestParam(required=false) String id) {
@@ -269,6 +274,43 @@ public class CustomerGroupController extends BaseController {
 		model.addAttribute("type", type);
 		model.addAttribute("productId", productId);
 		return "easyorder/common/customerGroupSelector";
+	}
+	
+	@RequestMapping(value = "/allocate", method = RequestMethod.POST)
+	@ResponseBody
+	public EasyResponse<String> allocateGroup(String customerGroupId, String customerId, HttpServletRequest request, HttpServletResponse response) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
+		}
+		
+		if(com.easyorder.common.utils.StringUtils.isEmpty(customerGroupId)) {
+			logger.error("The param[customerGroupId] is empty.");
+			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
+		}
+		
+		if(com.easyorder.common.utils.StringUtils.isEmpty(customerId)) {
+			logger.error("The param[customerId] is empty.");
+			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
+		}
+		
+		SupplierCustomer supplierCustomer = new SupplierCustomer();
+		supplierCustomer.setSupplierId(supplierId);
+		supplierCustomer.setCustomerId(customerId);
+		SupplierCustomer sc = supplierCustomerService.get(supplierCustomer);
+		String supplierCustomerId = "";
+		if(BeanUtils.isNotEmpty(sc)) {
+			sc.setCustomerGroupId(customerGroupId);
+			supplierCustomerService.save(sc);
+			supplierCustomerId = sc.getId();
+		} else {
+			supplierCustomer.setCustomerGroupId(customerGroupId);
+			supplierCustomerService.save(supplierCustomer);
+			supplierCustomerId = supplierCustomer.getId();
+		}
+		
+		return EasyResponse.buildSuccess(supplierCustomerId);
 	}
 
 }
