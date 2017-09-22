@@ -39,6 +39,8 @@ public class UploadController extends BaseController {
 	public static String PORTRAIT_DIC = Global.getConfig("oss.access.portrait");
 	// 存储供应商店铺相关文件的文件夹
 	public static String STORE_DIC = Global.getConfig("oss.access.store");
+	// 存储商品类目图片的文件夹
+	public static String CATEGORY_DIC = Global.getConfig("oss.access.product.category");
 
 	@Autowired
 	private ProductPictureService productPictureService;
@@ -64,7 +66,7 @@ public class UploadController extends BaseController {
 			String path = "";
 			path = OSS_ROOT + PRODUCT_DIC.replace("{supplierId}", supplierId);
 			String uploadFileName = System.currentTimeMillis() + suffix;
-			uploadUrl = ossUtils.uploadStream(bucketName, path, uploadFileName, file.getInputStream());
+			uploadUrl = ossUtils.uploadStream(bucketName, path, uploadFileName, file.getInputStream(), true);
 			if(StringUtils.isEmpty(uploadUrl)) {
 				return EasyResponse.buildError();
 			}
@@ -106,13 +108,11 @@ public class UploadController extends BaseController {
 				suffix = fileName.substring(fileName.lastIndexOf("."));
 			}
 			String path = "";
+			String uploadFileName = System.currentTimeMillis() + suffix;
 			if("product".equals(utype)) {
 				path = OSS_ROOT + PRODUCT_DIC.replace("{supplierId}", supplierId);
-			} else if("brand".equals(utype)) {
-				path = OSS_ROOT + BRAND_DIC.replace("{supplierId}", supplierId);
 			}
-			String uploadFileName = System.currentTimeMillis() + suffix;
-			uploadUrl = ossUtils.uploadStream(bucketName, path, uploadFileName, file.getInputStream());
+			uploadUrl = ossUtils.uploadStream(bucketName, path, uploadFileName, file.getInputStream(), true);
 			if(StringUtils.isEmpty(uploadUrl)) {
 				buildUEErrorResult(resultMap);
 				return resultMap;
@@ -183,7 +183,11 @@ public class UploadController extends BaseController {
 			}
 
 			String uploadFileName = System.currentTimeMillis() + suffix;
-			uploadUrl = ossUtils.uploadStream(bucketName, path, uploadFileName, file.getInputStream());
+			if("brand".equals(uploadBean.getType()) || "category".equals(uploadBean.getType())) {
+				uploadUrl = ossUtils.uploadStream(bucketName, path, uploadFileName, file.getInputStream(), 100, 100, true);
+			} else {
+				uploadUrl = ossUtils.uploadStream(bucketName, path, uploadFileName, file.getInputStream(), true);
+			}
 			if(StringUtils.isEmpty(uploadUrl)) {
 				return EasyResponse.buildError();
 			}
@@ -211,6 +215,8 @@ public class UploadController extends BaseController {
 			tmp = STORE_DIC;
 		} else if("brand".equals(type)) {
 			tmp = BRAND_DIC;
+		} else if("category".equals(type)) {
+			tmp = CATEGORY_DIC;
 		}
 		int idx = tmp.indexOf("{supplierId}");
 		if(idx != -1) {

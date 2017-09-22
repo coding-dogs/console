@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.easyorder.common.enums.CustomerStatusEnums;
 import com.easyorder.common.utils.BeanUtils;
 import com.easyorder.common.utils.MD5Utils;
 import com.easyorder.common.utils.StringUtils;
@@ -71,20 +70,21 @@ public class CustomerService extends CrudService<CustomerDao, Customer> {
 		super.save(customer);
 		
 		// 保存联系人
+		Contact contact = null;
 		if(StringUtils.isNotEmpty(customer.getContactId())) {
-			Contact contact = contactService.get(customer.getContactId());
-			if(BeanUtils.isEmpty(contact)) {
-				contact = new Contact();
-			}
-			contact.setId(customer.getContactId());
-			contact.setName(customer.getContactName());
-			contact.setAddress(customer.getContactAddress());
-			contact.setEmail(customer.getContactEmail());
-			contact.setPhone(customer.getContactPhone());
-			contact.setCustomerId(customer.getId());
-			if(BeanUtils.isNotEmpty(contact)) {
-				contactService.save(contact);
-			}
+			contact = contactService.get(customer.getContactId());
+		}
+		
+		if(BeanUtils.isEmpty(contact)) {
+			contact = new Contact();
+		}
+		contact.setName(customer.getContactName());
+		contact.setAddress(customer.getContactAddress());
+		contact.setEmail(customer.getContactEmail());
+		contact.setPhone(customer.getContactPhone());
+		contact.setCustomerId(customer.getId());
+		if(BeanUtils.isNotEmpty(contact)) {
+			contactService.save(contact);
 		}
 		
 		
@@ -97,8 +97,10 @@ public class CustomerService extends CrudService<CustomerDao, Customer> {
 			sc.setCustomerGroupId(customerGroupId);
 			sc.preUpdate();
 			supplierCustomerDao.update(sc);
-		} else if(BeanUtils.isEmpty(sc) && StringUtils.isNotEmpty(customerGroupId)) {
-			supplierCustomer.setCustomerGroupId(customerGroupId);
+		} else if(BeanUtils.isEmpty(sc)) {
+			if(StringUtils.isNotEmpty(customerGroupId)) {
+				supplierCustomer.setCustomerGroupId(customerGroupId);
+			}
 			// 默认为待激活状态
 			supplierCustomer.setMtCustomerStatusCd(customer.getMtCustomerStatusCd());
 			supplierCustomer.preInsert();

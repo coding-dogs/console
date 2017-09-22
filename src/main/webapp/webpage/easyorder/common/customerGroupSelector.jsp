@@ -93,7 +93,8 @@
 			requestData : getRequestData(),
 			type: '${type}',
 			url: '${ctx}/customerManager/customerGroup/async/list',
-			disabled: disabledIds
+			disabled: disabledIds,
+			radioSelected: '${selectedGroupId}'
 		});
 		
 		/* if(productId) {

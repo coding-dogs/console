@@ -99,21 +99,23 @@
 											
 											<td nowrap><i
 												class=""></i><a
-												href="#"
-												onclick="openDialogView('查看分类', '${ctx}/productManager/productCategory/form?id=${productCategory.id}','800px', '500px')">${productCategory.name}</a></td>
+												href="javascript:void(0);" data-id="${productCategory.id}"
+												onclick="viewDetail(this);">${productCategory.name}</a></td>
 											<td>
 												${productCategory.sort}
 											</td>
 											<td nowrap>
 												<shiro:hasPermission name="product:productCategory:view">
-													<a href="#"
-														onclick="openDialogView('查看分类', '${ctx}/productManager/productCategory/form?id=${productCategory.id}','800px', '500px')"
+													<a href="javascript:void(0);"
+														data-id="${productCategory.id}"
+														onclick="viewDetail(this);"
 														class="btn btn-info btn-xs"><i
 														class="fa fa-search-plus"></i> 查看</a>
 												</shiro:hasPermission> 
 												<shiro:hasPermission name="product:productCategory:edit">
-													<a href="#"
-														onclick="openDialog('修改分类', '${ctx}/productManager/productCategory/form?id=${productCategory.id}','800px', '500px')"
+													<a href="javascript:void(0);"
+														data-id="${productCategory.id}"
+														onclick="editCategory(this);"
 														class="btn btn-success btn-xs"><i class="fa fa-edit"></i>
 														修改</a>
 												</shiro:hasPermission> 
@@ -123,8 +125,8 @@
 														class="btn btn-danger btn-xs"><i class="fa fa-trash"></i>
 														删除</a>
 												</shiro:hasPermission> <shiro:hasPermission name="product:productCategory:add">
-													<a href="#"
-														onclick="openDialog('添加下级分类', '${ctx}/productManager/productCategory/form?pid=${productCategory.id}&action=add','800px', '500px')"
+													<a href="javascript:void(0);"
+														onclick="addNextLevel(this);" data-id="${productCategory.id}"
 														class="btn btn-primary btn-xs add-next-level"><i class="fa fa-plus"></i>
 														添加下级分类</a>
 												</shiro:hasPermission></td>
@@ -156,6 +158,42 @@
 		var $nextLevel = $("#treeTable").find('tr[depth="3"]').find('.add-next-level');
 		if($nextLevel.length > 0) {
 			$nextLevel.remove();
+		}
+		
+		function addNextLevel(ele) {
+			var that = $(ele);
+			var pid = that.attr("data-id");
+			var hasLogo = false;
+			var tr = that.parents('tr');
+			if(tr && tr.length != 0) {
+				var depth = tr.attr("depth");
+				hasLogo = depth == '2';
+			}
+			openDialog('添加下级分类', '${ctx}/productManager/productCategory/form?pid=' + pid + '&action=add&hasLogo=' + hasLogo,'800px', '500px');
+		}
+		
+		function viewDetail(ele) {
+			var that = $(ele);
+			var id = that.attr("data-id");
+			var hasLogo = false;
+			var tr = that.parents('tr');
+			if(tr && tr.length != 0) {
+				var depth = tr.attr("depth");
+				hasLogo = depth == '3';
+			}
+			openDialogView('查看分类', '${ctx}/productManager/productCategory/form?id=' + id + '&action=view&hasLogo=' + hasLogo,'800px', '500px');
+		}
+		
+		function editCategory(ele) {
+			var that = $(ele);
+			var id = that.attr("data-id");
+			var hasLogo = false;
+			var tr = that.parents('tr');
+			if(tr && tr.length != 0) {
+				var depth = tr.attr("depth");
+				hasLogo = depth == '3';
+			}
+			openDialog('修改分类', '${ctx}/productManager/productCategory/form?id=' + id + '&action=edit&hasLogo=' + hasLogo,'800px', '500px');
 		}
 	</script>
 </body>

@@ -146,7 +146,7 @@
 									<a href="${ctx}/customerManager/customer/form?id=${customer.id}&action=view" class="btn btn-info btn-xs" ><i class="fa fa-search-plus"></i> 查看</a>
 								</shiro:hasPermission>
 								<shiro:hasPermission name="customer:customer:edit">
-									<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="giveGroup('${customer.id}')"><i class="fa fa-refresh"> 分配客户组</i></a>
+									<a class="btn btn-warning btn-xs" href="javascript:void(0);" onclick="giveGroup('${customer.id}', '${customer.customerGroupId}')"><i class="fa fa-refresh"> 分配客户组</i></a>
 									<a class="btn btn-primary btn-xs" href="javascript:void(0);" onclick="updateStatus('${customer.id}')"><i class="fa fa-edit"> 修改状态</i></a>
 								</shiro:hasPermission>
 			    				<shiro:hasPermission name="customer:customer:del">
@@ -169,8 +169,8 @@
 </div>
 <script type="text/javascript" src="${ctxStatic}/easy-page-records/easy-page-records.js"></script>
 <script type="text/javascript">
-	function giveGroup(customerId) {
-		openDialogWithCallback('选择客户组', ctx + '/customerManager/customerGroup/selector?type=radio', '800px', '600px', null, function(index, layero) {
+	function giveGroup(customerId, sourceGroupId) {
+		openDialogWithCallback('选择客户组', ctx + '/customerManager/customerGroup/selector?type=radio&selectedGroupId=' + sourceGroupId, '800px', '600px', null, function(index, layero) {
 			var body = top.layer.getChildFrame('body', index);
 			var iframeWin = layero.find('iframe')[0];
 	     	var $table = iframeWin.contentWindow.table;

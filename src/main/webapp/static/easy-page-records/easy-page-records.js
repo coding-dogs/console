@@ -3,7 +3,9 @@
 	var defaults = {
 		url: '',					// 数据请求url
 		records: '',				// 不可选中记录ID集合
-		type: 'none',				// 	none: 无多选或单选框，checkbox：多选框，radio：单选框
+		type: 'none',				// 	none: 无多选或单选框，checkbox：多选框，radio：单选框, sequence:序号列
+		radioSelected: '',
+		sequenceText: '序号',
 		titles: [],					// 表头定制，数组内对象属性 name：返回数据取值字段名；title：表头名称
 		listProp: '',				// 数据中列表数据取值属性
 		pagination: true,			// 是否需要分页条
@@ -14,6 +16,7 @@
 		errorCallback: function() {	// 请求错误回调函数
 			
 		},
+		sizeArray: [10, 25, 50, 100],
 		receiveData: function(data) {
 			
 		},
@@ -41,6 +44,12 @@
 			throw new Error('the titles of options is empty.');
 		}
 
+		if(this.options.type == 'radio' && this.options.radioSelected) {
+			var obj = {};
+			obj[ID_KEY] = this.options.radioSelected;
+			this.records.push(obj);
+		}
+		
 		this._init(true);
 	}
 
@@ -80,13 +89,17 @@
 		var $tr = $('<tr>');
 
 		// 处理单选全选按钮
-		if(that.options.type && that.options.type !== 'none') {
+		if(that.options.type && that.options.type !== 'none' && that.options.type != 'sequence') {
 			var $td = $('<td>');
 			if(that.options.type == 'checkbox') {
 				var $icheckAll = $('<input class="i-checks">');
 				$icheckAll.attr('type', that.options.type);
 				$icheckAll.appendTo($td);
 			}
+			$td.appendTo($tr);
+		} else if(that.options.type && that.options.type == 'sequence'){
+			var $td = $('<td>');
+			$td.text(that.options.sequenceText);
 			$td.appendTo($tr);
 		}
 
@@ -142,7 +155,7 @@
 						var $tr = $('<tr>');
 						$tr.attr('data-value', item[ID_KEY]);
 						$tr.data('record', item);
-						if(that.options.type && that.options.type !== 'none') {
+						if(that.options.type && that.options.type !== 'none' && that.options.type != 'sequence') {
 							var $icheckTd = $('<td>');
 							var $icheck = $('<input class="i-checks" name="' + that.options.groupName + '">');
 							$icheck.attr('type', that.options.type);
@@ -168,6 +181,13 @@
 								}
 								$icheck.iCheck('disable');
 							}
+						} else if(that.options.type && that.options.type == 'sequence') {
+							var $td = $('<td>');
+							var pageNo = data.result['pageNo'];
+							var pageSize = data.result['pageSize'];
+							var idx = ((parseInt(pageNo) -1 ) * parseInt(pageSize)) + (index + 1);
+							$td.text(idx);
+							$td.appendTo($tr);
 						}
 						
 						// 遍历标题配置项取字段及值
@@ -254,7 +274,7 @@
 		
 		$btnGroup.html(btnHtml);
 		$text1.appendTo($pageList);
-		var sizeArray = [10, 25, 50, 100];
+		var sizeArray = that.options.sizeArray;
 		$.each(sizeArray, function(index, size) {
 			var $li = $('<li>');
 			var $a = $('<a>');
@@ -383,7 +403,6 @@
 			} else {
 				resetPage = $li.find('a').html();
 			}
-			console.log(resetPage);
 			that.options.requestData['pageNo'] = resetPage;
 			that.request();
 		});

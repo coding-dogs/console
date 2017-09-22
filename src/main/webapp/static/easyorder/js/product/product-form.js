@@ -1,3 +1,4 @@
+/* 客户组价，客户指定价移除按钮点击事件 */
 $(".fa-times").on('click', function(e) {
 	var tableId = $(this).parents('table').attr('id');
 	var $ptr = $(this).parents('tr');
@@ -11,11 +12,11 @@ $(".fa-times").on('click', function(e) {
 	}
 });
 
+/* 获取已选客户组ID */
 function getCustomerGroupIds() {
 	var customerGroupIds = [];
 	var $trs = $("#customerGroupPrice").find('tbody tr');
 	if($trs && $trs.length > 0) {
-		
 		$.each($trs, function(index, tr) {
 			var $tr = $(tr);
 			var id = $tr.attr('data-id');
@@ -25,6 +26,7 @@ function getCustomerGroupIds() {
 	return customerGroupIds;
 }
 
+/* 获取已选客户ID */
 function getCustomerIds() {
 	var customerIds = [];
 	var $trs = $("#customerPrice").find('tbody tr');
@@ -39,10 +41,11 @@ function getCustomerIds() {
 	return customerIds;
 }
 
+/* 设置已设置的客户组价和客户组各自的客户组ID及客户ID */
 $('#customerGroupIds').val(getCustomerGroupIds());
 $('#customerIds').val(getCustomerIds());
 
-
+/* 选择客户事件，打开新窗口进行客户选中，选中后绘制到客户指定价的表格中进行客户指定价设置 */
 $('#customerSelector').on('click', function(e) {
 	openDialogWithCallback('选择客户', ctx + '/customerManager/customer/selector?type=checkbox&productId=' + productId, '800px', '600px', null, function(index, layero) {
 		var body = top.layer.getChildFrame('body', index);
@@ -93,7 +96,8 @@ $('#customerSelector').on('click', function(e) {
      	top.layer.close(index);
 	});
 });
-	
+
+/* 选择客户组事件，打开新窗口进行客户组选中，选中后绘制到客户组指定价的表格中进行客户组指定价设置 */
 $('#customerGroupSelector').on('click', function(e) {
 	openDialogWithCallback('选择客户组', ctx + '/customerManager/customerGroup/selector?type=checkbox&productId=' + productId, '800px', '600px', null, function(index, layero) {
 		var body = top.layer.getChildFrame('body', index);
@@ -226,6 +230,8 @@ function getProductCategory() {
 }
 var items = getProductCategory();
 var units = getUnits();
+
+/* 商品单位下拉列表初始化 */
 $("#unit").easySelector({
 	maxHeight : 250,
 	hasMore: true,
@@ -267,7 +273,8 @@ $("#unit").easySelector({
 		});
 	}
 });
-// 构建商品分类选择器
+
+// 构建商品分类选择器(下拉列表形式)
 $("#productCategory").easySelector({
 	type : 'tree',
 	maxHeight : 250,
@@ -338,7 +345,8 @@ function getProductBrands() {
 	return items;
 }
 var items = getProductBrands();
-// 构建商品品牌选择器
+
+// 构建商品品牌选择器(下拉列表形式)
 $("#productBrand").easySelector({
 	maxHeight : 250,
 	hasMore : true,
@@ -385,7 +393,7 @@ $("#productBrand").easySelector({
 });
 
 
-
+/* 获取商品规格数据 */
 function getSpecifications() {
 	var items = [];
 	$.ajax({
@@ -410,7 +418,7 @@ function getSpecifications() {
 
 var specItems = getSpecifications();
 
-// 构建多规格选择器
+// 构建多规格选择器(下拉列表形式)
 function buildEasySelector(ele) {
 	$(ele).easySelector({
 		maxHeight : 250,
@@ -468,6 +476,19 @@ function buildEasySelector(ele) {
 			var id = $selected.attr('data-id');
 			var sibs = $ss.siblings();
 			$selector.attr('data-no', '');
+			
+			if(sibs.length != 0) {
+				$.each(sibs, function(index, sib) {
+					var $sib = $(sib);
+					var $select = $sib.find('.easy-selector');
+					var disabled = [];
+					if(id) {
+						disabled.push(id);
+					}
+					$select.easySelector('setOptions', 'disabled', disabled);
+				});
+			}
+			
 			if(id) {
 				$.ajax({
 					url: ctx + "/productManager/specification/detail",
@@ -726,12 +747,14 @@ function buildSpecSelector(spec, selectedItems) {
 		var $easySelector = $specSelector.find('.easy-selector');
 		var id = $easySelector.easySelector('getValue');
 		var sibs = $specSelector.siblings();
-		if(sibs.length != 0) {
+		if(sibs.length != 0 && id) {
 			$.each(sibs, function(index, sib) {
 				var $sib = $(sib);
 				var $select = $sib.find('.easy-selector');
 				var disabled = [];
-				disabled.push(id);
+				if(id) {
+					disabled.push(id);
+				}
 				$select.easySelector('setOptions', 'disabled', disabled);
 			});
 		}

@@ -52,6 +52,12 @@
 								<input type="text" id="accountNo" name="accountNo" value="${customer.accountNo}" placeholder="请输入手机号(作为登录账号使用)" maxlength="50" class="form-control required phoneNo"/>
 							</div>
 						</div>
+						<div class="form-group">
+							<label for="storeName" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>店铺名称</label>
+							<div class="col-sm-10">
+								<input type="text" id="storeName" name="storeName" value="${customer.storeName}" placeholder="请输入店铺名称" maxlength="50" class="form-control required"/>
+							</div>
+						</div>
 						<c:if test="${customer.action ne 'edit' and customer.action ne 'view'}">
 							<div class="form-group">
 								<label for="password" class="col-sm-2 ctrl-label"><em class="required-tag">* </em>密码</label>

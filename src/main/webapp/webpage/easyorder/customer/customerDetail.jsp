@@ -36,6 +36,10 @@
 								<dd>${customer.accountNo}</dd>
 							</dl>
 							<dl class="dl-horizontal">
+								<dt>店铺名称</dt>
+								<dd>${customer.storeName}</dd>
+							</dl>
+							<dl class="dl-horizontal">
 								<dt>账号状态</dt>
 								<dd>${fns:getDictLabel(customer.mtCustomerStatusCd,"mtCustomerStatusCd", "-")}</dd>
 							</dl>

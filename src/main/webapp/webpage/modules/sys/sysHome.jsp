@@ -20,23 +20,16 @@
 			list-style: none;
 			margin: 10px 15px 10px 0;
 		}
+		.search-result {
+			margin: 15px 0;
+		}
+		
+		.form-inline {
+			margin-top: 10px;
+		}
+		
+		
 	</style>
-	<script type="text/javascript">
-		$(document).ready(function() {
-			WinMove();
-	        //外部js调用
-	        laydate({
-	            elem: '#beginDate', //目标元素。由于laydate.js封装了一个轻量级的选择器引擎，因此elem还允许你传入class、tag但必须按照这种方式 '#id .class'
-	            event: 'focus' //响应事件。如果没有传入event，则按照默认的click
-	        });
-	        laydate({
-	            elem: '#endDate', //目标元素。由于laydate.js封装了一个轻量级的选择器引擎，因此elem还允许你传入class、tag但必须按照这种方式 '#id .class'
-	            event: 'focus' //响应事件。如果没有传入event，则按照默认的click
-	        });
-
-	       
-	    })
-	</script>
 </head>
 <body class="gray-bg">
 	<div class="wrapper wrapper-content">
@@ -64,9 +57,9 @@
 		    		<form class="form-inline">
 		    			<div class="form-group">
 			    			<span>日期：</span>
-			    			<input id="beginDate" name="beginDate" type="text" class="form-control laydate-icon layer-date input-sm"/>
+			    			<input id="beginDate" name="beginDate" type="text" readonly class="form-control laydate-icon layer-date input-sm"/>
 			    			<label>&nbsp;至&nbsp;</label>
-			    			<input id="endDate" name="endDate" type="text" class="form-control laydate-icon layer-date input-sm"/>
+			    			<input id="endDate" name="endDate" type="text" readonly class="form-control laydate-icon layer-date input-sm"/>
 			    		</div>
 			    		<div class="form-group">
 			    			<span>客户：</span>
@@ -87,10 +80,10 @@
 		    					
 		    				</ul>
 		    			</div>
-		    			<div class="sr-right pull-right">
+		    			<div class="sr-right pull-right" id="statisticsMode" data-init="true">
 		    				<span>统计方式：</span>
-		    				<input type="radio" class="i-checks" name="countMode" checked/> 日
-		    				<input type="radio" class="i-checks" name="countMode"/> 月
+		    				<label class="statistics-item"><input type="radio" class="i-checks" name="countMode" value="day"/> 日</label>
+		    				<label class="statistics-item"><input type="radio" class="i-checks" name="countMode" value="month"/> 月</label>
 		    			</div>
 		    		</div>
 		    		
@@ -104,7 +97,6 @@
 			</div>
 		</div>
 	</div>
-	
 	<script type="text/javascript" src="${ctxStatic}/easy-selector/easy-selector.js"></script>
 	<script type="text/javascript" src="${ctxStatic}/easy-tabs/easy-tabs.js"></script>
 	<script type="text/javascript" src="${ctxStatic}/easyorder/js/common/easy-request.js"></script>
@@ -114,11 +106,103 @@
 	<script type="text/javascript" src="${ctxStatic}/easyorder/js/common/easy-charts.js"></script>
 	<script type="text/javascript" src="${ctxStatic}/easy-page-records/easy-page-records.js"></script>
 	<script type="text/javascript">
-		var requestData = {
-			'pageNo' : 1,
-			'pageSize' : 30
+		WinMove();	
+		
+		function fun_date(date, diff, split){
+			if(!split) {
+				split = "-";
+			}
+	        var date2 = new Date(date);
+	        date2.setDate(date.getDate() + diff);
+	        return getFormatDate(date2, split);
+	    }
+		function fun_dates(date, diff, split) {
+			if(!split) {
+				split = "-";
+			}
+			var dates = date.split(split);
+			var date2 = new Date(dates[0], parseInt(dates[1]) - 1, dates[2]);
+	        date2.setDate(parseInt(dates[2]) + diff);
+	        return getFormatDate(date2, split);
+		}
+		
+		function getFormatDate(date, split) {
+			if(!split) {
+				split = "-";
+			}
+			var year = date.getFullYear();
+			var month = date.getMonth() + 1;
+			var day = date.getDate();
+			return year + split + digit(month) + split + digit(day);
+		}
+		
+		function digit(num, length) {
+			var str = '';
+		    num = String(num);
+		    length = length || 2;
+		    for(var i = num.length; i < length; i++){
+		      str += '0';
+		    }
+		    return num < Math.pow(10, length) ? str + (num|0) : num;
+		} 
+		
+		
+		var begin = {
+			elem: '#beginDate',
+            event: 'focus',
+            choose: function(dates) {
+            	end.min = dates;
+            	var mode = $("input[name=countMode]:checked").val();
+            	var diff = (mode == 'day') ? 30 : 365;
+            	end.max = fun_dates(dates, diff);
+            }
 		};
 		
+		var end = {
+            elem: '#endDate',
+            event: 'focus',
+            choose: function(dates) {
+            	
+            }
+        };
+		
+		//外部js调用
+        laydate(begin);
+        laydate(end);
+        
+        
+        $('#statisticsMode').delegate($('input:radio[name="countMode"]'),'ifChecked',function(e) {
+        	var target = $(e.target);
+        	var mode = target.val();
+        	var diff = 0, bigDiff = 0;
+        	if(mode == 'day') {
+                diff = -7;
+                bigDiff = 30;
+        	} else if(mode == 'month') {
+               	diff = -30;
+               	bigDiff = 365;
+        	}
+        	var now = new Date();
+            var beginDate = fun_date(now, diff);
+            $("#beginDate").val(beginDate);
+            end.min = beginDate;
+            end.max = fun_dates(beginDate, bigDiff);
+            $("#endDate").val(getFormatDate(now));
+            $("#customerSelector").easySelector("select", '');
+            execQuery();
+        });
+        
+        $("input[name=countMode]").eq(0).iCheck('check');
+        
+		
+		var requestData = {
+			'pageNo' : 1,
+			'pageSize' : 10
+		};
+		
+		/**
+		 * 从数据中抽取指定的属性拼装成一个集合
+		 */
 		function getArrayFormData(data, key) {
 			var array = [];
 			if(data && data.length > 0) {
@@ -131,20 +215,38 @@
 			return array;
 		}
 		
-		function execQuery(init) {
+		/**
+		 * 执行查询
+		 * init 只是是否初始化时调用，初始化时无需重新请求
+		 */
+		function execQuery() {
 			getStatistics();
-			if(init != false) {
+			var init = $("#statisticsMode").attr('data-init');
+			if(init != 'true') {
 				var rd = getRequestData();
 				// 重置查询条件
 				table.easyPageRecords('setOptions', 'requestData', rd);
 				// 执行请求
 				table.easyPageRecords('request');
+			} else {
+				$("#statisticsMode").attr('data-init', 'false');
 			}
 		}
 		
+		/**
+		 * 组装查询时需要的参数
+		 */
 		function getRequestData() {
 			var customerId = $('#customerSelector').find('input[name="customerId"]').val();
 			requestData['customerId'] = customerId;
+			
+			var beginDate = $("#beginDate").val();
+			var endDate = $("#endDate").val();
+			requestData['beginDate'] = beginDate;
+			requestData['endDate'] = endDate;
+			
+			var mode = $("#statisticsMode").find("input:radio[name=countMode]:checked").val();
+			requestData['mode'] = mode;
 			return requestData;
 		}
 		
@@ -163,23 +265,30 @@
 					title : '订单金额'
 				}
 			],
-			listProp: 'list',
-			requestData : getRequestData(),
-			url: '${ctx}/orderManager/order/statisticsDetail',
-			receiveData: function(data) {
+			listProp: 'list',							// 分页数据在异步返回结果中的属性名
+			type: 'sequence',							// 开启序号列
+			sequenceText: '',							// 序号列表头名称
+			sizeArray: [10, 20, 30],					// 可选每页显示数列表，必须是数组
+			requestData : getRequestData(),				// 请求参数
+			url: '${ctx}/orderManager/order/statisticsDetail',		// 数据请求URL 
+			receiveData: function(data) {							// 请求成功的数据处理函数
 				var statisticsData = data.result.list;
 				easyorder.charts.lineColumnar({
 					ele: '#container',
-					title: '订单数据报表',
+					title: '    ',
 					xAxisData: getArrayFormData(statisticsData, 'groupAccordance'),
 			        yAxisSetting: [
 			        	{
 			        		text: '订单金额',
-			        		suffix: '元'
+			        		suffix: '元',
+			        		x: 50,
+			        		y: -30
 			        	}, 
 			        	{
 			        		text: '订单数量',
-			        		suffix: '单'
+			        		suffix: '单',
+			        		x: -50,
+			        		y: -30
 			        	}
 			        ],
 			        series: [
@@ -199,11 +308,21 @@
 			}
 		});
 		
-		execQuery(false);
-		
+		/**
+		 * 获取订单统计数据
+		 */
 		function getStatistics() {
 			var customerId = $('#customerSelector').find('input[name="customerId"]').val();
-			easyorder.get("orderManager/order/statistics", {customerId: customerId}, false, function(data) {
+			var beginDate = $("#beginDate").val();
+			var endDate = $("#endDate").val();
+			var mode = $("#statisticsMode").find("input:radio[name=countMode]:checked").val();
+			var data = {
+				customerId: customerId,
+				beginDate: beginDate,
+				endDate: endDate,
+				mode: mode
+			};
+			easyorder.get("orderManager/order/statistics", data, false, function(data) {
 				if(data.code = SUCCESS_CODE) {
 					var customerCount = 0, orderCount = 0, orderTotalPrice = 0;
 					var result = data.result;
@@ -223,13 +342,14 @@
 			});
 		}
 	
-		// 页签组件的使用
+		// 页签组件的使用，一次性加载
 		$('#tabs-content').easyTabs({
 			selectedId: '#orderPreview',			// 指定要选中"小页面"的id属性
 			targetElement: '#ibox-content'			// 页签元素们的父元素
 		});
 		
-		var customers = [];
+		// 获取客户列表，作为客户下拉列表
+		var customers = [], customerSelector;
 		function getCustomers() {
 			easyorder.get("customerManager/customer/async/listAll", {}, true, function(data) {
 				if(data.code = SUCCESS_CODE) {
@@ -243,7 +363,7 @@
 						});
 					}
 					
-					$("#customerSelector").easySelector({
+					customerSelector = $("#customerSelector").easySelector({
 						type: 'select',
 						maxHeight: 250,
 						width: 150,

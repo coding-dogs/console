@@ -67,8 +67,8 @@ public class OrderService extends CrudService<OrderDao, Order> {
 		super.delete(order);
 	}
 
-	public List<OrderStatistics> getOrderStatistics(Order order) {
-		return dao.findOrderStatistics(order);
+	public List<OrderStatistics> getOrderStatistics(OrderStatistics orderStatistics) {
+		return dao.findOrderStatistics(orderStatistics);
 	}
 
 	

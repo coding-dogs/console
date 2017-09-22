@@ -1,6 +1,7 @@
 package com.easyorder.modules.order.entity;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.jeeplus.common.persistence.DataEntity;
 
@@ -17,6 +18,9 @@ public class OrderStatistics extends DataEntity<OrderStatistics> {
 	private String groupAccordance;				// 分组依据，若为月，则其值为具体某个月的值，若为日，则其值为具体某一日的值
 	private String supplierId;
 	private String customerId;
+	private Date beginDate;
+	private Date endDate;
+	private String mode;
 	
 	public Integer getOrderCount() {
 		return orderCount;
@@ -53,6 +57,24 @@ public class OrderStatistics extends DataEntity<OrderStatistics> {
 	}
 	public void setCustomerId(String customerId) {
 		this.customerId = customerId;
+	}
+	public Date getBeginDate() {
+		return beginDate;
+	}
+	public void setBeginDate(Date beginDate) {
+		this.beginDate = beginDate;
+	}
+	public Date getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+	public String getMode() {
+		return mode;
+	}
+	public void setMode(String mode) {
+		this.mode = mode;
 	}
 	
 }

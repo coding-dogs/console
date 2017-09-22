@@ -27,12 +27,15 @@ public class Order extends DataEntity<Order> {
 	private Date completedTime;
 	private Date closeTime;
 	private String supplierId;
+	private String customerStoreName;
 	
 	
 	private String customerName;
 	private List<OrderItem> orderItems;
 	private OrderShippingAddress orderShippingAddress;
 	private OrderExpress orderExpress;
+	
+	private String printPreview;
 	
 	public String getOrderNo() {
 		return orderNo;
@@ -147,6 +150,18 @@ public class Order extends DataEntity<Order> {
 	}
 	public void setOrderExpress(OrderExpress orderExpress) {
 		this.orderExpress = orderExpress;
+	}
+	public String getPrintPreview() {
+		return printPreview;
+	}
+	public void setPrintPreview(String printPreview) {
+		this.printPreview = printPreview;
+	}
+	public String getCustomerStoreName() {
+		return customerStoreName;
+	}
+	public void setCustomerStoreName(String customerStoreName) {
+		this.customerStoreName = customerStoreName;
 	}
 	
 }

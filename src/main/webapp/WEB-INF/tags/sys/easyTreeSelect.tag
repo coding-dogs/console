@@ -23,6 +23,7 @@
 <%@ attribute name="disabled" type="java.lang.String" required="false" description="是否限制选择，如果限制，设置为disabled"%>
 <%@ attribute name="dataMsgRequired" type="java.lang.String" required="false" description=""%>
 <%@ attribute name="allowMaxLevel" type="java.lang.String" required="false" description="允许选择的最大层级数"%>
+<%@ attribute name="controlElementId" type="java.lang.String" required="false" description="需要控制显示的动态元素的ID"%>
 	<input id="${id}Id" name="${name}" class="${cssClass}" type="hidden" value="${value}"/>
 	<div class="input-group">
 		<input id="${id}Name" name="${labelName}" ${allowInput?'':'readonly="readonly"'}  type="text" value="${labelValue}" data-msg-required="${dataMsgRequired}"
@@ -56,7 +57,21 @@
 						}else{
 							nodes = tree.getSelectedNodes();
 						}
+						console.log(nodes);
 						for(var i=0; i<nodes.length; i++) {//<c:if test="${checked && notAllowSelectParent}">
+							/* var controlElementId = "${controlElementId}";
+							console.log(controlElementId);
+							if(controlElementId) {
+								var ce = $("#${controlElementId}");
+								if(ce.length != 0) {
+									console.log(nodes[i].level);
+									if(nodes[i].level == '${allowMaxLevel}') {
+										ce.show();
+									} else {
+										ce.hide();
+									}
+								}
+							} */
 							if (nodes[i].isParent){
 								continue; // 如果为复选框选择，则过滤掉父节点
 							}//</c:if><c:if test="${notAllowSelectRoot}">
@@ -82,6 +97,17 @@
 							}//</c:if>
 							ids.push(nodes[i].id);
 							names.push(nodes[i].name);//<c:if test="${!checked}">
+							var controlElementId = "${controlElementId}";
+							if(controlElementId) {
+								var ce = $("#${controlElementId}");
+								if(ce.length != 0) {
+									if(nodes[i].level == '${allowMaxLevel}') {
+										ce.show();
+									} else {
+										ce.hide();
+									}
+								}
+							}
 							break; // 如果为非复选框选择，则返回第一个选择  </c:if>
 						}
 						$("#${id}Id").val(ids.join(",").replace(/u_/ig,""));
