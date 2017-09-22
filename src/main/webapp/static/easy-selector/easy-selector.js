@@ -452,6 +452,16 @@
 		var that = this;
 		var items = that.options.items;
 		
+		if(value == that.options.defaults.value) {
+			that.$element.find('.value-area').find('input').val(that.options.defaults.value);
+			that.$element.find('.value-area').find('span').html(that.options.defaults.text);
+			that.$element.find('.menu-wrapper ul li').removeClass('selected');
+			var $selectedLi = that.$element.find('.menu-wrapper ul li[data-id="' + value +'"]');
+			$selectedLi.addClass('selected');
+			that.options.selectedCallback(that.$element);
+			return;
+		}
+		
 		var $valueLi = that.$element.find('.menu-wrapper ul li[data-id="' + value + '"]');
 		if($valueLi.length > 0 && that.options.type === 'tree' && that.options.targetLevel) {
 			var valueLevel = $valueLi.attr('data-level');

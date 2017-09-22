@@ -51,7 +51,7 @@
 				</td>
 	         	<td class="width-35" >
 	         		<c:forEach items="${fns:getDictList('mtCustomerStatusCd')}" var="customerStatus">
-						<input type="radio" name="mtCustomerStatusCd" value="${customerStatus.value}" class="i-checks" <c:if test="${customerStatus.value eq customer.mtCustomerStatusCd}">checked="true"</c:if>> ${customerStatus.label}
+						<label><input type="radio" name="mtCustomerStatusCd" value="${customerStatus.value}" class="i-checks" <c:if test="${customerStatus.value eq customer.mtCustomerStatusCd}">checked="true"</c:if>> ${customerStatus.label}</label>
 					</c:forEach>
 	         	</td>
 	     	</tr>

@@ -37,9 +37,13 @@
 	<select id="findList" resultType="OrderItem" >
 		SELECT 
 			<include refid="orderItemColumns"/>,
-			p.product_no AS "productNo"
+			p.product_no AS "productNo",
+			p.name AS "productName",
+			p.bar_code AS "barCode",
+			unit.unit AS "unit"
 		FROM order_item a
 		LEFT JOIN product p on p.id = a.product_id
+		LEFT JOIN unit on unit.id = p.unit_id and unit.supplier_id = p.supplier_id
 		<include refid="orderItemJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}

@@ -133,6 +133,7 @@
 							<shiro:hasPermission name="order:order:edit">
 		    					<a href="${ctx}/orderManager/order/form?action=edit&id=${order.id}" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 修改</a>
 		    				</shiro:hasPermission>
+		    					<a href="javascript:void(0);" onclick="toPrintPreview('${order.id}')" class="btn btn-success btn-xs" ><i class="fa fa-edit"></i> 打印</a>
 		    				<shiro:hasPermission name="order:order:del">
 								<a href="${ctx}/orderManager/order/delete?id=${order.id}" onclick="return confirmx('确认要删除该订货单吗？', this.href)"   class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> 删除</a>
 							</shiro:hasPermission>
@@ -152,7 +153,12 @@
 	</div>
 </div>
 <script type="text/javascript" src="${ctxStatic}/easy-selector/easy-selector.js"></script>
+<script type="text/javascript" src="${ctxStatic}/common/contabs.js"></script>
 <script type="text/javascript">
+function toPrintPreview(id) {
+	openTab('${ctx}/orderManager/order/form?id=' + id + '&printPreview=Y', '订单打印预览');
+}
+
 /**
  * 获取订单状态
  */

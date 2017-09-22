@@ -9,7 +9,7 @@ import com.jeeplus.common.persistence.annotation.MyBatisDao;
 
 @MyBatisDao
 public interface OrderDao extends CrudDao<Order> {
-	List<OrderStatistics> findOrderStatistics(Order order);
+	List<OrderStatistics> findOrderStatistics(OrderStatistics orderStatistics);
 	
 	List<OrderStatistics> findOrderStatisticsDetail(OrderStatistics orderStatistics);
 	

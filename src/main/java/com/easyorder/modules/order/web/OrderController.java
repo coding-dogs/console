@@ -26,6 +26,8 @@ import com.easyorder.common.enums.EasyResponseEnums;
 import com.easyorder.modules.order.entity.Order;
 import com.easyorder.modules.order.entity.OrderStatistics;
 import com.easyorder.modules.order.service.OrderService;
+import com.easyorder.modules.supplier.entity.Supplier;
+import com.easyorder.modules.supplier.service.SupplierService;
 import com.google.common.collect.Lists;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.persistence.Page;
@@ -42,6 +44,8 @@ import com.jeeplus.modules.sys.utils.UserUtils;
 public class OrderController extends BaseController {
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private SupplierService supplierService;
 
 	@ModelAttribute
 	public Order get(@RequestParam(required=false) String id) {
@@ -79,17 +83,23 @@ public class OrderController extends BaseController {
 	@RequiresPermissions(value={"order:order:view","order:order:add","order:order:edit"},logical=Logical.OR)
 	@RequestMapping(value = "form")
 	public String form(Order order, Model model) {
+		String supplierId = UserUtils.getUser().getSupplierId();
+		
 		String returnPage = "easyorder/order/orderDetail";
 		if(Constants.ACTION_ADD.equals(order.getAction())) {
 			returnPage = "easyorder/order/orderForm";
 		}
-		String supplierId = UserUtils.getUser().getSupplierId();
+		if(Constants.YES.equals(order.getPrintPreview())) {
+			returnPage = "easyorder/order/printPreview";
+		}
 		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
 			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
 			addMessage(model, EasyResponseEnums.NOT_FOUND_SUPPLIER.message);
 			return returnPage;
 		}
 		order.setSupplierId(supplierId);
+		Supplier supplier = supplierService.get(supplierId);
+		model.addAttribute("supplier", supplier);
 		model.addAttribute("order", order);
 		return returnPage;
 	}
@@ -221,14 +231,14 @@ public class OrderController extends BaseController {
 	
 	@RequestMapping(value = "statistics")
 	@ResponseBody
-	public EasyResponse<OrderStatistics> getStatistics(Order order) {
+	public EasyResponse<OrderStatistics> getStatistics(OrderStatistics orderStatistics) {
 		String supplierId = UserUtils.getUser().getSupplierId();
 		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
 			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
 			return EasyResponse.buildByEnum(EasyResponseEnums.NOT_FOUND_SUPPLIER);
 		}
-		order.setSupplierId(supplierId);
-		List<OrderStatistics> resultList = orderService.getOrderStatistics(order);
+		orderStatistics.setSupplierId(supplierId);
+		List<OrderStatistics> resultList = orderService.getOrderStatistics(orderStatistics);
 		if(CollectionUtils.isEmpty(resultList)) {
 			return EasyResponse.buildSuccess(null);
 		}

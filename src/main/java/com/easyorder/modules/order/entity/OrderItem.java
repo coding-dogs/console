@@ -18,6 +18,9 @@ public class OrderItem extends DataEntity<OrderItem> {
 	private BigDecimal totalPrice;
 	private String productTitle;
 	private String productPicUrl;
+	private String productName;
+	private String barCode;
+	private String unit;
 	
 	private String productNo;
 	
@@ -74,6 +77,24 @@ public class OrderItem extends DataEntity<OrderItem> {
 	}
 	public void setProductNo(String productNo) {
 		this.productNo = productNo;
+	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public String getBarCode() {
+		return barCode;
+	}
+	public void setBarCode(String barCode) {
+		this.barCode = barCode;
+	}
+	public String getUnit() {
+		return unit;
+	}
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 	
 }

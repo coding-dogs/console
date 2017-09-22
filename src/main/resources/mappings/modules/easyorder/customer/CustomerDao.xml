@@ -5,6 +5,7 @@
 	<sql id="customerColumns">
 		a.id AS "id",
 		a.name AS "name",
+		a.store_name AS "storeName",
 		a.customer_no AS "customerNo",
 		a.account_no AS "accountNo",
 		a.password AS "password",
@@ -131,6 +132,7 @@
 		INSERT INTO customer(
 			id,
 			name,
+			store_name,
 			customer_no,
 			account_no,
 			password,
@@ -152,6 +154,7 @@
 		) VALUES (
 			#{id},
 			#{name},
+			#{storeName},
 			#{customerNo},
 			#{accountNo},
 			#{password},
@@ -176,6 +179,7 @@
 	<update id="update">
 		UPDATE customer SET 	
 			name = #{name},
+			store_name = #{storeName},
 			customer_no = #{customerNo},
 			account_no = #{accountNo},
 			password = #{password},

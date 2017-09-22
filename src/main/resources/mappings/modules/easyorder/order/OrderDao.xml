@@ -34,17 +34,21 @@
     
 	<select id="get" resultType="Order" >
 		SELECT 
-			<include refid="orderColumns"/>
+			<include refid="orderColumns"/>,
+			c.name AS "customerName",
+			c.store_name AS "customerStoreName"
 		FROM `order` a
+		LEFT JOIN customer c on c.id = a.customer_id
 		<where>
 			AND a.id = #{id}
 		</where>
-	</select>
+	</select> 
 	
 	<select id="findList" resultType="Order" >
 		SELECT 
 			<include refid="orderColumns"/>,
-			c.name AS "customerName"
+			c.name AS "customerName",
+			c.store_name AS "customerStoreName"
 		FROM `order` a
 		LEFT JOIN customer c on c.id = a.customer_id
 		<include refid="orderJoins"/>
@@ -202,32 +206,62 @@
 		FROM 
 			`order` a
 		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.mt_order_status_cd = 'COMPLETED'
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
 			</if>
 			<if test="customerId != null and customerId != ''">
 				AND a.customer_id = #{customerId}
 			</if>
+			<if test="beginDate != null">
+				AND a.create_date &gt;= CONCAT(DATE_FORMAT(#{beginDate},'%Y-%m-%d'), ' 00:00:00')
+				<if test="endDate != null">
+					AND a.create_date &lt;= CONCAT(DATE_FORMAT(#{endDate},'%Y-%m-%d'), ' 23:59:59')
+				</if>
+			</if> 
 		</where>
-	</select>
-	
+	</select> 
+	 
 	<!-- 分组 -->
 	<select id="findOrderStatisticsDetail" resultType="OrderStatistics">
 		SELECT
-			DATE_FORMAT(create_date,'%Y-%m-%d') AS 'groupAccordance', 
+			<if test="mode != null and mode != ''">
+				<if test="mode == 'day'">
+					DATE_FORMAT(create_date,'%Y-%m-%d') AS 'groupAccordance', 
+				</if>
+				<if test="mode == 'month'">
+					DATE_FORMAT(create_date,'%Y-%m') AS 'groupAccordance', 
+				</if>
+			</if>
 			COUNT(1) AS 'orderCount', 
 			SUM(actual_price) AS 'orderTotalPrice', 
 			COUNT(DISTINCT customer_id)  AS 'customerCount'
 		FROM 
 			`order` a
 		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.mt_order_status_cd = 'COMPLETED'
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
 			</if>
 			<if test="customerId != null and customerId != ''">
 				AND a.customer_id = #{customerId}
 			</if>
+			<if test="beginDate != null">
+				AND a.create_date &gt;= CONCAT(DATE_FORMAT(#{beginDate},'%Y-%m-%d'), ' 00:00:00')
+				<if test="endDate != null">
+					AND a.create_date &lt;= CONCAT(DATE_FORMAT(#{endDate},'%Y-%m-%d'), ' 23:59:59')
+				</if>
+			</if> 
 		</where>
-		GROUP BY DATE_FORMAT(create_date,'%Y-%m-%d')
+		<if test="mode != null and mode != ''">
+			<if test="mode == 'day'">
+				GROUP BY DATE_FORMAT(create_date,'%Y-%m-%d')
+			</if>
+			<if test="mode == 'month'">
+				GROUP BY DATE_FORMAT(create_date,'%Y-%m')
+			</if>
+		</if>
 	</select>
 </mapper>

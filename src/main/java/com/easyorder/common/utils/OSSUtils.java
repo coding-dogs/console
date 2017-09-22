@@ -1,6 +1,8 @@
 package com.easyorder.common.utils;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +18,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +40,8 @@ import com.aliyun.oss.model.SimplifiedObjectMeta;
 import com.jeeplus.common.config.Global;
 import com.jeeplus.common.utils.FileUtils;
 import com.jeeplus.modules.oss.entity.FileInfoVO;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 
 
@@ -423,7 +429,7 @@ public class OSSUtils implements Closeable {
 	public boolean exist(String bucketName, String key) {
 		return ossClient.doesObjectExist(bucketName, key);
 	}
-
+	
 	/**
 	 * 上传文件流
 	 * @param bucketName
@@ -431,20 +437,57 @@ public class OSSUtils implements Closeable {
 	 * @param inputStream
 	 * @return 返回文件url地址
 	 */
-	public String uploadStream(String bucketName, String uniqueKey, InputStream inputStream) {
+	public String uploadStream(String bucketName, String uniqueKey, InputStream inputStream, Boolean compress) {
 		String fileUrl = null;
 		String host = "https://" + bucketName + "." + endpoint + "/";
 		try {
+			int available = inputStream.available();
+			if(compress != null && compress.booleanValue() == true && available > 124000) {
+				String formatName = "";
+				if(uniqueKey.indexOf(".") != -1) {
+					formatName = uniqueKey.substring(uniqueKey.lastIndexOf(".") + 1);
+				}
+				BufferedImage bufImg = ImageIO.read(inputStream);
+				bufImg = Thumbnails.of(bufImg).scale(0.7).outputQuality(0.9).asBufferedImage();
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ImageIO.write(bufImg, formatName, bos);
+				inputStream = new ByteArrayInputStream(bos.toByteArray());
+			}
 			ossClient.putObject(bucketName, uniqueKey, inputStream);
 		} catch (Exception e) {
-			logger.error("upload file to [{}] failed.[fileName : {}]", host, uniqueKey);
+			logger.error("upload file to [{}] failed.[fileName : {}]", host, uniqueKey, e);
 			return fileUrl;
 		}
 		fileUrl = host + uniqueKey;
 		return fileUrl;
 	}
 	
-	public String uploadStream(String bucketName, String dic, String key, InputStream inputStream) {
+	/**
+	 * 上传文件流
+	 * @param bucketName
+	 * @param uniqueKey
+	 * @param inputStream
+	 * @return 返回文件url地址
+	 */
+	public String uploadStream(String bucketName, String uniqueKey, InputStream inputStream, int width, int height, boolean force) {
+		String fileUrl = null;
+		String host = "https://" + bucketName + "." + endpoint + "/";
+		try {
+			inputStream = ImageUtils.thumbnailImage(inputStream, uniqueKey, width, height, force);
+			if(inputStream == null) {
+				logger.error("Thumbnail image throw an error.");
+				return fileUrl;
+			}
+			ossClient.putObject(bucketName, uniqueKey, inputStream);
+		} catch (Exception e) {
+			logger.error("upload file to [{}] failed.[fileName : {}]", host, uniqueKey, e);
+			return fileUrl;
+		}
+		fileUrl = host + uniqueKey;
+		return fileUrl;
+	}
+
+	public String uploadStream(String bucketName, String dic, String key, InputStream inputStream, Boolean compress) {
 		if(StringUtils.isNotEmpty(dic) && !dic.endsWith("/")) {
 			dic += "/";
 		}
@@ -452,6 +495,25 @@ public class OSSUtils implements Closeable {
 		if(!exist) {
 			mkdir(bucketName, dic);
 		}
-		return uploadStream(bucketName, dic + key, inputStream);
+		return uploadStream(bucketName, dic + key, inputStream, compress);
+	}
+	
+	public String uploadStream(String bucketName, String dic, String key, InputStream inputStream) {
+		return uploadStream(bucketName, dic, key, inputStream, false);
+	}
+	
+	public String uploadStream(String bucketName, String dic, String key, InputStream inputStream, int width, int height) {
+		return uploadStream(bucketName, dic, key, inputStream, width, height, false);
+	}
+	
+	public String uploadStream(String bucketName, String dic, String key, InputStream inputStream, int width, int height, boolean force) {
+		if(StringUtils.isNotEmpty(dic) && !dic.endsWith("/")) {
+			dic += "/";
+		}
+		boolean exist = exist(bucketName, dic);
+		if(!exist) {
+			mkdir(bucketName, dic);
+		}
+		return uploadStream(bucketName, dic + key, inputStream, width, height, force);
 	}
 }

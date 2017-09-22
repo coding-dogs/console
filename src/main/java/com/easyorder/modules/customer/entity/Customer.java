@@ -12,6 +12,7 @@ public class Customer extends DataEntity<Customer> {
 	
 	private static final long serialVersionUID = 1L;
 	private String name;		// 客户名称
+	private String storeName; // 客户店铺名称
 	private String customerNo;		// 客户编号
 	private String accountNo;		// 登录账号
 	private String password;		// 登录密码
@@ -213,6 +214,14 @@ public class Customer extends DataEntity<Customer> {
 
 	public void setCustomerGroupName(String customerGroupName) {
 		this.customerGroupName = customerGroupName;
+	}
+
+	public String getStoreName() {
+		return storeName;
+	}
+
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
 	}
 	
 }

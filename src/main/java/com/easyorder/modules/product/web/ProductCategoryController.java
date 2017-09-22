@@ -116,7 +116,6 @@ public class ProductCategoryController extends BaseController {
 		} else {
 			productCategory.setParent(productCategoryService.get(productCategory.getPid()));
 		}
-		
 		model.addAttribute("productCategory", productCategory);
 		return "easyorder/product/productCategoryForm";
 	}

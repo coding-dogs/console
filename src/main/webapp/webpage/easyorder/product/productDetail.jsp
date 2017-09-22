@@ -214,13 +214,13 @@
 				if(tmpPath) {
 					tmpPath = tmpPath.substring(1);
 				}
+				var specNoDiv = $('#spec-display-container').find('.spec-no-div');
+				if(specNoDiv.length > 0) {
+					specNoDiv.html('');
+				}
 				if(productSpecList && productSpecList.length > 0) {
 					$.each(productSpecList, function(idx, psl) {
 						if(tmpPath == psl["specificationItemPath"]) {
-							var specNoDiv = $('#spec-display-container').find('.spec-no-div');
-							if(specNoDiv.length > 0) {
-								specNoDiv.html('');
-							}
 							var specNoSpan = $('<span>规格编号：' + psl.specificationNo + '</span>');
 							specNoSpan.appendTo(specNoDiv);
 						}

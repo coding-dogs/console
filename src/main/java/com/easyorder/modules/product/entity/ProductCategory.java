@@ -20,6 +20,8 @@ public class ProductCategory extends DataEntity<ProductCategory> {
 	private Integer sort; // 排序值
 	private ProductCategory parent;
 	
+	private String hasLogo;
+	
 	public ProductCategory() {
 		super();
 	}
@@ -94,6 +96,14 @@ public class ProductCategory extends DataEntity<ProductCategory> {
 
 	public void setPictureUrl(String pictureUrl) {
 		this.pictureUrl = pictureUrl;
+	}
+
+	public String getHasLogo() {
+		return hasLogo;
+	}
+
+	public void setHasLogo(String hasLogo) {
+		this.hasLogo = hasLogo;
 	}
 
 }

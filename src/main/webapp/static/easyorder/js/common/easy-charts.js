@@ -42,9 +42,16 @@ easyorder.charts.lineColumnar = function(options) {
 			color: Highcharts.getOptions().colors[index]
 		};
 		axis.title = {};
+		axis.title.align = 'high';
+		axis.title.margin = 0;
+		axis.title.rotation = 0;
+		axis.title.x = setting.x;
+		axis.title.y = setting.y;
 		axis.title.text = setting.text;
 		axis.title.style = {
-			color: Highcharts.getOptions().colors[index]
+			color: Highcharts.getOptions().colors[index],
+			x: 0,
+			y:0
 		};
 		if(index != 0) {
 			axis.opposite = true;
@@ -77,6 +84,9 @@ easyorder.charts.lineColumnar = function(options) {
         chart: {
             zoomType: 'xy'
         },
+        exporting: {
+        	enabled:false
+        },
         credits: {
             enabled:false
         },
@@ -95,12 +105,11 @@ easyorder.charts.lineColumnar = function(options) {
             shared: true
         },
         legend: {
-            layout: 'vertical',
-            align: 'left',
-            x: 120,
+            layout: 'horizontal',
+            x: 0,
+            y: 0,
+            align: 'center',
             verticalAlign: 'top',
-            y: 100,
-            floating: true,
             backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
         },
         series: series
