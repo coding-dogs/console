@@ -89,6 +89,7 @@
 				<th  class="sort-column supplierNo">供应商编号</th>
 				<th  class="sort-column name">供应商名称</th>
 				<th>老板姓名</th>
+				<th>联系方式</th>
 				<th>供应商地址</th>
 				<th  class="sort-column updateDate">更新时间</th>
 				<th  class="sort-column remarks">备注</th>
@@ -108,6 +109,7 @@
 					${supplier.name}
 				</a></td>
 				<td>${supplier.bossName}</td>
+				<td>${supplier.mobile}</td>
 				<td>
 					<c:choose>
 						<c:when test="${not empty supplier.storeAddress}">

@@ -16,6 +16,7 @@ public class SupplierVO extends DataEntity<SupplierVO> {
 	private String supplierNo;		// 供货商编号
 	private String logoPictureUrl;		// 供货商logo图片地址
 	private String managerId;		// 供货商管理员ID
+	private String mobile; 			// 供货商联系电话
 	private String description;		// 简述
 	private String storeAddress;	// 供应商地址
 	
@@ -95,6 +96,14 @@ public class SupplierVO extends DataEntity<SupplierVO> {
 
 	public void setBossName(String bossName) {
 		this.bossName = bossName;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 	
 }
