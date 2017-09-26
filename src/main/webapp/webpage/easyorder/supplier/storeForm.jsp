@@ -47,6 +47,14 @@
 										<td>${supplier.name}</td>
 									</tr>
 									<tr>
+										<td><strong>老板姓名</strong></td>
+										<td>${supplier.bossName}</td>
+									</tr>
+									<tr>
+										<td><strong>联系电话</strong></td>
+										<td>${supplier.mobile}</td>
+									</tr>
+									<tr>
 										<td><strong>店铺地址</strong></td>
 										<td>${supplier.storeAddress}</td>
 									</tr>

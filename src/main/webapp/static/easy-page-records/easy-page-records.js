@@ -44,6 +44,7 @@
 			throw new Error('the titles of options is empty.');
 		}
 
+		/* 列表第一项为单选按钮时，记录默认显示的数据 */
 		if(this.options.type == 'radio' && this.options.radioSelected) {
 			var obj = {};
 			obj[ID_KEY] = this.options.radioSelected;
@@ -89,7 +90,7 @@
 		var $tr = $('<tr>');
 
 		// 处理单选全选按钮
-		if(that.options.type && that.options.type !== 'none' && that.options.type != 'sequence') {
+		if(that.options.type && that.options.type != 'sequence' && that.options.type !== 'none') {
 			var $td = $('<td>');
 			if(that.options.type == 'checkbox') {
 				var $icheckAll = $('<input class="i-checks">');
@@ -128,12 +129,14 @@
 		if(that.options.pagination) {
 			that.$element.siblings('.fixed-table-pagination').remove();
 		}
-		// 初始化表头
+		// 初始化表头(每次先清空表头，再重新绘制)
 		that._init();
+		// 每次请求前先清空原来的表格数据
 		var $tbody = that.$element.find('tbody');
 		if($tbody.length > 0) {
 			$tbody.remove();
 		}
+		// 进行数据请求，生成表格数据，绘制分页条
 		$.ajax({
 			url: that.options.url,
 			type: "GET",
@@ -155,7 +158,7 @@
 						var $tr = $('<tr>');
 						$tr.attr('data-value', item[ID_KEY]);
 						$tr.data('record', item);
-						if(that.options.type && that.options.type !== 'none' && that.options.type != 'sequence') {
+						if(that.options.type && that.options.type != 'sequence' && that.options.type !== 'none') {
 							var $icheckTd = $('<td>');
 							var $icheck = $('<input class="i-checks" name="' + that.options.groupName + '">');
 							$icheck.attr('type', that.options.type);

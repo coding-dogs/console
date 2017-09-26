@@ -45,8 +45,9 @@ easyorder.charts.lineColumnar = function(options) {
 		axis.title.align = 'high';
 		axis.title.margin = 0;
 		axis.title.rotation = 0;
-		axis.title.x = setting.x;
-		axis.title.y = setting.y;
+		axis.title.offset = 0;
+		axis.title.x = setting.x || 0;
+		axis.title.y = setting.y || 0;
 		axis.title.text = setting.text;
 		axis.title.style = {
 			color: Highcharts.getOptions().colors[index],

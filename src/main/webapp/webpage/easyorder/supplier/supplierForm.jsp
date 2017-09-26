@@ -50,23 +50,30 @@
 		         	<td  class="width-35" ><form:input path="bossName" htmlEscape="false" maxlength="50" class="form-control required"/></td>
 		     	</tr>
 		     	<tr>
-		     		<td  class="width-15 active"><label class="pull-right">供应商地址:</label></td>
+		     		<td  class="width-15 active"><label class="pull-right"><font color="red">*</font>供应商地址:</label></td>
 		         	<td class="width-35" >
-		         		<form:input path="storeAddress" htmlEscaoe="false" maxlength="100" class="form-control"/>
+		         		<form:input path="storeAddress" htmlEscaoe="false" maxlength="100" class="form-control required"/>
 		         	</td>
-		         	<td  class="width-15 active"><label class="pull-right">行业简述:</label></td>
-		         	<td  class="width-35" ><form:input path="description" htmlEscape="false" maxlength="50" class="form-control"/></td>
+		         	<td  class="width-15 active"><label class="pull-right"><font color="red">*</font>联系电话:</label></td>
+		         	<td class="width-35" >
+		         		<form:input path="mobile" htmlEscaoe="false" maxlength="100" class="form-control required"/>
+		         	</td>
+		         	
 		     	</tr>
 		     	<tr>
-		     		<td  class="width-15 active"><label class="pull-right">备注:</label></td>
-		         	<td class="width-35" >
-		         		<form:textarea path="remarks" htmlEscaoe="false" maxlength="300" class="form-control"/>
-		         	</td>
+		     		<td  class="width-15 active"><label class="pull-right">行业简述:</label></td>
+		         	<td  class="width-35" ><form:input path="description" htmlEscape="false" maxlength="50" class="form-control"/></td>
 					<td  class="width-15 active"><label class="pull-right"><font color="red">*</font>分配管理员:</label></td>
 		         	<td class="width-35 clearfix">
 		         		<form:hidden path="managerId"/>
 		         		<form:input path="managerName" readonly="true" class="form-control required pull-left" style="width: 60%; border-radius: 3px 0 0 3px"/>
 		         		<button type="button" class="btn btn-primary btn-sm display-n pull-left" id="selectManager" style="width: 40%; height: 34px; border-radius: 0 3px 3px 0">选择管理员</button>
+		         	</td>
+		     	</tr>
+		     	<tr>
+		     		<td  class="width-15 active"><label class="pull-right">备注:</label></td>
+		         	<td class="width-35" >
+		         		<form:textarea path="remarks" htmlEscaoe="false" maxlength="300" class="form-control"/>
 		         	</td>
 		     	</tr>
 			</tbody>

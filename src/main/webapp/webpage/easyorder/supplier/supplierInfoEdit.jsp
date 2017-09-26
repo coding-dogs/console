@@ -49,15 +49,25 @@
 		         	<td class="width-35" >
 		         		<form:input path="name" htmlEscaoe="false" maxlength="50" class="form-control required"/>
 		         	</td>
-		         	<td  class="width-15 active"><label class="pull-right">行业简述:</label></td>
-		         	<td  class="width-35" ><form:input path="description" htmlEscape="false" maxlength="50" class="form-control"/></td>
+		         	<td  class="width-15 active"><label class="pull-right"><font color="red">*</font>老板姓名:</label></td>
+		         	<td class="width-35" >
+		         		<form:input path="bossName" htmlEscaoe="false" maxlength="50" class="form-control required"/>
+		         	</td>
 		     	</tr>
 		     	<tr>
-		     		<td  class="width-15 active"><label class="pull-right">店铺地址:</label></td>
+		     		<td  class="width-15 active"><label class="pull-right"><font color="red">*</font>店铺地址:</label></td>
 		         	<td class="width-35" >
-		         		<form:input path="storeAddress" htmlEscaoe="false" maxlength="100" class="form-control"/>
+		         		<form:input path="storeAddress" htmlEscaoe="false" maxlength="100" class="form-control required"/>
 		         	</td>
-		         	<td  class="width-15 active"><label class="pull-right">店铺图片:</label></td>
+		         	<td  class="width-15 active"><label class="pull-right"><font color="red">*</font>联系方式:</label></td>
+		         	<td class="width-35" >
+		         		<form:input path="mobile" htmlEscaoe="false" maxlength="100" class="form-control required"/>
+		         	</td>
+		     	</tr>
+		     	<tr>
+		     		<td  class="width-15 active"><label class="pull-right">行业简述:</label></td>
+		         	<td  class="width-35" ><form:input path="description" htmlEscape="false" maxlength="50" class="form-control"/></td>
+		     		<td  class="width-15 active"><label class="pull-right">店铺图片:</label></td>
 		         	<td class="width-35" >
 		         		<input type="hidden" name="logoPictureUrl" id="logoPictureUrl" value="${supplier.logoPictureUrl}"/>
 		         		<div id="easy-uploader"></div>
