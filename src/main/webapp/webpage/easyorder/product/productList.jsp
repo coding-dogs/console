@@ -99,7 +99,6 @@
 				<th  class="sort-column modelNumber">型号</th>
 				<th  class="sort-column mtProductUpdownCd">商品上下架标识</th>
 				<th  class="sort-column orderPrice">订货价格</th>
-				<th  class="sort-column buyPrice">进货价格</th>
 				<th  class="sort-column updateDate">更新时间</th>
 				<th>操作</th>
 			</tr>
@@ -144,9 +143,6 @@
 							</td>
 							<td>
 								${product.orderPrice}
-							</td>
-							<td>
-								${product.buyPrice}
 							</td>
 							<td>
 								<fmt:formatDate value="${product.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

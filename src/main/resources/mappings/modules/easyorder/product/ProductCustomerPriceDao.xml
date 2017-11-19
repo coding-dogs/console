@@ -45,6 +45,7 @@
 		FROM product_customer_price a
 		LEFT JOIN customer ON customer.id = a.customer_id
 		LEFT JOIN supplier_customer on supplier_customer.customer_id = customer.id
+					AND supplier_customer.supplier_id = #{supplierId}
 		LEFT JOIN customer_group ON customer_group.id = supplier_customer.customer_group_id
 		<include refid="productCustomerPriceJoins"/>
 		<where>
