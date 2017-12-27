@@ -106,12 +106,6 @@
 				    				<span>${product.minimumOrderNumber}${product.unitName}</span>
 				    			</li>
 			    			</c:if>
-			    			<c:if test="${not empty product && not empty product.productCategoryName }">
-			    				<li>
-				    				<span>商品分类：</span>
-				    				<span>${product.productCategoryName}</span>
-				    			</li>
-			    			</c:if>
 			    		</ul>
 			    		
 			    		<ul class="product-price">
@@ -119,10 +113,17 @@
 			    				<span>订货价：</span>
 			    				<span>¥${product.orderPrice}元</span>
 			    			</li>
-			    			<li>
-			    				<span>进货价：</span>
-			    				<span>¥${product.buyPrice}元</span>
-			    			</li>
+			    			<shiro:hasPermission name="product:product:buyprice">
+								<li>
+				    				<span>进货价：</span>
+				    				<c:if test="${not empty product.buyPrice }">
+										<span>¥${product.buyPrice}元</span>
+					    			</c:if>
+					    			<c:if test="${empty product.buyPrice }">
+										<span>未设置</span>
+					    			</c:if>
+				    			</li>
+							</shiro:hasPermission>
 			    		</ul>
 			    		
 			    		<div id="spec-display-container" class="spec-display-container ">

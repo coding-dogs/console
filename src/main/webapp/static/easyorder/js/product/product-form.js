@@ -600,7 +600,7 @@ $("#easy-uploader").easyUploader({
 	multiple: true,									// 开启多文件上传
 	targetName: 'pictures',							// 后台接收文件对象属性的属性名
 	fileTypes: 'image/jpg,image/jpeg,image/png',	// 限制文件格式(相应格式后缀名)，多个以','分割
-	maxSize: 5 * 1024,								// 限制单文件大小					
+	maxSize: 10 * 1024,								// 限制单文件大小					
 	maxLength: 24,									// 限制文件个数
 	mainSetting: true,								// 是否需要封面图片设置位
 	mainSettingPlaceholder: '设为封面图片',			// 封面文件设置位提示语

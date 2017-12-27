@@ -110,6 +110,7 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		String productId = product.getId();
 		ProductCustomerPrice productCustomerPrice = new ProductCustomerPrice();
 		productCustomerPrice.setProductId(productId);
+		productCustomerPrice.setSupplierId(product.getSupplierId());
 		List<ProductCustomerPrice> customerPriceList = productCustomerPriceService.findList(productCustomerPrice);
 		if(CollectionUtils.isNotEmpty(customerPriceList)) {
 			if(HANDLER_TYPE_MAP.equals(type)) {
