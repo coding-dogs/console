@@ -20,7 +20,7 @@ public class ProductCustomerPrice extends DataEntity<ProductCustomerPrice> {
 	private String customerName;
 	private String mtCityCd;
 	private String customerNo;
-	
+	private String supplierId;
 	public ProductCustomerPrice() {
 		super();
 	}
@@ -94,6 +94,14 @@ public class ProductCustomerPrice extends DataEntity<ProductCustomerPrice> {
 
 	public void setCustomerNo(String customerNo) {
 		this.customerNo = customerNo;
+	}
+
+	public String getSupplierId() {
+		return supplierId;
+	}
+
+	public void setSupplierId(String supplierId) {
+		this.supplierId = supplierId;
 	}
 	
 }

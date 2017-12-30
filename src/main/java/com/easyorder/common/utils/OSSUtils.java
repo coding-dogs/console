@@ -441,18 +441,33 @@ public class OSSUtils implements Closeable {
 		String fileUrl = null;
 		String host = "https://" + bucketName + "." + endpoint + "/";
 		try {
-			int available = inputStream.available();
-			if(compress != null && compress.booleanValue() == true && available > 124000) {
-				String formatName = "";
-				if(uniqueKey.indexOf(".") != -1) {
-					formatName = uniqueKey.substring(uniqueKey.lastIndexOf(".") + 1);
+			//int available = inputStream.available();
+//			if(compress != null && compress.booleanValue() == true && available > 124000) {
+//				String formatName = "";
+//				if(uniqueKey.indexOf(".") != -1) {
+//					formatName = uniqueKey.substring(uniqueKey.lastIndexOf(".") + 1);
+//				}
+//				BufferedImage bufImg = ImageIO.read(inputStream);
+//				bufImg = Thumbnails.of(bufImg).scale(0.7).outputQuality(0.9).asBufferedImage();
+//				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//				ImageIO.write(bufImg, formatName, bos);
+//				inputStream = new ByteArrayInputStream(bos.toByteArray());
+//			}
+			if(compress != null && compress.booleanValue() == true) {
+				while(inputStream.available() > 124000){
+					BufferedImage bufImg = ImageIO.read(inputStream);
+					bufImg = Thumbnails.of(bufImg).scale(0.5).outputQuality(0.7).asBufferedImage();
+					
+					String formatName = "";
+					if(uniqueKey.indexOf(".") != -1) {
+						formatName = uniqueKey.substring(uniqueKey.lastIndexOf(".") + 1);
+					}
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					ImageIO.write(bufImg, formatName, bos);
+					inputStream = new ByteArrayInputStream(bos.toByteArray());
 				}
-				BufferedImage bufImg = ImageIO.read(inputStream);
-				bufImg = Thumbnails.of(bufImg).scale(0.7).outputQuality(0.9).asBufferedImage();
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ImageIO.write(bufImg, formatName, bos);
-				inputStream = new ByteArrayInputStream(bos.toByteArray());
 			}
+			
 			ossClient.putObject(bucketName, uniqueKey, inputStream);
 		} catch (Exception e) {
 			logger.error("upload file to [{}] failed.[fileName : {}]", host, uniqueKey, e);

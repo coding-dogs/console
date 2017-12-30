@@ -250,9 +250,9 @@
 								<div class="col-sm-4">
 									<input type="number" id="orderPrice" name="orderPrice" value="${product.orderPrice}" placeholder="请输入订货价格(单位：元)" maxlength="20" class="form-control required"/>
 								</div>
-								<label for="buyPrice" class="col-sm-2 control-label"><em class="required-tag">* </em>进货价</label>
+								<label for="buyPrice" class="col-sm-2 control-label"> 进货价</label>
 								<div class="col-sm-4">
-									<input type="number" id="buyPrice" name="buyPrice" value="${product.buyPrice}" placeholder="请输入进货价格(单位：元)" maxlength="20" class="form-control required"/>
+									<input type="number" id="buyPrice" name="buyPrice" value="${product.buyPrice}" placeholder="请输入进货价格(单位：元)" maxlength="20" class="form-control"/>
 								</div>
 							</div>
 							<!-- 商品价格信息 end -->
