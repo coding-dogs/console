@@ -59,7 +59,6 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
 
   private SystemService systemService;
   
-  @Autowired
   private SupplierService supplierService;
 
   @Autowired
@@ -98,7 +97,7 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
       Principal principal = new Principal(user, token.isMobileLogin());
       
       // 查询用户关联供货商
-      List<SupplierVO> suppliers = supplierService.getByUserId(user.getId());
+      List<SupplierVO> suppliers = getSupplierService().getByUserId(user.getId());
     	if(CollectionUtils.isNotEmpty(suppliers)) {
     		String supplierId = suppliers.get(0).getId();
     		principal.setSupplierId(supplierId);
@@ -245,6 +244,14 @@ public class SystemAuthorizingRealm extends AuthorizingRealm {
     }
     return systemService;
   }
+  
+  public SupplierService getSupplierService() {
+  	if(supplierService == null) {
+  		supplierService = SpringContextHolder.getBean(SupplierService.class);
+  	}
+  	return supplierService;
+  }
+  
 
   /**
    * 授权用户信息

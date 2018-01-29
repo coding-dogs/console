@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.product.dao.ProductSpecificationCustomerGroupPriceDao">
+    
+	<sql id="productSpecificationCustomerGroupPriceColumns">
+		a.id AS "id",
+		a.customer_group_id AS "customerGroupId",
+		a.product_specification_id AS "productSpecificationId",
+		a.order_price AS "orderPrice",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="productSpecificationCustomerGroupPriceJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="ProductSpecificationCustomerGroupPrice" >
+		SELECT 
+			<include refid="productSpecificationCustomerGroupPriceColumns"/>
+		FROM product_specification_customer_group_price a
+		<include refid="productSpecificationCustomerGroupPriceJoins"/>
+		<where>
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="customerGroupId != null and customerGroupId != ''">
+				AND a.customer_group_id = #{customerGroupId}
+			</if>
+			<if test="productSpecificationId != null and productSpecificationId != ''">
+				AND a.product_specification_id = #{productSpecificationId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="ProductSpecificationCustomerGroupPrice" >
+		SELECT 
+			<include refid="productSpecificationCustomerGroupPriceColumns"/>
+		FROM product_specification_customer_group_price a
+		<include refid="productSpecificationCustomerGroupPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customerGroupId != null and customerGroupId != ''">
+				AND a.customer_group_id = #{customerGroupId}
+			</if>
+			<if test="productSpecificationId != null and productSpecificationId != ''">
+				AND a.product_specification_id = #{productSpecificationId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProductSpecificationCustomerGroupPrice" >
+		SELECT 
+			<include refid="productSpecificationCustomerGroupPriceColumns"/>
+		FROM product_specification_customer_group_price a
+		<include refid="productSpecificationCustomerGroupPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customerGroupId != null and customerGroupId != ''">
+				AND a.customer_group_id = #{customerGroupId}
+			</if>
+			<if test="productSpecificationId != null and productSpecificationId != ''">
+				AND a.product_specification_id = #{productSpecificationId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO product_specification_customer_group_price(
+			id,
+			customer_group_id,
+			product_specification_id,
+			order_price,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{customerGroupId},
+			#{productSpecificationId},
+			#{orderPrice},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE product_specification_customer_group_price SET 	
+			customer_group_id = #{customerGroupId},
+			product_specification_id = #{productSpecificationId},
+			order_price = #{orderPrice},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM product_specification_customer_group_price
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE product_specification_customer_group_price SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="ProductSpecificationCustomerGroupPrice" statementType="STATEMENT">
+		select * FROM product_specification_customer_group_price  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

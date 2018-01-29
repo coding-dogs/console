@@ -536,8 +536,9 @@ function buildEasySelector(ele) {
 											if($icheck.is(':checked')) {
 												var dataNo = $icheck.attr('data-no');
 												var dataId = $icheck.attr('data-id');
+												var pNo = $icheck.parents('.spec-selector').find('.easy-selector').attr('data-no');
 												var dataName = $icheck.parents('label').text();
-												item.children.push({name: dataName, no: dataNo, id: dataId});
+												item.children.push({name: dataName, no: dataNo, id: dataId, pNo: pNo});
 											}
 										});
 									}
@@ -808,6 +809,7 @@ buildSpecSelectorAll(specJson);
 $('#variousSpecArea').find('.spec-selector').hide();
 
 if(specJson) {
+	$("#specJson").val(JSON.stringify(specJson));
 	$('#openMultiple').iCheck('check');
 }
 
@@ -853,12 +855,28 @@ function createSpecTable(firstItem, secondItem, specs) {
 	$no.text('规格编号');
 	$no.appendTo($headerTr);
 	
+	var $orderPrice = $('<th data-attr-name="orderPrice">');
+	$orderPrice.text('订货价格');
+	$orderPrice.appendTo($headerTr);
+	
+	var $marketPrice = $('<th data-attr-name="marketPrice">');
+	$marketPrice.text('市场价格');
+	$marketPrice.appendTo($headerTr);
+	
+	var $buyPrice = $('<th data-attr-name="buyPrice">');
+	$buyPrice.text('进货价格');
+	$buyPrice.appendTo($headerTr);
+	
+	var $barCode = $('<th data-attr-name="barCode">');
+	$barCode.text('条形码');
+	$barCode.appendTo($headerTr);
+	
 	var $opera = $('<th>');
 	$opera.text('操作');
 	$opera.appendTo($headerTr);
 	$table.appendTo($manager);
 	
-	var paths = [];
+	var paths = [], firstSpec, secondSpec;
 	if(specs && specs.length != 0) {
 		$.each(specs, function(ix, spec) {
 			paths.push(spec.specificationItemPath);
@@ -880,7 +898,24 @@ function createSpecTable(firstItem, secondItem, specs) {
 				var $nov = $('<td data-attr-name="specificationNo">');
 				var $novInput = $('<input type="text" class="form-control required">');
 				
-				var specNo = productNo + fi.no + si.no;
+				var $orderPriceTd = $('<td data-attr-name="orderPrice">');
+				var $orderPriceInput = $('<input type="number" class="form-control required">');
+				$orderPriceInput.appendTo($orderPriceTd);
+				
+				var $marketPriceTd = $('<td data-attr-name="marketPrice">');
+				var $marketPriceInput = $('<input type="number" class="form-control required">');
+				$marketPriceInput.appendTo($marketPriceTd);
+				
+				var $buyPriceTd = $('<td data-attr-name="buyPrice">');
+				var $buyPriceInput = $('<input type="number" class="form-control required">');
+				$buyPriceInput.appendTo($buyPriceTd);
+				
+				var $barCodeTd = $('<td data-attr-name="barCode">');
+				var $barCodeInput = $('<input type="text" class="form-control required">');
+				$barCodeInput.appendTo($barCodeTd);
+				
+				// 规格编号 = 商品编号 + "-" + 多规格编号 + 多规格具体子规格编号  + "-" + 多规格编号 + 多规格具体子规格编号
+				var specNo = productNo + "-" + (fi.pNo + fi.no) + "-" + (si.pNo + si.no);
 				var comPath = fi.id + "," + si.id;
 				if(specs && specs.length != 0) {
 					var existIndex = existsOfArray(comPath, paths);
@@ -893,6 +928,24 @@ function createSpecTable(firstItem, secondItem, specs) {
 				$novInput.val(specNo);
 				$novInput.appendTo($nov);
 				$nov.appendTo($tbodyTr);
+				$orderPriceTd.appendTo($tbodyTr);
+				$marketPriceTd.appendTo($tbodyTr);
+				$buyPriceTd.appendTo($tbodyTr);
+				$barCodeTd.appendTo($tbodyTr);
+				
+				var tempItemPath = fi.id + "," + si.id;
+				// 找到对应的规格,获取价格信息
+				if(specs && specs.length != 0) {
+					$.each(specs, function(ii, spe) {
+						if(spe.specificationItemPath == tempItemPath) {
+							$orderPriceInput.val(spe.orderPrice);
+							$marketPriceInput.val(spe.marketPrice);
+							$buyPriceInput.val(spe.buyPrice);
+							$barCodeInput.val(spe.barCode);
+						}
+					});
+					
+				}
 				
 				var $ope = $('<td class="spec-opera">');
 				var $remove = $('<a href="javascript:void(0);">');
@@ -909,11 +962,47 @@ function createSpecTable(firstItem, secondItem, specs) {
 		} else {
 			$fv.text(fi.name);
 			$fv.appendTo($tbodyTr);
+			
 			var $nov = $('<td data-attr-name="specificationNo">');
 			var $novInput = $('<input type="text" class="form-control required">');
-			$novInput.val(productNo + fi.no);
+			
+			var $orderPriceTd = $('<td data-attr-name="orderPrice">');
+			var $orderPriceInput = $('<input type="number" class="form-control required">');
+			$orderPriceInput.appendTo($orderPriceTd);
+			
+			var $marketPriceTd = $('<td data-attr-name="marketPrice">');
+			var $marketPriceInput = $('<input type="number" class="form-control required">');
+			$marketPriceInput.appendTo($marketPriceTd);
+			
+			var $buyPriceTd = $('<td data-attr-name="buyPrice">');
+			var $buyPriceInput = $('<input type="number" class="form-control required">');
+			$buyPriceInput.appendTo($buyPriceTd);
+			
+			var $barCodeTd = $('<td data-attr-name="barCode">');
+			var $barCodeInput = $('<input type="text" class="form-control">');
+			$barCodeInput.appendTo($barCodeTd);
+			// 规格编号 = 商品编号 + "-" + 多规格编号 + 多规格具体子规格编号
+			$novInput.val(productNo + "-" + (fi.pNo + fi.no));
 			$novInput.appendTo($nov);
 			$nov.appendTo($tbodyTr);
+			$orderPriceTd.appendTo($tbodyTr);
+			$marketPriceTd.appendTo($tbodyTr);
+			$buyPriceTd.appendTo($tbodyTr);
+			$barCodeTd.appendTo($tbodyTr);
+			
+			// 找到对应的规格,获取价格信息
+			if(specs && specs.length != 0) {
+				$.each(specs, function(ii, spe) {
+					if(spe.specificationItemPath == fi.id) {
+						$orderPriceInput.val(spe.orderPrice);
+						$marketPriceInput.val(spe.marketPrice);
+						$buyPriceInput.val(spe.buyPrice);
+						$barCodeInput.val(spe.barCode);
+					}
+				});
+				
+			}
+			
 			
 			var $ope = $('<td class="spec-opera">');
 			var $remove = $('<a href="javascript:void(0);">');
@@ -961,9 +1050,7 @@ function getSpec4Json() {
 			}
 			
 			var attrName = $td.attr('data-attr-name');
-			if(attrName == 'specificationNo') {
-				sdItem.specificationNo = $td.find('input').val();
-			}
+			sdItem[attrName] = $td.find('input').val();
 			
 		});
 		

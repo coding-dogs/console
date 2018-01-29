@@ -56,6 +56,15 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		return product;
 	}
 	
+	public Product get(Product product) {
+		Product p = super.get(product);
+		if(BeanUtils.isNotEmpty(p)) {
+			handlerPrice(p, HANDLER_TYPE_LIST);
+			handlerSpecification(p);
+		}
+		return p;
+	}
+	
 	private void handlerSpecification(Product product) {
 		ProductSpecification ps = new ProductSpecification();
 		String productId = product.getId();
@@ -89,6 +98,8 @@ public class ProductService extends CrudService<ProductDao, Product> {
 			List<ProductSpecification> pss = GSONUtils.jsonToList(specJson, ProductSpecification.class);
 			if(CollectionUtils.isNotEmpty(pss)) {
 				pss.forEach(productSpec -> {
+					// 由于原先记录已经清除，此处提出id属性，直接视为新增
+					productSpec.setId(null);
 					productSpec.setSupplierId(supplierId);
 					productSpec.setProductId(productId);
 					productSpecificationService.save(productSpec);

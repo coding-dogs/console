@@ -363,6 +363,28 @@ public class SpecificationController extends BaseController {
 		return EasyResponse.buildSuccess(specs);
 	}
 	
-
+	@RequestMapping(value = "/validate")
+	@ResponseBody
+	public String validate(String no) {
+		String result = "false";
+		String supplierId = UserUtils.getUser().getSupplierId();
+		if(com.easyorder.common.utils.StringUtils.isEmpty(supplierId)) {
+			logger.error("Did not find the supplier.[supplierId : {}]", supplierId);
+			return result;
+		}
+		if(!com.easyorder.common.utils.StringUtils.hasText(no)) {
+			logger.error("Check whether the specification no is repeated, but specification no is empty.");
+			return result;
+		}
+		Specification specification = new Specification();
+		specification.setNo(no);
+		List<Specification> specifications = specificationService.findList(specification);
+		// 存在则校验不通过，否则校验通过
+		if(CollectionUtils.isNotEmpty(specifications)) {
+			return result;
+		}
+		result = "true";
+		return result;
+	}
 
 }

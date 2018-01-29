@@ -1,5 +1,7 @@
 package com.easyorder.modules.product.entity;
 
+import java.math.BigDecimal;
+
 import com.jeeplus.common.persistence.DataEntity;
 import com.jeeplus.common.utils.excel.annotation.ExcelField;
 
@@ -15,6 +17,10 @@ public class ProductSpecification extends DataEntity<ProductSpecification> {
 	private String supplierId;	// 供应商ID
 	private String specificationItemPath;		// 规格项组合ID
 	private String specificationNo;					// 规格项编号
+	private BigDecimal orderPrice;							// 订货价
+	private BigDecimal marketPrice;							// 市场价
+	private BigDecimal buyPrice;						// 进货价
+	private String barCode;									// 条形码
 	
 	public ProductSpecification() {
 		super();
@@ -55,6 +61,38 @@ public class ProductSpecification extends DataEntity<ProductSpecification> {
 
 	public void setSpecificationNo(String specificationNo) {
 		this.specificationNo = specificationNo;
+	}
+
+	public BigDecimal getOrderPrice() {
+		return orderPrice;
+	}
+
+	public void setOrderPrice(BigDecimal orderPrice) {
+		this.orderPrice = orderPrice;
+	}
+
+	public BigDecimal getMarketPrice() {
+		return marketPrice;
+	}
+
+	public void setMarketPrice(BigDecimal marketPrice) {
+		this.marketPrice = marketPrice;
+	}
+
+	public BigDecimal getBuyPrice() {
+		return buyPrice;
+	}
+
+	public void setBuyPrice(BigDecimal buyPrice) {
+		this.buyPrice = buyPrice;
+	}
+
+	public String getBarCode() {
+		return barCode;
+	}
+
+	public void setBarCode(String barCode) {
+		this.barCode = barCode;
 	}
 	
 }

@@ -15,30 +15,51 @@
 
 		return false;
 	}
-	$(document).ready(
-			function() {
-				validateForm = $("#inputForm")
-						.validate(
-								{
-									submitHandler : function(form) {
-										$('#children').val(JSON.stringify(wrapJson()));
-										loading('正在提交，请稍等...');
-										form.submit();
-									},
-									errorContainer : "#messageBox",
-									errorPlacement : function(error, element) {
-										$("#messageBox").text("输入有误，请先更正。");
-										if (element.is(":checkbox")
-												|| element.is(":radio")
-												|| element.parent().is(
-														".input-append")) {
-											error.appendTo(element.parent()
-													.parent());
-										} else {
-											error.insertAfter(element);
-										}
+	var readonly = "${specification.id}";
+	$(document).ready(function() {
+				var validateConfig = {
+					submitHandler : function(form) {
+						$('#children').val(JSON.stringify(wrapJson()));
+						loading('正在提交，请稍等...');
+						form.submit();
+					},
+					errorContainer : "#messageBox",
+					errorPlacement : function(error, element) {
+						$("#messageBox").text("输入有误，请先更正。");
+						if (element.is(":checkbox")
+								|| element.is(":radio")
+								|| element.parent().is(
+										".input-append")) {
+							error.appendTo(element.parent()
+									.parent());
+						} else {
+							error.insertAfter(element);
+						}
+					}
+				};
+				if(!readonly) {
+					validateConfig.rules = {
+						no: {
+							required: true,
+							remote: {
+								url: '${ctx}/productManager/specification/validate',
+								type: 'GET',
+								data: {
+									no : function() {
+										return $('#no').val();
 									}
-								});
+								}
+							}
+						}
+					};
+					validateConfig.messages = {
+						no: {
+							required: "请输入规格编号",
+							remote: "此规格编号已存在"
+						}
+					};
+				}
+				validateForm = $("#inputForm").validate(validateConfig);
 
 			});
 </script>
@@ -60,11 +81,11 @@
 						<label class="pull-right"><font color="red">*</font>规格名称:</label>
 					</td>
 		         	<td class="width-35" >
-		         		<form:input path="name" htmlEscaoe="false" placeholder="请输入规格名称" maxlength="50" class="form-control required"/>
+			         	<form:input path="name" htmlEscaoe="false" placeholder="请输入规格名称" maxlength="50" class="form-control required"/>
 		         	</td>
-		         	<td  class="width-15 active"><label class="pull-right">规格编号</label></td>
+		         	<td  class="width-15 active"><label class="pull-right"><font color="red">*</font>规格编号</label></td>
 		         	<td  class="width-35" >
-		         		<form:input path="no" htmlEscaoe="false" placeholder="请输入规格编号" maxlength="300" class="form-control"/>
+		         		<form:input path="no" readonly="${not empty specification.id}" htmlEscaoe="false" placeholder="请输入规格编号" maxlength="300" class="form-control required"/>
 		         	</td>
 		     	</tr>
 			</tbody>
@@ -154,6 +175,7 @@
 		
 		var specId = '${specification.id}';
 		if(specId) {
+			// 查询规格下的子规格项目
 			$.ajax({
 				url: '${ctx}/productManager/specification/items',
 				type: "GET",
@@ -179,14 +201,6 @@
 			createRow();
 		}
 		
-		/* if(jsonData && jsonData.children) {
-			$.each(jsonData.children, function(index, sub) {
-				createRow(sub.name, sub.no);
-			});
-		} else {
-			createRow();
-		} */
-		
 		$('#addSubSpec').on('click', function(e) {
 			createRow();
 		});
@@ -209,7 +223,6 @@
 				
 				children.push(subData);
 			});
-			console.log(children);
 			return children;
 		}
 	</script>

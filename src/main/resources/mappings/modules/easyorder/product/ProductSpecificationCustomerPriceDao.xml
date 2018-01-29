@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easyorder.modules.product.dao.ProductSpecificationCustomerPriceDao">
+    
+	<sql id="productSpecificationCustomerPriceColumns">
+		a.id AS "id",
+		a.customer_id AS "customerId",
+		a.product_specification_id AS "productSpecificationId",
+		a.order_price AS "orderPrice",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.version AS "version"
+	</sql>
+	
+	<sql id="productSpecificationCustomerPriceJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="ProductSpecificationCustomerPrice" >
+		SELECT 
+			<include refid="productSpecificationCustomerPriceColumns"/>
+		FROM product_specification_customer_price a
+		<include refid="productSpecificationCustomerPriceJoins"/>
+		<where>
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+			<if test="productSpecificationId != null and productSpecificationId != ''">
+				AND a.product_specification_id = #{productSpecificationId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="ProductSpecificationCustomerPrice" >
+		SELECT 
+			<include refid="productSpecificationCustomerPriceColumns"/>
+		FROM product_specification_customer_price a
+		<include refid="productSpecificationCustomerPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+			<if test="productSpecificationId != null and productSpecificationId != ''">
+				AND a.product_specification_id = #{productSpecificationId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProductSpecificationCustomerPrice" >
+		SELECT 
+			<include refid="productSpecificationCustomerPriceColumns"/>
+		FROM product_specification_customer_price a
+		<include refid="productSpecificationCustomerPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
+			</if>
+			<if test="productSpecificationId != null and productSpecificationId != ''">
+				AND a.product_specification_id = #{productSpecificationId}
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO product_specification_customer_price(
+			id,
+			customer_id,
+			product_specification_id,
+			order_price,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			version
+		) VALUES (
+			#{id},
+			#{customerId},
+			#{productSpecificationId},
+			#{orderPrice},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{version}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE product_specification_customer_price SET 	
+			customer_id = #{customerId},
+			product_specification_id = #{productSpecificationId},
+			order_price = #{orderPrice},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			version = #{version}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM product_specification_customer_price
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE product_specification_customer_price SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="ProductSpecificationCustomerPrice" statementType="STATEMENT">
+		select * FROM product_specification_customer_price  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>
