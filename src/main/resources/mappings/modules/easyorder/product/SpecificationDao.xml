@@ -45,6 +45,9 @@
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
 			</if>
+			<if test="no != null and no != ''">
+				AND a.no = #{no}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

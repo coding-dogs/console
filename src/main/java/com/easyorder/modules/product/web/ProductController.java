@@ -246,6 +246,11 @@ public class ProductController extends BaseController {
 			addMessage(redirectAttributes, EasyResponseEnums.NOT_FOUND_SUPPLIER.message);
 			return "redirect:" + Global.getAdminPath() + "/productManager/product/?repage";
 		}
+		if(!com.easyorder.common.utils.StringUtils.hasText(product.getId())) {
+			logger.error("ProductId is empty.[productId : {}]", product.getId());
+			addMessage(redirectAttributes, EasyResponseEnums.NOT_FOUND_PRODUCT.message);
+			return "redirect:" + Global.getAdminPath() + "/productManager/product/?repage";
+		}
 		product.setSupplierId(supplierId);
 		Product p = productService.get(product);
 		if(BeanUtils.isEmpty(p)) {

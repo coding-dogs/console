@@ -111,7 +111,7 @@
 			    		<ul class="product-price">
 			    			<li>
 			    				<span>订货价：</span>
-			    				<span>¥${product.orderPrice}元</span>
+			    				<span>¥<span id="productOrderPrice">${product.orderPrice}元</span></span>
 			    			</li>
 			    			<shiro:hasPermission name="product:product:buyprice">
 								<li>
@@ -216,14 +216,21 @@
 					tmpPath = tmpPath.substring(1);
 				}
 				var specNoDiv = $('#spec-display-container').find('.spec-no-div');
+				var barCodeDiv = $('#spec-display-container').find('.spec-barCode-div');
 				if(specNoDiv.length > 0) {
+					// 存在规格信息，清空
 					specNoDiv.html('');
+					barCodeDiv.html('');
 				}
 				if(productSpecList && productSpecList.length > 0) {
 					$.each(productSpecList, function(idx, psl) {
 						if(tmpPath == psl["specificationItemPath"]) {
 							var specNoSpan = $('<span>规格编号：' + psl.specificationNo + '</span>');
+							var barCodeSpan = $('<span>商品条形码：' + psl.barCode + '</span>');
+							var orderPrice = psl.orderPrice;
+							$("#productOrderPrice").text(orderPrice);
 							specNoSpan.appendTo(specNoDiv);
+							barCodeSpan.appendTo(barCodeDiv);
 						}
 					});
 				}
@@ -284,7 +291,9 @@
 									span.appendTo(box);
 								});
 								var specNoDiv = $('<div class="spec-no-div">');
+								var barCodeDiv = $('<div class="spec-barCode-div">');
 								specNoDiv.appendTo(container);
+								barCodeDiv.appendTo(container);
 							}
 						} else {
 							top.layer.alert(data.msg);
