@@ -43,6 +43,13 @@
 				}
 			},
 			submitHandler : function(form) {
+				var openMultiple = $("#openMultiple").is(":checked");
+				if(openMultiple) {
+					if($(".spec-table").length == 0 || $(".spec-table .spec-tbody").length == 0) {
+						top.layer.alert("开启多规格后，至少需要编辑一条规格数据哦");
+						return false;
+					}					
+				}
 				loading('正在提交，请稍等...');
 				$('#specJson').val(JSON.stringify(getSpec4Json()));
 				form.submit();
@@ -74,7 +81,7 @@
 			},
 			messages: {
 				id: {
-					required: '请保存商品后重新进入后进行保存'
+					required: '请保存商品后重新进入再进行保存'
 				}
 			},
 			submitHandler : function(form) {
@@ -145,6 +152,7 @@
 		    		<form:form id="inputForm" modelAttribute="product"
 					action="${ctx}/productManager/product/save" method="post"
 					class="form-horizontal">
+						<input type="hidden" name="step" id="step" value="1"/>
 						<input type="hidden" id="id" name="id" value="${product.id}"/>
 						<sys:message content="${message}" />
 						<div class="easy-order product-base-info">
@@ -210,7 +218,7 @@
 						</div>
 						
 						<!-- start 商品单位 -->
-						<div class="easy-order product-price-info">
+						<div class="easy-order product-unit-info">
 							<h2>单位</h2>
 							<div class="form-group">
 								<label class="col-sm-2 control-label"><em class="required-tag">* </em>商品单位</label>
@@ -222,7 +230,7 @@
 						<!-- 商品单位 end -->
 						
 						<!-- start 商品多规格开启与设置 -->
-						<div class="easy-order product-price-info" id="variousSpecManager">
+						<div class="easy-order product-spec-info" id="variousSpecManager">
 							<h2>多规格</h2>
 							<input type="hidden" name="specJson" id="specJson">
 							<div class="form-group">
@@ -244,6 +252,8 @@
 						
 						<div class="easy-order product-price-info">
 							<h2>价格</h2>
+							<!-- 默认不忽略价格信息 -->
+							<input type="hidden" id="ignorePriceExistSpec" name="ignorePriceExistSpec" value="N">
 							<!-- start 商品价格信息 -->
 							<div class="form-group">
 								<label for="orderPrice" class="col-sm-2 control-label"><em class="required-tag">* </em>订货价</label>
@@ -253,6 +263,12 @@
 								<label for="buyPrice" class="col-sm-2 control-label"> 进货价</label>
 								<div class="col-sm-4">
 									<input type="number" id="buyPrice" name="buyPrice" value="${product.buyPrice}" placeholder="请输入进货价格(单位：元)" maxlength="20" class="form-control"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="marketPrice" class="col-sm-2 control-label">市场价</label>
+								<div class="col-sm-4">
+									<input type="number" id="marketPrice" name="marketPrice" value="${product.marketPrice}" placeholder="请输入市场价格(单位：元)" maxlength="20" class="form-control"/>
 								</div>
 							</div>
 							<!-- 商品价格信息 end -->
@@ -284,7 +300,7 @@
 													<td>${cp.customerGroupName}</td>
 													<td>${cp.mtCityCd}</td>
 													<td>
-														<input name="customerPrice[${cp.customerId}]" type="number" value="${cp.price}" maxlength="20" class="form-control">
+														<input name="customerPrice[${cp.customerId}]" type="number" value="${cp.price}" maxlength="20" class="form-control required">
 													</td>
 													<td>
 														<span class="fa fa-times"></span>
@@ -318,7 +334,7 @@
 												<tr data-id='${cgp.customerGroupId}'>
 													<td>${cgp.customerGroupName}</td>
 													<td>
-														<input name="customerGroupPrice[${cgp.customerGroupId}]" type="number" value="${cgp.price}" maxlength="20" class="form-control">
+														<input name="customerGroupPrice[${cgp.customerGroupId}]" type="number" value="${cgp.price}" maxlength="20" class="form-control required">
 													</td>
 													<td>
 														<span class="fa fa-times"></span>
@@ -342,6 +358,7 @@
 		    	</div>
 				<div id="picAndDesc">
 					<form:form id="descForm" modelAttribute="product" action="${ctx}/productManager/product/picDesc" method="post" class="form-horizontal">
+						<input type="hidden" name="step" id="step" value="2"/>
 						<input type="hidden" name="id" id="productId" class="form-control required" value="${product.id}"/>
 						<!-- start 商品图片 -->
 						<div class="easy-order product-pictures">

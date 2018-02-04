@@ -16,4 +16,10 @@ import com.jeeplus.common.service.CrudService;
 @Transactional(readOnly = true)
 public class ProductSpecificationCustomerGroupPriceService extends CrudService<ProductSpecificationCustomerGroupPriceDao, ProductSpecificationCustomerGroupPrice> {
 
+	@Override
+	public ProductSpecificationCustomerGroupPrice get(String id) {
+		ProductSpecificationCustomerGroupPrice productSpecificationCustomerGroupPrice = super.get(id);
+		return productSpecificationCustomerGroupPrice;
+	}
+
 }

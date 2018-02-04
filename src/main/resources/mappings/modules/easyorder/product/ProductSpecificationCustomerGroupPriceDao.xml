@@ -40,8 +40,10 @@
 	
 	<select id="findList" resultType="ProductSpecificationCustomerGroupPrice" >
 		SELECT 
-			<include refid="productSpecificationCustomerGroupPriceColumns"/>
+			<include refid="productSpecificationCustomerGroupPriceColumns"/>,
+			cg.name AS "customerGroupName"
 		FROM product_specification_customer_group_price a
+		LEFT JOIN customer_group cg ON cg.id = a.customer_group_id 
 		<include refid="productSpecificationCustomerGroupPriceJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}

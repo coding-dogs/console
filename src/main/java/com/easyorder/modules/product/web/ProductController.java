@@ -136,6 +136,7 @@ public class ProductController extends BaseController {
 		product.setSpecJson(StringEscapeUtils.unescapeHtml4(product.getSpecJson()));;
 		if(!product.getIsNewRecord()){//编辑表单保存
 			Product t = productService.get(product.getId());//从数据库取出记录的值
+			t.setStep(product.getStep());
 			MyBeanUtils.copyBeanNotNull2Bean(product, t);//将编辑表单中的非NULL值覆盖数据库记录中的值
 			productService.save(t);//保存
 		}else{//新增表单保存
@@ -258,10 +259,11 @@ public class ProductController extends BaseController {
 			addMessage(redirectAttributes, EasyResponseEnums.NOT_FOUND_PRODUCT.message);
 			return "redirect:" + Global.getAdminPath() + "/productManager/product/?repage"; 
 		}
-		
+		p.setIgnorePriceExistSpec(product.getIgnorePriceExistSpec());
 		p.setCoverUrl(product.getCoverUrl());
 		p.setDescription(StringEscapeUtils.unescapeHtml4(product.getDescription()));
 		p.setPictures(product.getPictures());
+		p.setStep(product.getStep());
 		productService.save(p);
 		addMessage(redirectAttributes, "商品图片及描述保存成功");
 		return "redirect:" + Global.getAdminPath() + "/productManager/product/?repage";

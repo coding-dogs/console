@@ -30,7 +30,7 @@ import com.jeeplus.common.utils.excel.ImportExcel;
 import com.jeeplus.common.web.BaseController;
 
 @Controller
-@RequestMapping(value = "${adminPath}/productManager/productSpecificationCustomerPriceCustomerPrice")
+@RequestMapping(value = "${adminPath}/productManager/productSpecificationCustomerPrice")
 public class ProductSpecificationCustomerPriceController extends BaseController {
 	@Autowired
 	private ProductSpecificationCustomerPriceService productSpecificationCustomerPriceService;
@@ -50,28 +50,28 @@ public class ProductSpecificationCustomerPriceController extends BaseController 
 	/**
 	 * 商品规格客户价列表页面
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerPrice:list")
+	@RequiresPermissions("product:product:list")
 	@RequestMapping(value = {"list", ""})
 	public String list(ProductSpecificationCustomerPrice productSpecificationCustomerPrice, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<ProductSpecificationCustomerPrice> page = productSpecificationCustomerPriceService.findPage(new Page<ProductSpecificationCustomerPrice>(request, response), productSpecificationCustomerPrice); 
 		model.addAttribute("page", page);
-		return "easyorder/product/productSpecificationList";
+		return "easyorder/product/productSpecificationCustomerPriceList";
 	}
 
 	/**
 	 * 查看，增加，编辑商品规格客户价表单页面
 	 */
-	@RequiresPermissions(value={"product:productSpecificationCustomerPrice:view","product:productSpecificationCustomerPrice:add","product:productSpecificationCustomerPrice:edit"},logical=Logical.OR)
+	@RequiresPermissions(value={"product:product:view","product:product:add","product:product:edit"},logical=Logical.OR)
 	@RequestMapping(value = "form")
 	public String form(ProductSpecificationCustomerPrice productSpecificationCustomerPrice, Model model) {
 		model.addAttribute("productSpecificationCustomerPrice", productSpecificationCustomerPrice);
-		return "easyorder/product/productSpecificationForm";
+		return "easyorder/product/productSpecificationCustomerPriceForm";
 	}
 
 	/**
 	 * 保存商品规格客户价
 	 */
-	@RequiresPermissions(value={"product:productSpecificationCustomerPrice:add","product:productSpecificationCustomerPrice:edit"},logical=Logical.OR)
+	@RequiresPermissions(value={"product:product:add","product:product:edit"},logical=Logical.OR)
 	@RequestMapping(value = "save")
 	public String save(ProductSpecificationCustomerPrice productSpecificationCustomerPrice, Model model, RedirectAttributes redirectAttributes) throws Exception{
 		if (!beanValidator(model, productSpecificationCustomerPrice)){
@@ -85,13 +85,13 @@ public class ProductSpecificationCustomerPriceController extends BaseController 
 			productSpecificationCustomerPriceService.save(productSpecificationCustomerPrice);//保存
 		}
 		addMessage(redirectAttributes, "保存商品规格客户价成功");
-		return "redirect:"+Global.getAdminPath()+"/productManager/productSpecificationCustomerPriceCustomerPrice/?repage";
+		return "redirect:"+Global.getAdminPath()+"/productManager/productSpecificationCustomerPrice/?repage";
 	}
 
 	/**
 	 * 删除商品规格客户价
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerPrice:del")
+	@RequiresPermissions("product:product:del")
 	@RequestMapping(value = "delete")
 	public String delete(ProductSpecificationCustomerPrice productSpecificationCustomerPrice, RedirectAttributes redirectAttributes) {
 		productSpecificationCustomerPriceService.delete(productSpecificationCustomerPrice);
@@ -102,7 +102,7 @@ public class ProductSpecificationCustomerPriceController extends BaseController 
 	/**
 	 * 批量删除商品规格客户价
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerPrice:del")
+	@RequiresPermissions("product:product:del")
 	@RequestMapping(value = "deleteAll")
 	public String deleteAll(String ids, RedirectAttributes redirectAttributes) {
 		String idArray[] =ids.split(",");
@@ -116,7 +116,7 @@ public class ProductSpecificationCustomerPriceController extends BaseController 
 	/**
 	 * 导出excel文件
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerPrice:export")
+	@RequiresPermissions("product:product:export")
 	@RequestMapping(value = "export", method=RequestMethod.POST)
 	public String exportFile(ProductSpecificationCustomerPrice productSpecificationCustomerPrice, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
@@ -134,7 +134,7 @@ public class ProductSpecificationCustomerPriceController extends BaseController 
 	 * 导入Excel数据
 
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerPrice:import")
+	@RequiresPermissions("product:product:import")
 	@RequestMapping(value = "import", method=RequestMethod.POST)
 	public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
 		try {

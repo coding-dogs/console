@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.easyorder.common.beans.EasyResponse;
+import com.easyorder.common.enums.EasyResponseEnums;
 import com.easyorder.modules.product.entity.ProductSpecificationCustomerGroupPrice;
 import com.easyorder.modules.product.service.ProductSpecificationCustomerGroupPriceService;
 import com.google.common.collect.Lists;
@@ -35,7 +37,7 @@ import com.jeeplus.common.web.BaseController;
 public class ProductSpecificationCustomerGroupPriceController extends BaseController {
 	@Autowired
 	private ProductSpecificationCustomerGroupPriceService productSpecificationCustomerGroupPriceService;
-
+	
 	@ModelAttribute
 	public ProductSpecificationCustomerGroupPrice get(@RequestParam(required=false) String id) {
 		ProductSpecificationCustomerGroupPrice entity = null;
@@ -51,7 +53,7 @@ public class ProductSpecificationCustomerGroupPriceController extends BaseContro
 	/**
 	 * ProductSpecificationCustomerGroupPrice列表页面
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerGroupPrice:list")
+	@RequiresPermissions("product:product:list")
 	@RequestMapping(value = {"list", ""})
 	public String list(ProductSpecificationCustomerGroupPrice productSpecificationCustomerGroupPrice, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<ProductSpecificationCustomerGroupPrice> page = productSpecificationCustomerGroupPriceService.findPage(new Page<ProductSpecificationCustomerGroupPrice>(request, response), productSpecificationCustomerGroupPrice); 
@@ -62,7 +64,7 @@ public class ProductSpecificationCustomerGroupPriceController extends BaseContro
 	/**
 	 * 查看，增加，编辑ProductSpecificationCustomerGroupPrice表单页面
 	 */
-	@RequiresPermissions(value={"product:productSpecificationCustomerGroupPrice:view","product:productSpecificationCustomerGroupPrice:add","product:productSpecificationCustomerGroupPrice:edit"},logical=Logical.OR)
+	@RequiresPermissions(value={"product:product:view","product:product:add","product:product:edit"},logical=Logical.OR)
 	@RequestMapping(value = "form")
 	public String form(ProductSpecificationCustomerGroupPrice productSpecificationCustomerGroupPrice, Model model) {
 		model.addAttribute("productSpecificationCustomerGroupPrice", productSpecificationCustomerGroupPrice);
@@ -72,7 +74,7 @@ public class ProductSpecificationCustomerGroupPriceController extends BaseContro
 	/**
 	 * 保存ProductSpecificationCustomerGroupPrice
 	 */
-	@RequiresPermissions(value={"product:productSpecificationCustomerGroupPrice:add","product:productSpecificationCustomerGroupPrice:edit"},logical=Logical.OR)
+	@RequiresPermissions(value={"product:product:add","product:product:edit"},logical=Logical.OR)
 	@RequestMapping(value = "save")
 	public String save(ProductSpecificationCustomerGroupPrice productSpecificationCustomerGroupPrice, Model model, RedirectAttributes redirectAttributes) throws Exception{
 		if (!beanValidator(model, productSpecificationCustomerGroupPrice)){
@@ -88,11 +90,31 @@ public class ProductSpecificationCustomerGroupPriceController extends BaseContro
 		addMessage(redirectAttributes, "保存ProductSpecificationCustomerGroupPrice成功");
 		return "redirect:"+Global.getAdminPath()+"/productManager/productSpecificationCustomerGroupPrice/?repage";
 	}
+	
+	/**
+	 * 保存ProductSpecificationCustomerGroupPrice
+	 */
+	@RequiresPermissions(value={"product:product:add","product:product:edit"},logical=Logical.OR)
+	@RequestMapping(value = "async/save")
+	public EasyResponse<String> asyncSave(ProductSpecificationCustomerGroupPrice productSpecificationCustomerGroupPrice, Model model) throws Exception{
+		if (!beanValidator(model, productSpecificationCustomerGroupPrice)){
+			return EasyResponse.buildByEnum(EasyResponseEnums.REQUEST_PARAM_ERROR);
+		}
+		if(!productSpecificationCustomerGroupPrice.getIsNewRecord()){//编辑表单保存
+			ProductSpecificationCustomerGroupPrice t = productSpecificationCustomerGroupPriceService.get(productSpecificationCustomerGroupPrice.getId());//从数据库取出记录的值
+			MyBeanUtils.copyBeanNotNull2Bean(productSpecificationCustomerGroupPrice, t);//将编辑表单中的非NULL值覆盖数据库记录中的值
+			productSpecificationCustomerGroupPriceService.save(t);//保存
+		}else{//新增表单保存
+			productSpecificationCustomerGroupPriceService.save(productSpecificationCustomerGroupPrice);//保存
+		}
+		return EasyResponse.buildSuccess("true");
+	}
+
 
 	/**
 	 * 删除ProductSpecificationCustomerGroupPrice
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerGroupPrice:del")
+	@RequiresPermissions("product:product:del")
 	@RequestMapping(value = "delete")
 	public String delete(ProductSpecificationCustomerGroupPrice productSpecificationCustomerGroupPrice, RedirectAttributes redirectAttributes) {
 		productSpecificationCustomerGroupPriceService.delete(productSpecificationCustomerGroupPrice);
@@ -103,7 +125,7 @@ public class ProductSpecificationCustomerGroupPriceController extends BaseContro
 	/**
 	 * 批量删除ProductSpecificationCustomerGroupPrice
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerGroupPrice:del")
+	@RequiresPermissions("product:product:del")
 	@RequestMapping(value = "deleteAll")
 	public String deleteAll(String ids, RedirectAttributes redirectAttributes) {
 		String idArray[] =ids.split(",");
@@ -117,7 +139,7 @@ public class ProductSpecificationCustomerGroupPriceController extends BaseContro
 	/**
 	 * 导出excel文件
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerGroupPrice:export")
+	@RequiresPermissions("product:product:export")
 	@RequestMapping(value = "export", method=RequestMethod.POST)
 	public String exportFile(ProductSpecificationCustomerGroupPrice productSpecificationCustomerGroupPrice, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {
@@ -135,7 +157,7 @@ public class ProductSpecificationCustomerGroupPriceController extends BaseContro
 	 * 导入Excel数据
 
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerGroupPrice:import")
+	@RequiresPermissions("product:product:import")
 	@RequestMapping(value = "import", method=RequestMethod.POST)
 	public String importFile(MultipartFile file, RedirectAttributes redirectAttributes) {
 		try {
@@ -167,7 +189,7 @@ public class ProductSpecificationCustomerGroupPriceController extends BaseContro
 	/**
 	 * 下载导入ProductSpecificationCustomerGroupPrice数据模板
 	 */
-	@RequiresPermissions("product:productSpecificationCustomerGroupPrice:import")
+	@RequiresPermissions("product:product:import")
 	@RequestMapping(value = "import/template")
 	public String importFileTemplate(HttpServletResponse response, RedirectAttributes redirectAttributes) {
 		try {

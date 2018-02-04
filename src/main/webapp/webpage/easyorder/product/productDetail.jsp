@@ -14,7 +14,7 @@
 			border: 2px solid #F0F0F0;
 			background-color: #fff;
 			color: #666;
-			padding: 3px 5px;
+			padding: 0 15px;
 			width: auto;
 			float: left;
 			margin: 0 10px 10px 0;
@@ -28,9 +28,11 @@
 			color: #fff;
 		}
 		
-		.spec-no-div {
+		.spec-no-div,
+		.spec-display-container {
 			margin-bottom: 10px;
 		}
+		
 	</style>
 </head>
 <body class="gray-bg">
@@ -113,6 +115,15 @@
 			    				<span>订货价：</span>
 			    				<span>¥<span id="productOrderPrice">${product.orderPrice}元</span></span>
 			    			</li>
+			    			<li>
+			    				<span>市场价：</span>
+			    				<c:if test="${not empty product.marketPrice }">
+									<span>¥${product.marketPrice}元</span>
+				    			</c:if>
+				    			<c:if test="${empty product.marketPrice }">
+									<span>¥ <span id="marketPrice">暂无参考</span></span>
+				    			</c:if>
+			    			</li>
 			    			<shiro:hasPermission name="product:product:buyprice">
 								<li>
 				    				<span>进货价：</span>
@@ -120,7 +131,7 @@
 										<span>¥${product.buyPrice}元</span>
 					    			</c:if>
 					    			<c:if test="${empty product.buyPrice }">
-										<span>未设置</span>
+										<span>¥ <span id="buyPrice">暂无参考</span></span>
 					    			</c:if>
 				    			</li>
 							</shiro:hasPermission>
@@ -226,15 +237,53 @@
 					$.each(productSpecList, function(idx, psl) {
 						if(tmpPath == psl["specificationItemPath"]) {
 							var specNoSpan = $('<span>规格编号：' + psl.specificationNo + '</span>');
-							var barCodeSpan = $('<span>商品条形码：' + psl.barCode + '</span>');
-							var orderPrice = psl.orderPrice;
-							$("#productOrderPrice").text(orderPrice);
+							var barCodeSpan = $('<span>商品条形码：' + (psl.barCode ? psl.barCode : '未录入')  + '</span>');
+							$("#productOrderPrice").text(psl.orderPrice ? psl.orderPrice : "暂无参考");
+							$("#marketPrice").text(psl.marketPrice ? psl.marketPrice : "暂无参考");
+							$("#buyPrice").text(psl.buyPrice ? psl.buyPrice : "暂无参考");
 							specNoSpan.appendTo(specNoDiv);
 							barCodeSpan.appendTo(barCodeDiv);
+							// 切换价格组显示
+							$("#customerGroupPrice tbody").html("");
+							$("#customerPrice tbody").html("");
+							generateCustomerPrice(psl.productSpecificationCustomerPrices); 
+							generateCustomerGroupPrice(psl.productSpecificationCustomerGroupPrices); 
 						}
 					});
 				}
 			}
+		}
+		
+		function generateCustomerPrice(prices) {
+			if(!prices || prices.length == 0) {
+				return;
+			}
+			$.each(prices, function(index, price) {
+				var $tr = $("<tr>");
+				var $tdCustomerName = $("<td>");
+				var $tdOrderPrice = $("<td>");
+				$tdCustomerName.html(price.customerName);
+				$tdOrderPrice.html(price.orderPrice);
+				$tdCustomerName.appendTo($tr);
+				$tdOrderPrice.appendTo($tr);
+				$tr.appendTo($("#customerPrice tbody"));
+			});
+		}
+		
+		function generateCustomerGroupPrice(prices) {
+			if(!prices || prices.length == 0) {
+				return;
+			}
+			$.each(prices, function(index, price) {
+				var $tr = $("<tr>");
+				var $tdCustomerGroupName = $("<td>");
+				var $tdOrderPrice = $("<td>");
+				$tdCustomerGroupName.html(price.customerGroupName);
+				$tdOrderPrice.html(price.orderPrice);
+				$tdCustomerGroupName.appendTo($tr);
+				$tdOrderPrice.appendTo($tr);
+				$tr.appendTo($("#customerGroupPrice tbody"));
+			});
 		}
 		
 		function generateItemBlocks(sp) {
@@ -267,7 +316,7 @@
 		var productId = "${product.id}";
 		var productSpecList = [];
 		// 多规格展示
-		// 1. 先获取商品多规格关联信息
+		// 获取商品多规格关联信息
 		easyorder.get("productManager/productSpecification/async/list", {productId: productId}, false, function(data) {
 			if(SUCCESS_CODE == data.code) {
 				var resultList = data.result;
@@ -338,16 +387,6 @@
 		}, function(XMLHttpRequest, textStatus, errorThrown) {
 			
 		});
-		
-		// 2. 拆分多规格信息
-		
-		
-		
-		// 3. 分别获取不同规格类型下涉及到的值
-		
-		
-		
-		// 4. 查找对应位置进行显示
 	</script>
 </body>
 </html>
