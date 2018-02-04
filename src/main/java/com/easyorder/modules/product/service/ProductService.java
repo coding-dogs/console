@@ -23,6 +23,8 @@ import com.easyorder.modules.product.entity.ProductCustomerGroupPrice;
 import com.easyorder.modules.product.entity.ProductCustomerPrice;
 import com.easyorder.modules.product.entity.ProductPicture;
 import com.easyorder.modules.product.entity.ProductSpecification;
+import com.easyorder.modules.product.entity.ProductSpecificationCustomerGroupPrice;
+import com.easyorder.modules.product.entity.ProductSpecificationCustomerPrice;
 import com.jeeplus.common.persistence.Page;
 import com.jeeplus.common.service.CrudService;
 
@@ -46,6 +48,10 @@ public class ProductService extends CrudService<ProductDao, Product> {
 	ProductCustomerGroupPriceService productCustomerGroupPriceService;
 	@Autowired
 	ProductSpecificationService productSpecificationService;
+	@Autowired
+	ProductSpecificationCustomerGroupPriceService productSpecificationCustomerGroupPriceService;
+	@Autowired
+	ProductSpecificationCustomerPriceService productSpecificationCustomerPriceService;
 
 	public Product get(String id) {
 		Product product = super.get(id);
@@ -55,7 +61,7 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		}
 		return product;
 	}
-	
+
 	public Product get(Product product) {
 		Product p = super.get(product);
 		if(BeanUtils.isNotEmpty(p)) {
@@ -64,7 +70,11 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		}
 		return p;
 	}
-	
+
+	/**
+	 * 处理多规格信息
+	 * @param product
+	 */
 	private void handlerSpecification(Product product) {
 		ProductSpecification ps = new ProductSpecification();
 		String productId = product.getId();
@@ -72,9 +82,23 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		ps.setProductId(productId);
 		ps.setSupplierId(supplierId);
 		List<ProductSpecification> psList = productSpecificationService.findList(ps);
-		if(CollectionUtils.isNotEmpty(psList)) {
-			product.setSpecJson(GSONUtils.toJSON(psList));
+		if(CollectionUtils.isEmpty(psList)) {
+			return;
 		}
+		psList.forEach(psl -> {
+			// 查询多规格客户组指定价格
+			ProductSpecificationCustomerGroupPrice pscgp = new ProductSpecificationCustomerGroupPrice();
+			pscgp.setProductSpecificationId(psl.getId());
+			List<ProductSpecificationCustomerGroupPrice> customerGroupPriceList = productSpecificationCustomerGroupPriceService.findList(pscgp);
+			// 查询多规格客户指定价格
+			ProductSpecificationCustomerPrice pscp = new ProductSpecificationCustomerPrice();
+			pscp.setProductSpecificationId(psl.getId());
+			List<ProductSpecificationCustomerPrice> customerPriceList = productSpecificationCustomerPriceService.findList(pscp);
+			psl.setProductSpecificationCustomerGroupPrices(customerGroupPriceList);
+			psl.setProductSpecificationCustomerPrices(customerPriceList);
+		});
+		product.setSpecJson(GSONUtils.toJSON(psList));
+
 	}
 
 	/**
@@ -89,20 +113,57 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		ps.setSupplierId(supplierId);
 		List<ProductSpecification> psList = productSpecificationService.findList(ps);
 		if(CollectionUtils.isNotEmpty(psList)) {
-			psList.forEach(psl -> {
+			for (ProductSpecification psl : psList) {
 				productSpecificationService.delete(psl);
-			});
+				// 清除相应的客户组指定价格
+				ProductSpecificationCustomerGroupPrice pscgp = new ProductSpecificationCustomerGroupPrice();
+				pscgp.setProductSpecificationId(psl.getId());
+				List<ProductSpecificationCustomerGroupPrice> customerGroupPriceList = productSpecificationCustomerGroupPriceService.findList(pscgp);
+				if(CollectionUtils.isNotEmpty(customerGroupPriceList)) {
+					customerGroupPriceList.forEach(cgpl -> { productSpecificationCustomerGroupPriceService.delete(cgpl); });
+				}
+				// 清除相应的客户指定价格
+				ProductSpecificationCustomerPrice pscp = new ProductSpecificationCustomerPrice();
+				pscgp.setProductSpecificationId(psl.getId());
+				List<ProductSpecificationCustomerPrice> customerPriceList = productSpecificationCustomerPriceService.findList(pscp);
+				if(CollectionUtils.isNotEmpty(customerPriceList)) {
+					customerPriceList.forEach(cpl -> { productSpecificationCustomerPriceService.delete(cpl); });
+				}
+			}
 		}
 		String specJson = product.getSpecJson();
-		if(StringUtils.hasText(specJson)) {
-			List<ProductSpecification> pss = GSONUtils.jsonToList(specJson, ProductSpecification.class);
-			if(CollectionUtils.isNotEmpty(pss)) {
-				pss.forEach(productSpec -> {
-					// 由于原先记录已经清除，此处提出id属性，直接视为新增
-					productSpec.setId(null);
-					productSpec.setSupplierId(supplierId);
-					productSpec.setProductId(productId);
-					productSpecificationService.save(productSpec);
+		if(!StringUtils.hasText(specJson)) {
+			return;
+		}
+
+		List<ProductSpecification> pss = GSONUtils.jsonToList(specJson, ProductSpecification.class);
+		if(CollectionUtils.isEmpty(pss)) {
+			return;
+		}
+
+		for (ProductSpecification productSpec : pss) {
+			// 由于原先记录已经清除，此处提出id属性，直接视为新增
+			productSpec.setId(null);
+			productSpec.setSupplierId(supplierId);
+			productSpec.setProductId(productId);
+			productSpecificationService.save(productSpec);
+
+			List<ProductSpecificationCustomerGroupPrice> pscgpList = productSpec.getProductSpecificationCustomerGroupPrices();
+			List<ProductSpecificationCustomerPrice> pscpList = productSpec.getProductSpecificationCustomerPrices();
+			// 保存多规格客户组指定价格
+			if(CollectionUtils.isNotEmpty(pscgpList)) {
+				pscgpList.forEach(cgpl -> {
+					cgpl.setId(null);
+					cgpl.setProductSpecificationId(productSpec.getId());
+					productSpecificationCustomerGroupPriceService.save(cgpl);
+				});
+			}
+			// 保存多规格客户指定价格
+			if(CollectionUtils.isNotEmpty(pscpList)) {
+				pscpList.forEach(cpl -> {
+					cpl.setId(null);
+					cpl.setProductSpecificationId(productSpec.getId());
+					productSpecificationCustomerPriceService.save(cpl);
 				});
 			}
 		}
@@ -153,8 +214,85 @@ public class ProductService extends CrudService<ProductDao, Product> {
 
 	@Transactional(readOnly = false)
 	public void save(Product product) {
+		// 两种情况：1.保存基本信息  2.保存图片及详情信息
+		if("1".equals(product.getStep())) {
+			saveProductBaseInfo(product);
+		} else if("2".equals(product.getStep())) {
+			savePictureAndDetail(product);
+		}
+	}
+
+	private void saveProductBaseInfo(Product product) {
+		// 存在多规格信息则忽略价格信息
+		if(Constants.YES.equals(product.getIgnorePriceExistSpec())) {
+			product.setBuyPrice(null);
+			product.setMarketPrice(null);
+			product.setOrderPrice(null);
+		}
 		super.save(product);
-		String productId = product.getId();
+		// 保存分类与品牌关联关系
+		saveCategoryBrand(product);
+		
+		// 保存商品指定价格(含客户与客户组)
+		saveExclusivePrice(product);
+
+		// 保存多规格信息
+		saveSpecification(product);
+	}
+
+	/**
+	 * 保存商品指定价格
+	 * @param product
+	 * @param productId
+	 */
+	private void saveExclusivePrice(Product product) {
+		// 保存客户指定价格
+		Map<String, Double> customerPrice = product.getCustomerPrice();
+		if(CollectionUtils.isNotEmpty(customerPrice)) {
+			ProductCustomerPrice productCustomerPrice = new ProductCustomerPrice();;
+			productCustomerPrice.setProductId(product.getId());
+			productCustomerPriceService.deleteByCondition(productCustomerPrice);
+			// 不忽略价格信息才添加客户指定价格
+			if(Constants.NO.equals(product.getIgnorePriceExistSpec())) {
+				for (Map.Entry<String, Double> entry : customerPrice.entrySet()) {
+					String customerId = entry.getKey();
+					Double price = entry.getValue();
+					productCustomerPrice = new ProductCustomerPrice();
+					productCustomerPrice.setPrice(price);
+					productCustomerPrice.setProductId(product.getId());
+					productCustomerPrice.setCustomerId(customerId);
+					productCustomerPriceService.save(productCustomerPrice);
+				}
+			}
+		}
+
+		// 保存客户组指定价格
+		Map<String, Double> customerGroupPrice = product.getCustomerGroupPrice();
+		if(CollectionUtils.isNotEmpty(customerGroupPrice)) {
+			// 先删除
+			ProductCustomerGroupPrice productCustomerGroupPrice = new ProductCustomerGroupPrice();
+			productCustomerGroupPrice.setProductId(product.getId());
+			productCustomerGroupPriceService.deleteByCondition(productCustomerGroupPrice);
+			// 不忽略价格信息才添加客户组指定价格
+			if(Constants.NO.equals(product.getIgnorePriceExistSpec())) {
+				for (Map.Entry<String, Double> entry : customerGroupPrice.entrySet()) {
+					String customerGroupId = entry.getKey();
+					Double price = entry.getValue();
+					productCustomerGroupPrice = new ProductCustomerGroupPrice();
+					productCustomerGroupPrice.setCustomerGroupId(customerGroupId);
+					productCustomerGroupPrice.setPrice(price);
+					productCustomerGroupPrice.setProductId(product.getId());
+					productCustomerGroupPriceService.save(productCustomerGroupPrice);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 保存分类与品牌关联关系
+	 * @param product
+	 */
+	private void saveCategoryBrand(Product product) {
 		// 查询商品分类和品牌的关系，不存在关联关系，否则向数据库插入一条数据
 		if(StringUtils.hasText(product.getProductBrandId()) && StringUtils.hasText(product.getProductCategoryId())) {
 			ProductCategoryBrand productCategoryBrand = new ProductCategoryBrand();
@@ -166,43 +304,16 @@ public class ProductService extends CrudService<ProductDao, Product> {
 				productCategoryBrandService.save(productCategoryBrand);
 			}
 		}
-		// 保存客户指定价格
-		Map<String, Double> customerPrice = product.getCustomerPrice();
-		if(CollectionUtils.isNotEmpty(customerPrice)) {
-			ProductCustomerPrice productCustomerPrice = new ProductCustomerPrice();;
-			productCustomerPrice.setProductId(productId);
-			productCustomerPriceService.deleteByCondition(productCustomerPrice);
-			
-			for (Map.Entry<String, Double> entry : customerPrice.entrySet()) {
-				String customerId = entry.getKey();
-				Double price = entry.getValue();
-				productCustomerPrice = new ProductCustomerPrice();
-				productCustomerPrice.setPrice(price);
-				productCustomerPrice.setProductId(product.getId());
-				productCustomerPrice.setCustomerId(customerId);
-				productCustomerPriceService.save(productCustomerPrice);
-			}
-		}
+	}
 
-		// 保存客户组指定价格
-		Map<String, Double> customerGroupPrice = product.getCustomerGroupPrice();
-		if(CollectionUtils.isNotEmpty(customerGroupPrice)) {
-			// 先删除
-			ProductCustomerGroupPrice productCustomerGroupPrice = new ProductCustomerGroupPrice();
-			productCustomerGroupPrice.setProductId(product.getId());
-			productCustomerGroupPriceService.deleteByCondition(productCustomerGroupPrice);
-			
-			for (Map.Entry<String, Double> entry : customerGroupPrice.entrySet()) {
-				String customerGroupId = entry.getKey();
-				Double price = entry.getValue();
-				productCustomerGroupPrice = new ProductCustomerGroupPrice();
-				productCustomerGroupPrice.setCustomerGroupId(customerGroupId);
-				productCustomerGroupPrice.setPrice(price);
-				productCustomerGroupPrice.setProductId(product.getId());
-				productCustomerGroupPriceService.save(productCustomerGroupPrice);
-			}
-		}
-		
+	/**
+	 * 保存图片及详情
+	 * @param product
+	 */
+	private void savePictureAndDetail(Product product) {
+		// 保存详情等信息
+		super.save(product);
+		// 保存图片信息
 		if (product.getPictures() != null && product.getPictures().length > 0) {
 			ProductPicture productPicture = new ProductPicture();
 			productPicture.setProductId(product.getId());
@@ -218,26 +329,28 @@ public class ProductService extends CrudService<ProductDao, Product> {
 					productPictureService.save(pp);
 				}
 			}
+		} else if((product.getPictures() == null || product.getPictures().length == 0) && "2".equals(product.getStep())) {
+			// 若当前保存的是图片信息，且图片信息为空，则直接删除商品图片关联
+			ProductPicture productPicture = new ProductPicture();
+			productPicture.setProductId(product.getId());
+			productPictureService.deleteByCondition(productPicture);
 		}
-		
+
+		// 保存主图
+		ProductPicture pp = new ProductPicture();
+		pp.setProductId(product.getId());
+		pp.setIsMain(Constants.NO);
+		productPictureService.updateIsMain(pp);
 		if (StringUtils.isNotEmpty(product.getCoverUrl())) {
 			ProductPicture productPicture = new ProductPicture();
 			productPicture.setProductId(product.getId());
 			productPicture.setUrl(product.getCoverUrl());
 			productPicture = productPictureService.get(productPicture);
 			if(BeanUtils.isNotEmpty(productPicture)) {
-				ProductPicture pp = new ProductPicture();
-				pp.setProductId(product.getId());
-				pp.setIsMain(Constants.NO);
-				productPictureService.updateIsMain(pp);
 				productPicture.setIsMain(Constants.YES);
 				productPictureService.save(productPicture);
 			}
 		}
-		
-		// 保存多规格
-		saveSpecification(product);
-		
 	}
 
 	@Transactional(readOnly = false)
@@ -249,16 +362,16 @@ public class ProductService extends CrudService<ProductDao, Product> {
 		ProductCustomerPrice pcp = new ProductCustomerPrice();
 		pcp.setProductId(productId);
 		productCustomerPriceService.deleteByCondition(pcp);
-		
+
 		ProductCustomerGroupPrice pcgp = new ProductCustomerGroupPrice();
 		pcgp.setProductId(productId);
 		productCustomerGroupPriceService.deleteByCondition(pcgp);
-		
+
 		// 删除商品图片数据库记录
 		ProductPicture pp = new ProductPicture();
 		pp.setProductId(productId);
 		productPictureService.deleteByCondition(pp);
-		
+
 	}
 
 

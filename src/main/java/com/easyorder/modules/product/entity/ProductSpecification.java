@@ -1,6 +1,7 @@
 package com.easyorder.modules.product.entity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.jeeplus.common.persistence.DataEntity;
 import com.jeeplus.common.utils.excel.annotation.ExcelField;
@@ -11,7 +12,7 @@ import com.jeeplus.common.utils.excel.annotation.ExcelField;
  * @version 2017-06-09
  */
 public class ProductSpecification extends DataEntity<ProductSpecification> {
-	
+
 	private static final long serialVersionUID = 1L;
 	private String productId;		// 商品ID
 	private String supplierId;	// 供应商ID
@@ -21,7 +22,11 @@ public class ProductSpecification extends DataEntity<ProductSpecification> {
 	private BigDecimal marketPrice;							// 市场价
 	private BigDecimal buyPrice;						// 进货价
 	private String barCode;									// 条形码
-	
+	// 多规格客户组指定价格
+	private List<ProductSpecificationCustomerGroupPrice> productSpecificationCustomerGroupPrices;
+	// 多规格客户指定价格
+	private List<ProductSpecificationCustomerPrice> productSpecificationCustomerPrices;
+
 	public ProductSpecification() {
 		super();
 	}
@@ -29,7 +34,7 @@ public class ProductSpecification extends DataEntity<ProductSpecification> {
 	public ProductSpecification(String id){
 		super(id);
 	}
-	
+
 	@ExcelField(title="商品ID", align=2, sort=3)
 	public String getProductId() {
 		return productId;
@@ -94,5 +99,23 @@ public class ProductSpecification extends DataEntity<ProductSpecification> {
 	public void setBarCode(String barCode) {
 		this.barCode = barCode;
 	}
-	
+
+	public List<ProductSpecificationCustomerGroupPrice> getProductSpecificationCustomerGroupPrices() {
+		return productSpecificationCustomerGroupPrices;
+	}
+
+	public void setProductSpecificationCustomerGroupPrices(
+			List<ProductSpecificationCustomerGroupPrice> productSpecificationCustomerGroupPrices) {
+		this.productSpecificationCustomerGroupPrices = productSpecificationCustomerGroupPrices;
+	}
+
+	public List<ProductSpecificationCustomerPrice> getProductSpecificationCustomerPrices() {
+		return productSpecificationCustomerPrices;
+	}
+
+	public void setProductSpecificationCustomerPrices(
+			List<ProductSpecificationCustomerPrice> productSpecificationCustomerPrices) {
+		this.productSpecificationCustomerPrices = productSpecificationCustomerPrices;
+	}
+
 }

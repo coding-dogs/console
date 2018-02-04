@@ -47,9 +47,18 @@ public class Product extends DataEntity<Product> {
 	private List<ProductCustomerPrice> productCustomerPrices;
 	private List<ProductCustomerGroupPrice> productCustomerGroupPrices;
 	
+	// 多规格客户组指定价格
+	private List<ProductSpecificationCustomerGroupPrice> productSpecificationCustomerGroupPrices;
+	// 多规格客户指定价格
+	private List<ProductSpecificationCustomerPrice> productSpecificationCustomerPrices;
+	
 	private String[] pictures;
 	
 	private String specJson;
+	
+	private String ignorePriceExistSpec;    // 存在多规格信息时，忽略价格和指定价信息
+	
+	private String step;										// 保存步骤-->1.为保存商品基本信息；2.保存详情与图片信息
 	
 	public Product() {
 		super();
@@ -177,7 +186,6 @@ public class Product extends DataEntity<Product> {
 		this.mtProductUpdownCd = mtProductUpdownCd;
 	}
 	
-	@NotNull(message="订货价格不能为空")
 	@ExcelField(title="订货价格", align=2, sort=14)
 	public Double getOrderPrice() {
 		return orderPrice;
@@ -321,5 +329,40 @@ public class Product extends DataEntity<Product> {
 	public void setSpecJson(String specJson) {
 		this.specJson = specJson;
 	}
+
+	public String getIgnorePriceExistSpec() {
+		return ignorePriceExistSpec;
+	}
+
+	public void setIgnorePriceExistSpec(String ignorePriceExistSpec) {
+		this.ignorePriceExistSpec = ignorePriceExistSpec;
+	}
+
+	public List<ProductSpecificationCustomerGroupPrice> getProductSpecificationCustomerGroupPrices() {
+		return productSpecificationCustomerGroupPrices;
+	}
+
+	public void setProductSpecificationCustomerGroupPrices(
+			List<ProductSpecificationCustomerGroupPrice> productSpecificationCustomerGroupPrices) {
+		this.productSpecificationCustomerGroupPrices = productSpecificationCustomerGroupPrices;
+	}
+
+	public List<ProductSpecificationCustomerPrice> getProductSpecificationCustomerPrices() {
+		return productSpecificationCustomerPrices;
+	}
+
+	public void setProductSpecificationCustomerPrices(
+			List<ProductSpecificationCustomerPrice> productSpecificationCustomerPrices) {
+		this.productSpecificationCustomerPrices = productSpecificationCustomerPrices;
+	}
+
+	public String getStep() {
+		return step;
+	}
+
+	public void setStep(String step) {
+		this.step = step;
+	}
+	
 	
 }
