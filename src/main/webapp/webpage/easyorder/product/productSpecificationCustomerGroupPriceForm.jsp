@@ -79,13 +79,15 @@
 						<input type="hidden" id="productSpecificationId" name="productSpecificationId" value="${productSpecificationCustomerGroupPrice.productSpecificationId}"/>
 						<sys:message content="${message}" />
 							<!-- start 客户组指定价 -->
-							<div class="form-group">
-								<label class="col-sm-2 control-label">客户组价</label>
-								<input id="customerGroupIds" type="hidden"/>
-								<div class="col-sm-10 display-ib">
-									<button type="button" class="btn btn-white btn-sm" id="customerGroupSelector">选择客户组</button>
+							<div class="form-group  paddingLR-10">
+								<div class="col-sm-12">
+									<label class="">客户组价</label>
+										<input id="customerGroupIds" type="hidden"/>
+										<div class="display-ib">
+											<button type="button" class="btn btn-white btn-sm" id="customerGroupSelector">选择客户组</button>
+										</div>
 								</div>
-								<div class="col-sm-11 col-sm-offset-1">
+								<div class="col-sm-12">
 									<table id="customerGroupPrice" class="table table-striped table-bordered table-hover table-condensed dataTables-example dataTable">
 										<thead>
 											<tr>

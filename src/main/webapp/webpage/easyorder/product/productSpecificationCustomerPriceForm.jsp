@@ -81,13 +81,15 @@
 						
 						<div class="easy-order product-price-info">
 							<!-- start 客户指定价 -->
-							<div class="form-group">
-								<label class="col-sm-2 control-label">客户价</label>
-								<input id="customerIds" type="hidden"/>
-								<div class="col-sm-10 display-ib">
-									<button type="button" class="btn btn-white btn-sm" id="customerSelector">选择客户</button>
+							<div class="form-group paddingLR-10">
+								<div class="col-sm-12">
+									<label class="">客户价</label>
+									<input id="customerIds" type="hidden"/>
+									<div class="display-ib">
+										<button type="button" class="btn btn-white btn-sm" id="customerSelector">选择客户</button>
+									</div>
 								</div>
-								<div class="col-sm-11 col-sm-offset-1">
+								<div class="col-sm-12">
 									<table id="customerPrice" class="table table-striped table-bordered table-hover table-condensed dataTables-example dataTable">
 										<thead>
 											<tr>
@@ -143,7 +145,7 @@
         			var $customerPrice = $("#customerPrice");
         			$.each(dataPrice, function(index, dp) {
         				var $tr = $("<tr>");
-        				$tr.attr("data-id", dp.customerGroupId);
+        				$tr.attr("data-id", dp.customerId);
         				$tr.appendTo($customerPrice);
         				// 遍历时需要的属性,注意顺序需要对应表头所需要的属性
         				var persistProp = ["customerName", "customerNo", "customerGroupName", "mtCityCd", "orderPrice"];

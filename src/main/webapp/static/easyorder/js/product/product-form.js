@@ -243,7 +243,7 @@ $("#unit").easySelector({
 	moreText : "<span style='text-weight:bold'> + </span> 新增单位",
 	items: units,
 	moreCallback: function() {
-		openDialogWithCallback('新增单位', ctx + '/productManager/unit/form','800px', '500px', null, function(index, layero) {
+		openDialogWithCallback('新增单位', ctx + '/productManager/unit/form','800px', '600px', null, function(index, layero) {
 			var body = top.layer.getChildFrame('body', index);
 			var inputForm = body.find("#inputForm");
 			var unit = inputForm.find("#unit").val();
@@ -287,7 +287,7 @@ $("#productCategory").easySelector({
 	moreText : "<span style='text-weight:bold'> + </span> 新增商品分类",
 	items : items,
 	moreCallback : function() {
-		openDialogWithCallback('新增商品分类', ctx + '/productManager/productCategory/form','800px', '500px', null, function(index, layero) {
+		openDialogWithCallback('新增商品分类', ctx + '/productManager/productCategory/form','800px', '600px', null, function(index, layero) {
 			var body = top.layer.getChildFrame('body', index);
 			var inputForm = body.find("#inputForm");
 			var name = inputForm.find("#name").val();
@@ -359,7 +359,7 @@ $("#productBrand").easySelector({
 	moreText : "<span style='text-weight:bold'> + </span> 新增商品品牌",
 	items : items,
 	moreCallback : function() {
-		openDialogWithCallback('新增商品品牌', ctx + '/productManager/productBrand/form','800px', '500px', null, function(index, layero) {
+		openDialogWithCallback('新增商品品牌', ctx + '/productManager/productBrand/form','800px', '600px', null, function(index, layero) {
 			var body = top.layer.getChildFrame('body', index);
 			var inputForm = body.find("#inputForm");
 			var name = inputForm.find("#name").val();
@@ -433,7 +433,7 @@ function buildEasySelector(ele) {
 		},
 		items : specItems,
 		moreCallback : function() {
-			openDialogWithCallback('新增多规格', ctx + '/productManager/specification/form','800px', '500px', null, function(index, layero) {
+			openDialogWithCallback('新增多规格', ctx + '/productManager/specification/form','800px', '600px', null, function(index, layero) {
 				var body = top.layer.getChildFrame('body', index);
 				var inputForm = body.find("#inputForm");
 				var name = inputForm.find("#name").val();
@@ -1010,7 +1010,7 @@ function createSpecTable(firstItem, secondItem, specs) {
 				$customerPriceA.on('click', function(e) {
 					var specId = $customerGroupPriceTd.parents('.spec-tbody').attr("data-id");
 					openDialogWithCallback("多规格客户价格设置", ctx + "/productManager/productSpecificationCustomerPrice/form?action=edit&productSpecificationId=" + specId,
-							"1200px", "700px", null, function(index, layero) {
+							"800px", "600px", null, function(index, layero) {
 						var body = top.layer.getChildFrame('body', index);
 						var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
 						// 表单验证通过才执行
@@ -1034,7 +1034,7 @@ function createSpecTable(firstItem, secondItem, specs) {
 				$customerGroupPriceA.on('click', function(e) {
 					var specId = $customerGroupPriceTd.parents('.spec-tbody').attr("data-id");
 					openDialogWithCallback("多规格客户组价格设置", ctx + "/productManager/productSpecificationCustomerGroupPrice/form?action=edit&productSpecificationId=" + specId,
-							"1200px", "700px", null, function(index, layero) {
+							"800px", "600px", null, function(index, layero) {
 						var body = top.layer.getChildFrame('body', index);
 						var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
 						// 表单验证通过才执行
@@ -1171,7 +1171,7 @@ function createSpecTable(firstItem, secondItem, specs) {
 			
 			$customerPriceA.on('click', function(e) {
 				openDialogWithCallback("多规格客户价格设置", ctx + "/productManager/productSpecificationCustomerPrice/form?action=edit",
-						"1200px", "700px", null, function(index, layero) {
+						"800px", "600px", null, function(index, layero) {
 					var body = top.layer.getChildFrame('body', index);
 					var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
 					// 表单验证通过才执行
@@ -1199,7 +1199,7 @@ function createSpecTable(firstItem, secondItem, specs) {
 			$customerGroupPriceA.on('click', function(e) {
 				var specId = $customerGroupPriceTd.parents('.spec-tbody').attr("data-id");
 				openDialogWithCallback("多规格客户组价格设置", ctx + "/productManager/productSpecificationCustomerGroupPrice/form?action=edit&productSpecificationId=" + specId,
-						"1200px", "700px", null, function(index, layero) {
+						"800px", "600px", null, function(index, layero) {
 					var body = top.layer.getChildFrame('body', index);
 					var iframeWin = layero.find('iframe')[0]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
 					// 表单验证通过才执行
