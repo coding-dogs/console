@@ -223,12 +223,6 @@ public class ProductService extends CrudService<ProductDao, Product> {
 	}
 
 	private void saveProductBaseInfo(Product product) {
-		// 存在多规格信息则忽略价格信息
-		if(Constants.YES.equals(product.getIgnorePriceExistSpec())) {
-			product.setBuyPrice(null);
-			product.setMarketPrice(null);
-			product.setOrderPrice(null);
-		}
 		super.save(product);
 		// 保存分类与品牌关联关系
 		saveCategoryBrand(product);

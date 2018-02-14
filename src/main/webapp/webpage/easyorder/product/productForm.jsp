@@ -209,6 +209,20 @@
 								</div>
 							</div>
 							<div class="form-group">
+								<label for="orderPrice" class="col-sm-2 control-label"><em class="required-tag">* </em>订货价</label>
+								<div class="col-sm-4">
+									<input type="number" id="orderPrice" name="orderPrice" value="${product.orderPrice}" placeholder="请输入订货价格(单位：元)" maxlength="20" class="form-control required"/>
+								</div>
+								<label for="buyPrice" class="col-sm-2 control-label"> 进货价</label>
+								<div class="col-sm-4">
+									<input type="number" id="buyPrice" name="buyPrice" value="${product.buyPrice}" placeholder="请输入进货价格(单位：元)" maxlength="20" class="form-control"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="marketPrice" class="col-sm-2 control-label">市场价</label>
+								<div class="col-sm-4">
+									<input type="number" id="marketPrice" name="marketPrice" value="${product.marketPrice}" placeholder="请输入市场价格(单位：元)" maxlength="20" class="form-control"/>
+								</div>
 								<label for="remarks" class="col-sm-2 control-label">备注</label>
 								<div class="col-sm-4">
 									<textarea id="remarks" name="remarks" maxlength="300" class="form-control">${product.remarks}</textarea>
@@ -251,11 +265,11 @@
 						<!-- 商品多规格开启与设置 end -->
 						
 						<div class="easy-order product-price-info">
-							<h2>价格</h2>
+							<h2>指定价</h2>
 							<!-- 默认不忽略价格信息 -->
 							<input type="hidden" id="ignorePriceExistSpec" name="ignorePriceExistSpec" value="N">
 							<!-- start 商品价格信息 -->
-							<div class="form-group">
+							<%-- <div class="form-group">
 								<label for="orderPrice" class="col-sm-2 control-label"><em class="required-tag">* </em>订货价</label>
 								<div class="col-sm-4">
 									<input type="number" id="orderPrice" name="orderPrice" value="${product.orderPrice}" placeholder="请输入订货价格(单位：元)" maxlength="20" class="form-control required"/>
@@ -270,7 +284,7 @@
 								<div class="col-sm-4">
 									<input type="number" id="marketPrice" name="marketPrice" value="${product.marketPrice}" placeholder="请输入市场价格(单位：元)" maxlength="20" class="form-control"/>
 								</div>
-							</div>
+							</div> --%>
 							<!-- 商品价格信息 end -->
 							
 							<!-- start 客户指定价 -->

@@ -550,7 +550,7 @@ function buildEasySelector(ele) {
 										item2 = item;
 									}
 								});
-								createSpecTable(item1, item2);
+								createSpecTable(item1, item2, null, true);
 							});
 						}
 					}
@@ -682,7 +682,7 @@ function buildSpecSelectorAll(specs) {
 				} else {
 					secondItem = item;
 				}
-				createSpecTable(firstItem, secondItem, specs);
+				createSpecTable(firstItem, secondItem, specs, false);
 			}
 		});
 		
@@ -798,19 +798,14 @@ $('#openMultiple').on('ifChanged', function(e) {
 		$('#variousSpecManager').find('.spec-table').show();
 		// 多规格显示时添加必填项
 		$('#variousSpecManager').find('.spec-table').find('[data-attr-name="specificationNo"]').find('input').addClass('required');
-		$('#variousSpecManager').find('.spec-table').find('[data-attr-name="orderPrice"]').find('input').addClass('required');
 		$(".product-price-info").hide();
-		// 价格隐藏时去除必填项
-		$("#orderPrice").removeClass('required');
 		$("#ignorePriceExistSpec").val(YES);
 	} else {
 		$('#variousSpecManager').find('.spec-table').hide();
 		// 多规格隐藏时去除必填项
 		$('#variousSpecManager').find('.spec-table').find('[data-attr-name="specificationNo"]').find('input').removeClass('required');
-		$('#variousSpecManager').find('.spec-table').find('[data-attr-name="orderPrice"]').find('input').removeClass('required');
 		$(".product-price-info").show();
 		// 价格显示时添加必填项
-		$("#orderPrice").addClass('required');
 		$("#ignorePriceExistSpec").val(NO);
 	}
 });
@@ -835,7 +830,7 @@ if(specJson) {
  * @param secondItem
  * @returns
  */
-function createSpecTable(firstItem, secondItem, specs) {
+function createSpecTable(firstItem, secondItem, specs, copyPrice) {
 	var $manager = $('#variousSpecManager');
 	if($manager.length == 0) {
 		return;
@@ -849,7 +844,11 @@ function createSpecTable(firstItem, secondItem, specs) {
 	var hasSecond = secondItem && secondItem.children && secondItem.children.length > 0;
 	
 	// 模拟缓存，缓存前一次编辑数据
-	var caches = [];
+	var caches = [], 
+		orderPrice = $("#orderPrice").val(), 
+		marketPrice = $("#marketPrice").val(),
+		buyPrice = $("#buyPrice").val(),
+		barCode = $("#barCode").val();
 	
 	/**
 	 * {
@@ -1083,6 +1082,12 @@ function createSpecTable(firstItem, secondItem, specs) {
 				$customerGroupPriceTd.appendTo($tbodyTr);
 				
 				// 存在对应的规格缓存，则为其赋值
+				if(copyPrice) {
+					$orderPriceInput.val(getOrDefault(orderPrice));
+					$marketPriceInput.val(getOrDefault(marketPrice));
+					$buyPriceInput.val(getOrDefault(buyPrice));
+					$barCodeInput.val(getOrDefault(barCode));
+				}
 				if(specCache) {
 					$tbodyTr.attr("data-id", specCache.productSpecificationId);
 					$novInput.val(getOrDefault(specCache.specificationNo));
@@ -1232,6 +1237,12 @@ function createSpecTable(firstItem, secondItem, specs) {
 			$customerGroupPriceTd.appendTo($tbodyTr);
 			
 			// 存在对应的规格缓存，则为其赋值
+			if(copyPrice) {
+				$orderPriceInput.val(getOrDefault(orderPrice));
+				$marketPriceInput.val(getOrDefault(marketPrice));
+				$buyPriceInput.val(getOrDefault(buyPrice));
+				$barCodeInput.val(getOrDefault(barCode));
+			}
 			if(specCache) {
 				$tbodyTr.attr("data-id", specCache.productSpecificationId);
 				$novInput.val(getOrDefault(specCache.specificationNo));
