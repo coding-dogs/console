@@ -139,14 +139,14 @@
         				$tr.attr("data-id", dp.customerGroupId);
         				$tr.appendTo($customerGroupPrice);
         				// 遍历时需要的属性,注意顺序需要对应表头所需要的属性
-        				var persistProp = ["customerGroupId", "customerGroupName", "orderPrice"];
+        				var persistProp = ["customerGroupName", "orderPrice"];
         				$.each(persistProp, function(idx, prop) {
+        					var $td = $("<td>");
+        					$td.attr("data-type", prop);
         					for(var key in dp) {
             					if(prop != key) {
             						continue;
             					}
-            					var $td = $("<td>");
-            					$td.attr("data-type", key);
             					if(key == "customerGroupId") {
             						continue;
             					} else if(key == "orderPrice") {
@@ -160,8 +160,8 @@
             					} else {
             						$td.text(dp[key]);
             					}
-            					$td.appendTo($tr);
             				}
+        					$td.appendTo($tr);
         				});
         				
         				var $td = $("<td>");

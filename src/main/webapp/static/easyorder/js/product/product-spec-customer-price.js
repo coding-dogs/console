@@ -34,6 +34,10 @@ $('#customerSelector').on('click', function(e) {
      		$tbody.appendTo($('#customerPrice'));
      	}
      	var fields = ['name', 'customerNo', 'customerGroupName', 'mtCityCd'];
+     	// 字段data-type属性映射
+     	var fieldMapping = {
+     		"name" : "customerName"
+     	};
      	$.each(records, function(idx, record) {
      		var $findTr = $tbody.find('tr[data-id="' + record.id + '"]');
      		if($findTr.length != 0) {
@@ -42,7 +46,7 @@ $('#customerSelector').on('click', function(e) {
      		var $tr = $('<tr data-id="' + record.id + '">');
      		$.each(fields, function(i, field) {
      			var $td = $('<td>');
-     			$td.attr("data-type", field);
+     			$td.attr("data-type", fieldMapping[field] ? fieldMapping[field] : field);
      			$td.html(record[field]);
      			$td.appendTo($tr);
      		});
