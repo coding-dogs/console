@@ -35,6 +35,9 @@ $('#customerGroupSelector').on('click', function(e) {
      		$tbody.appendTo($('#customerGroupPrice'));
      	}
      	var fields = ['name'];
+     	var fieldMapping = {
+     		"name" : "customerGroupName"
+     	};
      	$.each(records, function(idx, record) {
      		var $findTr = $tbody.find('tr[data-id="' + record.id + '"]');
      		if($findTr.length != 0) {
@@ -43,7 +46,7 @@ $('#customerGroupSelector').on('click', function(e) {
      		var $tr = $('<tr data-id="' + record.id + '">');
      		$.each(fields, function(i, field) {
      			var $td = $('<td>');
-     			$td.attr("data-type", field);
+     			$td.attr("data-type", fieldMapping[field] ? fieldMapping[field] : field);
      			$td.html(record[field]);
      			$td.appendTo($tr);
      		});
